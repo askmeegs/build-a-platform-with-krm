@@ -1,12 +1,12 @@
-# Setup 
+# 2 - Setup 
 
 This directory contains Terraform and Cloud Build resources to set up a basic GKE cluster with the CymbalBank app's KRM resources deployed to it. 
 
-Note: This setup process will also create a Github repository in your account, and you will push the CymbalBank 
+Note: This setup process will also create a Github repository in your account, and you will push the CymbalBank manifests to that repo.
 
 ![screenshot1](screenshots/arch.png)
 
-### Prerequisites 
+## Prerequisites 
 
 1. A Google Cloud project 
 2. A Github account (you will be creating 3 new repositories overall). 
@@ -18,32 +18,32 @@ Note: This setup process will also create a Github repository in your account, a
 
 4. A Github Personal Access token that Terraform can use to create a Github repo on your behalf. See instructions [here](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token). 
 
-### How to use 
+## Steps 
 
-1. Create a Google Cloud project or get the ID of an existing project you can create resources in. 
+1. **Create a Google Cloud project** or get the ID of an existing project.
 
-2. Clone this repo. 
+2. **Clone this repo.**
 
 ```
 git clone https://github.com/askmeegs/intro-to-krm
 cd intro-to-krm/2-setup/ 
 ```
 
-3. Set variables. 
+3. **Set environment variables.**
 
 ```
 export PROJECT_ID="<your-project-id>" 
 export GITHUB_USERNAME="<your-github-username>" 
 ```
 
-4. Enable Google Cloud APIs.  
+4. **Enable Google Cloud APIs.**  
 
 ```
 gcloud config set project ${PROJECT_ID}
 gcloud services enable container.googleapis.com cloudbuild.googleapis.com
 ```
 
-5. Replace the values in `terraform.tfvars` with the values corresponding to your project. You can pick any GCP region / zone. 
+5. **Replace the values in `terraform.tfvars`** with the values corresponding to your project. You can pick any GCP region / zone. 
 
 ```
 project_id = "<your-project-id>"
@@ -55,19 +55,19 @@ github_token = "<your-token>"
 
 **Note**: if you choose a different zone from `us-central1-b`, you have to change the cluster zone in `cloudbuild.yaml`. 
 
-6. Run `terraform init`. This downloads the providers (Github, Google Cloud) needed for setup. On success, you should see: 
-
-```
-Terraform has been successfully initialized!
-```
-
-7. Set up application default credentials for your project - this allows Terraform to create GCP resources on your behalf. 
+6. **Set up application default credentials** for your project - this allows Terraform to create GCP resources on your behalf. 
 
 ```
 gcloud auth application-default login
 ```
 
-8. Run `terraform plan`. This looks at the `.tf` files in the directory and tells you what it will deploy to your Google Cloud project. 
+7. **Run `terraform init`.** This downloads the providers (Github, Google Cloud) needed for setup. On success, you should see: 
+
+```
+Terraform has been successfully initialized!
+```
+
+8. **Run `terraform plan`.** This looks at the `.tf` files in the directory and tells you what it will deploy to your Google Cloud project. 
 
 ```
 Plan: 7 to add, 0 to change, 0 to destroy.
@@ -79,7 +79,7 @@ Changes to Outputs:
   + region                  = "us-central1"
 ```
 
-9. Run `terraform apply`. It will take a few minutes for Terraform to set up the cluster and the Cloud Build pipeline. When the command completes, you should see something similar to this: 
+9. **Run `terraform apply`.** It will take a few minutes for Terraform to set up the cluster and the Cloud Build pipeline. When the command completes, you should see something similar to this: 
 
 ```
 Apply complete! Resources: 7 added, 0 changed, 0 destroyed.
@@ -93,17 +93,17 @@ region = "us-central1"
 ```
 
 
-10. Connect to your newly-created GKE cluster. 
+10. **Connect to your new GKE cluster.**
 
 ```
 gcloud container clusters get-credentials cymbal-test-1 --zone us-central1-b --project ${PROJECT_ID}
 ```
 
-11. Now we're ready to deploy the CymbalBank app to this cluster via Cloud Build. To do this, we have to authenticate Cloud Build to Github. Navigate to the Cloud Build console and click "Connect Repository" in the top menubar. Follow the steps to allow Cloud Build to authenticate - select the `cymbalbank-app-config` repo. Skip the `Create Trigger` step; this was already completed by Terraform. 
+11. **Authenticate Cloud Build to your Github account.** Navigate to the Cloud Build console and click "Connect Repository" in the top menubar. Follow the steps to allow Cloud Build to authenticate - select the `cymbalbank-app-config` repo. Skip the `Create Trigger` step; this was already completed by Terraform. 
 
 ![cloudbuild-auth](screenshots/cloud-build-auth.png)
 
-12. Clone your newly-created CymbalBank app config repo, copy the manifests and push to the `main` branch. This will trigger the Cloud Build pipeline created by Terraform in the previous step. 
+12. **Clone your new CymbalBank app config repo**, copy the manifests and push to the `main` branch. This will trigger the Cloud Build pipeline created by Terraform in the previous step. 
 
 ```
 git clone "https://github.com/${GITHUB_USERNAME}/cymbalbank-app-config"
@@ -113,11 +113,11 @@ cp ../cloudbuild.yaml .
 git add .; git commit -m "Initialize repo"; git push origin main;   
 ```
 
-13. Navigate to Cloud Build in the Google Cloud Console to view the build status. You should see a success message once Cloud Build deploys your repo's app manifests.
+13. **Navigate to Cloud Build** in the Google Cloud Console to view the build status. You should see a success message once Cloud Build deploys your repo's app manifests.
 
-![screenshot](screenshots/cloudbuild.png)
+![screenshot](screenshots/build-success.png)
 
-14. Verify that the CymbalBank app has been deployed to your cluster. 
+14. **Verify that the CymbalBank app has been deployed** to your cluster. 
 
 ```
 $ kubectl get pods 
@@ -143,4 +143,4 @@ NAME       TYPE           CLUSTER-IP       EXTERNAL-IP   PORT(S)        AGE
 frontend   LoadBalancer   10.155.254.143   <YOUR_EXTERNAL_IP>     80:31521/TCP   93s
 ```
 
-🎊 Congrats! You just deployed KRM to a Google Kubernetes Engine cluster via CI/CD.  
+🎊 **Congrats**! You just deployed KRM to a Google Kubernetes Engine cluster via CI/CD.  
