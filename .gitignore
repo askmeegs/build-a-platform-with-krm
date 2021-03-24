@@ -1,0 +1,6 @@
+megan.tfvars
+2-setup/cymbalbank-app-config
+.terraform
+*.tfstate*
+*.lock.hcl
+.DS_Store
