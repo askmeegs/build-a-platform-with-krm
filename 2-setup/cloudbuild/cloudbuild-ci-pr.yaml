@@ -1,0 +1,11 @@
+steps:
+- name: 'gcr.io/k8s-skaffold/skaffold:latest'
+  id: DeployStaging
+  description: "deploy code to staging cluster"
+  args:
+  - 'run'
+  - '--default-repo'
+  - 'gcr.io/${PROJECT_ID}/cymbal-bank/${BRANCH_NAME}'
+  env:
+  - 'CLOUDSDK_COMPUTE_ZONE=us-central1-a'
+  - 'CLOUDSDK_CONTAINER_CLUSTER=cymbal-staging'

@@ -5,4 +5,3 @@ megan.tfvars
 *.lock.hcl
 .DS_Store
 bank-of-anthos/
-cymbalbank-app-config/

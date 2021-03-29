@@ -1,0 +1,52 @@
+steps:
+- name: 'gcr.io/k8s-skaffold/skaffold:latest'
+  id: BuildProdImages
+  description: "build production images"
+  args:
+  - 'build'
+  - '--default-repo'
+  - 'gcr.io/${PROJECT_ID}/cymbal-bank/prod'
+  - '--tag'
+  - '${SHORT_SHA}'
+# source: https://cloud.google.com/kubernetes-engine/docs/tutorials/gitops-cloud-build#modifying_the_continuous_integration_pipeline_to_trigger_the_continuous_delivery_pipeline 
+# This step clones the hello-cloudbuild-env repository
+- name: 'gcr.io/cloud-builders/gcloud'
+  id: Clone env repository
+  entrypoint: /bin/sh
+  args:
+  - '-c'
+  - |
+    git clone https://github.com/${_GITHUB_USERNAME}/cymbalbank-app-config && \
+    cd cymbalbank-app-config && \
+    git checkout main && \
+    git config user.email $(gcloud auth list --filter=status:ACTIVE --format='value(account)')
+  substitutions: 
+    _GITHUB_USERNAME: "askmeegs"
+# Inject updated image tag into prod manifests 
+- name: 'gcr.io/cloud-builders/gcloud'
+  id: Inject image tags into manifests
+  entrypoint: /bin/sh
+  args:
+  - '-c'
+  - |
+    for f in manifests/; do 
+        SERVICE_NAME="`basename $f .yaml`"
+        SUBST="image: gcr.io/${PROJECT_ID}/cymbal-bank/prod/${SERVICE_NAME}:${SHORT_SHA}"
+        echo "Injecting image tag: $SUBST > $f"  
+        sed -i "s|image: $SERVICE_NAME|$SUBST|g" $f 
+    done 
+
+# This step pushes the manifest back to hello-cloudbuild-env
+- name: 'gcr.io/cloud-builders/gcloud'
+  id: Push manifests to app-config-repo
+  entrypoint: /bin/sh
+  args:
+  - '-c'
+  - |
+    set -x && \
+    cd cymbalbank-app-config/ && \
+    git add . && \
+    git commit -m "Deploying: ${SHORT_SHA}
+    Built from commit ${COMMIT_SHA} of repository cymbalbank-app-source - main branch 
+    Author: $(git log --format='%an <%ae>' -n 1 HEAD)" && \
+    git push origin main -f

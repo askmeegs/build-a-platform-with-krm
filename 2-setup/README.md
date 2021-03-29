@@ -14,6 +14,7 @@ Note: This setup process will also create a Github repository in your account, a
 - git
 - [gcloud](https://cloud.google.com/sdk/docs/install)
 - [kubectl](https://cloud.google.com/sdk/gcloud/reference/components/install) - you can install this via gcloud: `gcloud components install kubectl`
+- [kubectx](https://github.com/ahmetb/kubectx#installation)
 - [terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli) 
 
 4. A Github Personal Access token that Terraform can use to create a Github repo on your behalf. See instructions [here](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token). 
@@ -40,17 +41,14 @@ export GITHUB_USERNAME="<your-github-username>"
 
 ```
 gcloud config set project ${PROJECT_ID}
-gcloud services enable container.googleapis.com cloudbuild.googleapis.com
+gcloud services enable container.googleapis.com cloudbuild.googleapis.com sqladmin.googleapis.com
+
 ```
 
 5. **Replace the values in `terraform.tfvars`** with the values corresponding to your project. You can pick any GCP region / zone. 
 
 ```
-project_id = "<your-project-id>"
-project_number = "<your-project-number>"
-region     = "us-central1"
-zone = "us-central1-b"
-github_token = "<your-token>"
+
 ```
 
 **Note**: if you choose a different zone from `us-central1-b`, you have to change the cluster zone in `cloudbuild.yaml`. 
