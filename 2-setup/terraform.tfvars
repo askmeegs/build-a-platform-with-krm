@@ -1,6 +1,4 @@
 project_id = ""
 project_number = ""
-region     = "us-central1"
-zone = "us-central1-b"
-github_token = ""
 github_username = ""
+github_token = ""

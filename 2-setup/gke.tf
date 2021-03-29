@@ -7,48 +7,16 @@ variable "gke_num_nodes" {
   description = "number of gke nodes"
 }
 
-variable "dev-cluster-name" {
-  type = string
-  description = "Dev cluster name"
-}
-
-variable "dev-cluster-zone" {
-  type = string
-  description = "Dev cluster zone"
-}
-
-
-variable "staging-cluster-name" {
-  type = string
-  description = "staging cluster name"
-}
-
-variable "staging-cluster-zone" {
-  type = string
-  description = "staging cluster zone"
-}
-
-
-variable "prod-cluster-name" {
-  type = string
-  description = "prod cluster name"
-}
-
-variable "prod-cluster-zone" {
-  type = string
-  description = "prod cluster zone"
-}
-
 # 💻 DEVELOPMENT CLUSTER 
 resource "google_container_cluster" "dev" {
-  name     = var.dev-cluster-name
-  location = var.dev-cluster-zone
+  name     = "cymbal-dev"
+  location = "us-east1-a"
 
   remove_default_node_pool = true
   initial_node_count = 1
 
-  network    = google_compute_network.vpc.name
-  subnetwork = google_compute_subnetwork.subnet.name
+  # network    = google_compute_network.vpc.name
+  # subnetwork = google_compute_subnetwork.subnet.name
 
   workload_identity_config {
     identity_namespace = "${var.project_id}.svc.id.goog"
@@ -58,7 +26,7 @@ resource "google_container_cluster" "dev" {
 # Separately Managed Node Pool
 resource "google_container_node_pool" "dev-nodes" {
   name       = "${google_container_cluster.dev.name}-node-pool"
-  location   = var.dev-cluster-zone
+  location   = "us-east1-a"
   cluster    = google_container_cluster.dev.name
   node_count = var.gke_num_nodes
 
@@ -83,14 +51,14 @@ resource "google_container_node_pool" "dev-nodes" {
 
 # 🏁 STAGING CLUSTER 
 resource "google_container_cluster" "staging" {
-  name     = var.staging-cluster-name
-  location = var.staging-cluster-zone
+  name     = "cymbal-staging"
+  location = "us-central1-a"
 
   remove_default_node_pool = true
   initial_node_count = 1
 
-  network    = google_compute_network.vpc.name
-  subnetwork = google_compute_subnetwork.subnet.name
+  # network    = google_compute_network.vpc.name
+  # subnetwork = google_compute_subnetwork.subnet.name
 
   workload_identity_config {
     identity_namespace = "${var.project_id}.svc.id.goog"
@@ -100,7 +68,7 @@ resource "google_container_cluster" "staging" {
 # Separately Managed Node Pool
 resource "google_container_node_pool" "staging-nodes" {
   name       = "${google_container_cluster.staging.name}-node-pool"
-  location   = var.staging-cluster-zone
+  location   = "us-central1-a"
   cluster    = google_container_cluster.staging.name
   node_count = var.gke_num_nodes
 
@@ -125,16 +93,16 @@ resource "google_container_node_pool" "staging-nodes" {
 
 # 🚀 PRODUCTION CLUSTER 
 resource "google_container_cluster" "prod" {
-  name     = var.prod-cluster-name
-  location = var.prod-cluster-zone
+  name     = "cymbal-prod"
+  location = "us-west1-a"
 
   remove_default_node_pool = true
   initial_node_count = 1
 
-  network    = google_compute_network.vpc.name
-  subnetwork = google_compute_subnetwork.subnet.name
+  # network    = google_compute_network.vpc.name
+  # subnetwork = google_compute_subnetwork.subnet.name
 
-   workload_identity_config {
+  workload_identity_config {
     identity_namespace = "${var.project_id}.svc.id.goog"
   }
 }
@@ -142,7 +110,7 @@ resource "google_container_cluster" "prod" {
 # Separately Managed Node Pool
 resource "google_container_node_pool" "prod-nodes" {
   name       = "${google_container_cluster.prod.name}-node-pool"
-  location   = var.prod-cluster-zone
+  location   = "us-west1-a"
   cluster    = google_container_cluster.prod.name
   node_count = var.gke_num_nodes
 
