@@ -25,12 +25,14 @@ resource "google_project_iam_binding" "cloud-build-iam-binding" {
 }
 
 # 🏁 CI trigger  - app source repo - PR - deploy to Staging 
-resource "google_cloudbuild_trigger" "ci-main" {
+resource "google_cloudbuild_trigger" "ci-pr" {
+  name = "App Source - Pull Request"
+  project = var.project_id 
   github {
     owner = var.github_username
-    name = "cymbalbank-app-config" 
+    name = "cymbalbank-app-source" 
     pull_request {
-      branch = "*"
+      branch = ".*"
     }
   }
 
@@ -40,9 +42,11 @@ resource "google_cloudbuild_trigger" "ci-main" {
 
 # 🐳 CI trigger - app source repo - Main - build images + update app config repo 
 resource "google_cloudbuild_trigger" "ci-main" {
+  name = "App Source - Main Branch Commit"
+  project = var.project_id 
   github {
     owner = var.github_username
-    name = "cymbalbank-app-config" 
+    name = "cymbalbank-app-source" 
     push {
       branch = "main"
     }
@@ -56,6 +60,8 @@ resource "google_cloudbuild_trigger" "ci-main" {
 # 🚀 CD trigger - app config repo - Main -  deploy to prod  
 # https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/cloudbuild_trigger 
 resource "google_cloudbuild_trigger" "cd-prod" {
+  name = "App Config - Continuous Deployment"
+  project = var.project_id 
   github {
     owner = var.github_username
     name = "cymbalbank-app-config" 

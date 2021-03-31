@@ -4,7 +4,18 @@ This directory contains Terraform and Cloud Build resources to set up a basic GK
 
 Note: This setup process will also create a Github repository in your account, and you will push the CymbalBank manifests to that repo.
 
-![screenshot1](screenshots/arch.png)
+## Architecture 
+
+![screenshot1](screenshots/architecture.png)
+
+This Terraform setup bootstraps many of the GCP resources used in subsequent demos in this series. The Terraform scripts in this directory set up the following: 
+
+- 4 GKE clusters for admin, dev, staging, and prod. The admin cluster has [Config Connector](https://cloud.google.com/config-connector/docs/overview) enabled, which will be used in a later demo.
+- 3 Github repos for app source, app config, and policy. 
+- 3 Cloud Build triggers:
+  - **`ci-pr`** - Continuous Integration for Pull Requests (app source repo). Builds and deploys images to the Staging GKE cluster. 
+  - **`ci-main`** - Continous Integration for commits to the `main` branch (app source repo). Builds images + pushes to GCR. Injects the GCR image tags into the Kubernetes manifests in the app config repo. 
+  - **`cd-prod`** - Watches commits to the app-config-repo `main` branch (done by the `ci-main` pipeline above). Deploys Kubernetes manifests to the `prod` cluster. 
 
 ## Prerequisites 
 
@@ -23,29 +34,30 @@ Note: This setup process will also create a Github repository in your account, a
 
 1. **Create a Google Cloud project** or get the ID of an existing project.
 
-1. **Clone this repo.**
+2. **Clone this repo.**
 
 ```
 git clone https://github.com/askmeegs/intro-to-krm
 cd intro-to-krm/2-setup/ 
 ```
 
-1. **Set vars**. 
+3. **Set vars**. 
 
 ```
 export PROJECT_ID="<your-project-id>" 
 export GITHUB_USERNAME="<your-github-username>"
 ```
 
-2. **Enable Google Cloud APIs.**  
+4. **Enable Google Cloud APIs.**  
 
 ```
 gcloud config set project ${PROJECT_ID}
 gcloud services enable container.googleapis.com cloudbuild.googleapis.com sqladmin.googleapis.com
-
 ```
 
-1. **Replace the values in `terraform.tfvars`** with the values corresponding to your project. 
+5. Open Cloud Build in the Google Cloud console and authenticate Cloud Build to your Github account. 
+
+6. **Return to the terminal. Replace the values in `terraform.tfvars`** with the values corresponding to your project. 
 
 ```
 project_id = ""
@@ -54,31 +66,31 @@ github_username = ""
 github_token = ""
 ```
 
-1. **Set up application default credentials** for your project - this allows Terraform to create GCP resources on your behalf. 
+7. **Set up application default credentials** for your project - this allows Terraform to create GCP resources on your behalf. 
 
 ```
 gcloud auth application-default login
 ```
 
-1. **Run `terraform init`.** This downloads the providers (Github, Google Cloud) needed for setup. On success, you should see: 
+8. **Run `terraform init`.** This downloads the providers (Github, Google Cloud) needed for setup. On success, you should see: 
 
 ```
 Terraform has been successfully initialized!
 ```
 
-1. **Run `terraform plan`.** This looks at the `.tf` files in the directory and tells you what it will deploy to your Google Cloud project. 
+9. **Run `terraform plan`.** This looks at the `.tf` files in the directory and tells you what it will deploy to your Google Cloud project. 
 
 ```
-Plan: 7 to add, 0 to change, 0 to destroy.
+Plan: 31 to add, 0 to change, 0 to destroy.
 
 Changes to Outputs:
-  + kubernetes_cluster_host = (known after apply)
-  + kubernetes_cluster_name = "cymbal-test-1"
-  + project_id              = "krm-awareness"
-  + region                  = "us-central1"
+  + kubernetes_admin_cluster_name   = "cymbal-admin"
+  + kubernetes_dev_cluster_name     = "cymbal-dev"
+  + kubernetes_prod_cluster_name    = "cymbal-prod"
+  + kubernetes_staging_cluster_name = "cymbal-staging"
 ```
 
-1. **Run `terraform apply`.** It will take a few minutes for Terraform to set up the cluster and the Cloud Build pipeline. When the command completes, you should see something similar to this: 
+10. **Run `terraform apply`,** and enter `yes` when prompted. It will take a few minutes for Terraform to set up the cluster and the Cloud Build pipeline. When the command completes, you should see something similar to this: 
 
 ```
 Apply complete! Resources: 7 added, 0 changed, 0 destroyed.
@@ -92,20 +104,20 @@ region = "us-central1"
 ```
 
 
-1. **Run the cluster setup script.** This sets up kubernetes contexts, boostraps app namespaces, a
+11. **Run the cluster setup script.** This sets up kubernetes contexts, boostraps app namespaces, a
 
 ```
 ./cluster-setup.sh
 ```
 
-1. Verify that you can now access your different clusters as follows: 
+12. Verify that you can now access your different clusters as follows: 
 
 ```
 kubectx cymbal-prod 
 kubectl get nodes
 ```
 
-1. **Set up your app source repo**. 
+13.  **Set up your app repos**. 
 
 ```
 ./repo-setup.sh 

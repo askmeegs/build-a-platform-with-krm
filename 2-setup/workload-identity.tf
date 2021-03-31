@@ -1,12 +1,8 @@
-variable "gsa-name" {
-  type = string
-  description = "GSA Name for Workload Identity"
-}
-
 # Service account (GSA)
-resource "google_service_account" "gsa" {
+resource "google_service_account" "cymbal-gsa" {
+  project = var.project_id 
   account_id   = "cymbal-gsa"
-  display_name = "CymbalBank GSA"
+  display_name = "cymbal-gsa"
 }
 
 # Cloud Trace, Monitoring, Cloud SQL permissions 

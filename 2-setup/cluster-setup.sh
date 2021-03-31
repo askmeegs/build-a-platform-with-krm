@@ -11,7 +11,15 @@ export KSA_NAME="cymbal-ksa"
 export GSA_NAME="cymbal-gsa"
 ############################################################
 
-declare -A clusters=( ["cymbal-dev"]="us-east1-a" ["cymbal-staging"]="us-central1-a" ["cymbal-prod"]="us-west1-a")
+
+# kubeconfig for admin cluster 
+echo "☁️ Connecting to admin cluster for later..."
+gcloud container clusters get-credentials cymbal-admin --zone us-central1-f --project ${PROJECT_ID} 
+echo "💻 Creating kubectx shorthand"
+kubectx cymbal-admin . 
+
+
+declare -A clusters=(["cymbal-dev"]="us-east1-c" ["cymbal-staging"]="us-central1-a" ["cymbal-prod"]="us-west1-a")
 
 for CLUSTER_NAME in "${!clusters[@]}"
 do 

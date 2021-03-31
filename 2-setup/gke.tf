@@ -7,10 +7,59 @@ variable "gke_num_nodes" {
   description = "number of gke nodes"
 }
 
+# ☁️ ADMIN CLUSTER (Config Connector)
+resource "google_container_cluster" "admin" {
+  project = var.project_id 
+  provider = google-beta
+  name     = "cymbal-admin"
+  location = "us-central1-f"
+
+  remove_default_node_pool = true
+  initial_node_count = 1
+
+  workload_identity_config {
+    identity_namespace = "${var.project_id}.svc.id.goog"
+  }
+
+  addons_config {
+    config_connector_config {
+      enabled = true
+    }
+  }
+}
+
+# Separately Managed Node Pool
+resource "google_container_node_pool" "admin-nodes" {
+  project = var.project_id 
+  name       = "${google_container_cluster.admin.name}-node-pool"
+  location   = "us-central1-f"
+  cluster    = google_container_cluster.admin.name
+  node_count = 2
+
+  node_config {
+    oauth_scopes = [
+      "https://www.googleapis.com/auth/logging.write",
+      "https://www.googleapis.com/auth/monitoring",
+    ]
+
+    labels = {
+      env = var.project_id
+    }
+
+    # preemptible  = true
+    machine_type = "e2-standard-4"
+    tags         = ["gke-node", "${var.project_id}-gke"]
+    metadata = {
+      disable-legacy-endpoints = "true"
+    }
+  }
+}
+
 # 💻 DEVELOPMENT CLUSTER 
 resource "google_container_cluster" "dev" {
+  project = var.project_id 
   name     = "cymbal-dev"
-  location = "us-east1-a"
+  location = "us-east1-c"
 
   remove_default_node_pool = true
   initial_node_count = 1
@@ -25,8 +74,9 @@ resource "google_container_cluster" "dev" {
 
 # Separately Managed Node Pool
 resource "google_container_node_pool" "dev-nodes" {
+  project = var.project_id 
   name       = "${google_container_cluster.dev.name}-node-pool"
-  location   = "us-east1-a"
+  location   = "us-east1-c"
   cluster    = google_container_cluster.dev.name
   node_count = var.gke_num_nodes
 
@@ -51,6 +101,7 @@ resource "google_container_node_pool" "dev-nodes" {
 
 # 🏁 STAGING CLUSTER 
 resource "google_container_cluster" "staging" {
+  project = var.project_id 
   name     = "cymbal-staging"
   location = "us-central1-a"
 
@@ -67,6 +118,7 @@ resource "google_container_cluster" "staging" {
 
 # Separately Managed Node Pool
 resource "google_container_node_pool" "staging-nodes" {
+  project = var.project_id 
   name       = "${google_container_cluster.staging.name}-node-pool"
   location   = "us-central1-a"
   cluster    = google_container_cluster.staging.name
@@ -93,6 +145,7 @@ resource "google_container_node_pool" "staging-nodes" {
 
 # 🚀 PRODUCTION CLUSTER 
 resource "google_container_cluster" "prod" {
+  project = var.project_id 
   name     = "cymbal-prod"
   location = "us-west1-a"
 
@@ -109,6 +162,7 @@ resource "google_container_cluster" "prod" {
 
 # Separately Managed Node Pool
 resource "google_container_node_pool" "prod-nodes" {
+  project = var.project_id 
   name       = "${google_container_cluster.prod.name}-node-pool"
   location   = "us-west1-a"
   cluster    = google_container_cluster.prod.name

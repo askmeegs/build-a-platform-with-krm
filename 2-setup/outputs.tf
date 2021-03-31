@@ -1,3 +1,8 @@
+output "kubernetes_admin_cluster_name" {
+  value       = google_container_cluster.admin.name
+  description = "GKE Admin Cluster Name"
+}
+
 output "kubernetes_dev_cluster_name" {
   value       = google_container_cluster.dev.name
   description = "GKE Dev Cluster Name"
