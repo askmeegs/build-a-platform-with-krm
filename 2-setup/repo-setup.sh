@@ -12,22 +12,27 @@ if [[ -z "$GITHUB_USERNAME" ]]; then
 fi
 ##########################################################
 
+echo "☸ Setting up app config repo..."
+git clone "https://github.com/${GITHUB_USERNAME}/cymbalbank-app-config"
+cd cymbalbank-app-config; mkdir manifests/; 
+cp -r ../app-manifests/* manifests/ 
+cp ../build/cloudbuild-cd-prod.yaml . 
+git add .; git commit -m "Initialize app config repo"; git push origin main;   
+
 echo "🏦 Setting up app source repo..."
 git clone "https://github.com/${GITHUB_USERNAME}/cymbalbank-app-source"
 git clone "https://github.com/GoogleCloudPlatform/bank-of-anthos"
 cp -r bank-of-anthos/* cymbalbank-app-source/ 
 rm -rf bank-of-anthos 
-rm -rf cymbalbank-app-source/dev-kubernetes-manifests/* 
-cp -r app-manifests/*  cymbalbank-app-source/dev-kubernetes-manifests/
 
+cp build/cloudbuild-ci-pr.yaml cymbalbank-app-source/
+cp build/cloudbuild-ci-main.yaml cymbalbank-app-source/
+cp build/skaffold.yaml cymbalbank-app-source/
 
-1. **Set up your app config repo**. 
-
-```
+echo "🏗 Cloning config repo - main branch- as a submodule for skaffold..."
+cd cymbalbank-app-source 
 git clone "https://github.com/${GITHUB_USERNAME}/cymbalbank-app-config"
-cd cymbalbank-app-config; mkdir manifests/; 
-cp -r ../app-manifests/ manifests/ 
-cp ../cloudbuild.yaml .
-git add .; git commit -m "Initialize repo"; git push origin main;   
+
+git add .; git commit -m "Initialize app source repo"; git push origin main;   
 ```
 

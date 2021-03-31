@@ -1,0 +1,32 @@
+apiVersion: skaffold/v2alpha4
+kind: Config
+build:
+  artifacts:
+  - image: gcr.io/bank-of-anthos/frontend
+    context: src/frontend
+  - image: gcr.io/bank-of-anthos/ledgerwriter
+    jib:
+      project: src/ledgerwriter
+  - image: gcr.io/bank-of-anthos/balancereader
+    jib:
+      project: src/balancereader
+  - image: gcr.io/bank-of-anthos/transactionhistory
+    jib:
+      project: src/transactionhistory
+  - image: gcr.io/bank-of-anthos/contacts
+    context: src/contacts
+  - image: gcr.io/bank-of-anthos/userservice
+    context: src/userservice
+  - image: gcr.io/bank-of-anthos/loadgenerator
+    context: src/loadgenerator
+  tagPolicy:
+    gitCommit: {}
+  local:
+    concurrency: 0
+deploy:
+  statusCheckDeadlineSeconds: 300
+  kubectl:
+    manifests:
+    - ./cymbalbank-app-config/manifests/*
+profiles:
+  - name: local-code
