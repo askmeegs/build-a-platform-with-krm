@@ -26,7 +26,7 @@ resource "google_project_iam_binding" "cloud-build-iam-binding" {
 
 # 🏁 CI trigger  - app source repo - PR - deploy to Staging 
 resource "google_cloudbuild_trigger" "ci-pr" {
-  name = "App Source - Pull Request"
+  name = "app-source-pull-request"
   project = var.project_id 
   github {
     owner = var.github_username
@@ -42,7 +42,7 @@ resource "google_cloudbuild_trigger" "ci-pr" {
 
 # 🐳 CI trigger - app source repo - Main - build images + update app config repo 
 resource "google_cloudbuild_trigger" "ci-main" {
-  name = "App Source - Main Branch Commit"
+  name = "app-source-main-branch"
   project = var.project_id 
   github {
     owner = var.github_username
@@ -60,7 +60,7 @@ resource "google_cloudbuild_trigger" "ci-main" {
 # 🚀 CD trigger - app config repo - Main -  deploy to prod  
 # https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/cloudbuild_trigger 
 resource "google_cloudbuild_trigger" "cd-prod" {
-  name = "App Config - Continuous Deployment"
+  name = "app-config-continuous-deployment"
   project = var.project_id 
   github {
     owner = var.github_username

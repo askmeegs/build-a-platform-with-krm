@@ -12,13 +12,6 @@ if [[ -z "$GITHUB_USERNAME" ]]; then
 fi
 ##########################################################
 
-echo "☸ Setting up app config repo..."
-git clone "https://github.com/${GITHUB_USERNAME}/cymbalbank-app-config"
-cd cymbalbank-app-config; mkdir manifests/; 
-cp -r ../app-manifests/* manifests/ 
-cp ../build/cloudbuild-cd-prod.yaml . 
-git add .; git commit -m "Initialize app config repo"; git push origin main;   
-
 echo "🏦 Setting up app source repo..."
 git clone "https://github.com/${GITHUB_USERNAME}/cymbalbank-app-source"
 git clone "https://github.com/GoogleCloudPlatform/bank-of-anthos"
@@ -29,10 +22,21 @@ cp build/cloudbuild-ci-pr.yaml cymbalbank-app-source/
 cp build/cloudbuild-ci-main.yaml cymbalbank-app-source/
 cp build/skaffold.yaml cymbalbank-app-source/
 
-echo "🏗 Cloning config repo - main branch- as a submodule for skaffold..."
-cd cymbalbank-app-source 
-git clone "https://github.com/${GITHUB_USERNAME}/cymbalbank-app-config"
+cd cymbalbank-app-source/ 
+git checkout main
+git add .
+git commit -m "Initialize app source repo"
+git push origin main 
+cd ..
 
-git add .; git commit -m "Initialize app source repo"; git push origin main;   
-```
+echo "☸ Setting up app config repo..."
+git clone "https://github.com/${GITHUB_USERNAME}/cymbalbank-app-config"
+cd cymbalbank-app-config; mkdir manifests/; 
+cp -r ../app-manifests/* manifests/ 
+cp ../build/cloudbuild-cd-prod.yaml . 
+
+git add .
+git commit -m "Initialize app config repo, trigger prod deploy"
+git push origin main
+cd .. 
 

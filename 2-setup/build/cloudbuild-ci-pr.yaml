@@ -1,7 +1,6 @@
 steps:
 - name: 'gcr.io/k8s-skaffold/skaffold:latest'
-  id: DeployStaging
-  description: "deploy code to staging cluster"
+  id: Deploy to Staging Cluster
   args:
   - 'run'
   - '--default-repo'

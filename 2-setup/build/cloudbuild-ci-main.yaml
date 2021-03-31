@@ -1,7 +1,6 @@
 steps:
 - name: 'gcr.io/k8s-skaffold/skaffold:latest'
-  id: BuildProdImages
-  description: "build production images"
+  id: Build Prod Images
   args:
   - 'build'
   - '--default-repo'
@@ -33,7 +32,7 @@ steps:
         SERVICE_NAME="`basename $f .yaml`"
         SUBST="image: gcr.io/${PROJECT_ID}/cymbal-bank/prod/${SERVICE_NAME}:${SHORT_SHA}"
         echo "Injecting image tag: $SUBST > $f"  
-        sed -i "s|image: $SERVICE_NAME|$SUBST|g" $f 
+        sed -i "s|image:*$SERVICE_NAME|$SUBST|g" $f 
     done 
 
 # This step pushes the manifest back to hello-cloudbuild-env

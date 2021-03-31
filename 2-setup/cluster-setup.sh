@@ -12,30 +12,19 @@ export GSA_NAME="cymbal-gsa"
 ############################################################
 
 
-# kubeconfig for admin cluster 
-echo "☁️ Connecting to admin cluster for later..."
-gcloud container clusters get-credentials cymbal-admin --zone us-central1-f --project ${PROJECT_ID} 
-echo "💻 Creating kubectx shorthand"
-kubectx cymbal-admin . 
-
-
-declare -A clusters=(["cymbal-dev"]="us-east1-c" ["cymbal-staging"]="us-central1-a" ["cymbal-prod"]="us-west1-a")
-
-for CLUSTER_NAME in "${!clusters[@]}"
-do 
-    echo "\n\n☸️ Setting up cluster: $CLUSTER_NAME" 
-    CLUSTER_ZONE="${clusters[$CLUSTER_NAME]}"
+setup_cluster () {
+    CLUSTER_NAME=$1 
+    CLUSTER_ZONE=$2 
+    echo "********** ☸️ Setting up cluster: $CLUSTER_NAME, zone: $CLUSTER_ZONE ***************" 
     gcloud container clusters get-credentials ${CLUSTER_NAME} --zone ${CLUSTER_ZONE} --project ${PROJECT_ID} 
-
-    echo "💻 Creating kubectx shorthand"
-    kubectx ${CLUSTER_NAME} . 
+    kubectx ${CLUSTER_NAME}=. 
 
     echo "💡 Creating a Kubernetes Service Account (KSA) for each CymbalBank namespace..."
     declare -a NAMESPACES=("balancereader" "transactionhistory" "ledgerwriter" "contacts" "userservice" "frontend" "loadgenerator")
 
     for ns in "${NAMESPACES[@]}"
     do
-        echo "🔁 Setting up namespace: ${ns}"
+        echo "****** 🔁 Setting up namespace: ${ns} ********"
         # boostrap namespace 
         kubectl create namespace $ns 
 
@@ -62,7 +51,17 @@ do
             --from-literal=connectionName=${INSTANCE_CONNECTION_NAME}  
     done 
     echo "⭐️ Done with cluster: ${CLUSTER_NAME}"
-done
+    }
+
+# kubeconfig for admin cluster 
+echo "☁️  Connecting to the admin cluster for later..."
+gcloud container clusters get-credentials cymbal-admin --zone us-central1-f --project ${PROJECT_ID} 
+kubectx cymbal-admin=. 
+
+setup_cluster "cymbal-dev" "us-east1-c" 
+setup_cluster "cymbal-staging" "us-central1-a" 
+setup_cluster "cymbal-prod" "us-west1-a"
+
 echo "✅ GKE Cluster Setup Complete."
 
 

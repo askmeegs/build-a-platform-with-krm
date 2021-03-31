@@ -11,11 +11,14 @@ Note: This setup process will also create a Github repository in your account, a
 This Terraform setup bootstraps many of the GCP resources used in subsequent demos in this series. The Terraform scripts in this directory set up the following: 
 
 - 4 GKE clusters for admin, dev, staging, and prod. The admin cluster has [Config Connector](https://cloud.google.com/config-connector/docs/overview) enabled, which will be used in a later demo.
+- 3 Cloud SQL (Postgres) databases for dev, staging, and prod. 
 - 3 Github repos for app source, app config, and policy. 
 - 3 Cloud Build triggers:
   - **`ci-pr`** - Continuous Integration for Pull Requests (app source repo). Builds and deploys images to the Staging GKE cluster. 
   - **`ci-main`** - Continous Integration for commits to the `main` branch (app source repo). Builds images + pushes to GCR. Injects the GCR image tags into the Kubernetes manifests in the app config repo. 
   - **`cd-prod`** - Watches commits to the app-config-repo `main` branch (done by the `ci-main` pipeline above). Deploys Kubernetes manifests to the `prod` cluster. 
+
+Once the Terraform script completes, the subsequent steps in this README will show you how to initialize your new app source/config repos, and push existing CymbalBank app manifests. This will trigger the Continuous Deployment pipeline, to get you started with a working version of the app running on the production cluster. 
 
 ## Prerequisites 
 
@@ -93,14 +96,14 @@ Changes to Outputs:
 10. **Run `terraform apply`,** and enter `yes` when prompted. It will take a few minutes for Terraform to set up the cluster and the Cloud Build pipeline. When the command completes, you should see something similar to this: 
 
 ```
-Apply complete! Resources: 7 added, 0 changed, 0 destroyed.
+Apply complete! Resources: 31 added, 0 changed, 0 destroyed.
 
 Outputs:
 
-kubernetes_cluster_host = "<IP>"
-kubernetes_cluster_name = "cymbal-test-1"
-project_id = "your-project-id"
-region = "us-central1"
+kubernetes_admin_cluster_name = "cymbal-admin"
+kubernetes_dev_cluster_name = "cymbal-dev"
+kubernetes_prod_cluster_name = "cymbal-prod"
+kubernetes_staging_cluster_name = "cymbal-staging"
 ```
 
 

@@ -21,7 +21,7 @@ resource "google_sql_user" "cymbal-dev-user" {
   name     = "admin"
   password = "admin"
   instance = google_sql_database_instance.cymbal-dev.name
-  type     = "CLOUD_IAM_USER"
+  type     = "BUILT_IN"
 }
 
 resource "google_sql_database" "cymbal-dev-ledger-db" {
@@ -55,7 +55,7 @@ resource "google_sql_user" "cymbal-staging-user" {
   name     = "admin"
   password = "admin"
   instance = google_sql_database_instance.cymbal-staging.name
-  type     = "CLOUD_IAM_USER"
+  type     = "BUILT_IN"
 }
 
 resource "google_sql_database" "cymbal-staging-ledger-db" {
@@ -87,7 +87,7 @@ resource "google_sql_user" "cymbal-prod-user" {
   name     = "admin"
   password = "admin"
   instance = google_sql_database_instance.cymbal-prod.name
-  type     = "CLOUD_IAM_USER"
+  type     = "BUILT_IN"
 }
 
 resource "google_sql_database" "cymbal-prod-ledger-db" {
