@@ -81,7 +81,16 @@ cp skaffold.yaml cymbalbank-app-source/
 
 ```
 
-1. Run `skaffold dev` to build and deploy your code changes to the dev cluster. 
+
+1. **Explore the kustomization overlays.**
+
+|      | 🔎 **Tracing** | 📊 **Metrics** | 📝 **Log Level** | 🏦 **Frontend Replicas** |
+|------|---------|---------|-----------|---------------------|
+| 💻 **Dev**  | off     | off     | `debug`   | 1                   |
+| 🚀 **Prod** | on      | on      | `info`    | 3                   |
+
+
+1. Run `skaffold dev` to build and deploy your code changes to the dev cluster, using the `dev` profile. 
 
 ```
 kubectx cymbal-dev
@@ -130,3 +139,18 @@ cd ..
 
 
 1. View the new frontend banner running in production. 
+
+
+
+
+### Learn More 
+
+https://kustomize.io/
+
+https://github.com/kubernetes-sigs/kustomize/tree/master/examples
+
+https://github.com/kubernetes-sigs/kustomize
+
+https://kubernetes.io/docs/tasks/manage-kubernetes-objects/kustomization/
+
+https://kubectl.docs.kubernetes.io/guides/config_management/components/
