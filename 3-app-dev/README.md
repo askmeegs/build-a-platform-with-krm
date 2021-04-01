@@ -1,59 +1,55 @@
-# 3 - Kustomize 
+# 3 - App Development with KRM   
 
-This demo shows how app developers can use Kustomize, a KRM command-line tool, to build and test application features without writing any YAML. 
+This demo shows an example App Developer workflow in a KRM environment, using the `skaffold` and `kustomize` tools to build app features without writing any new YAML files. 
+
+In this scenario, Alice is an app developer
 
 ### Prerequisites 
 
-- Completed the [Setup demo](/2-setup) - this created a Github repo, `cymbalbank-app-config`, in your Github account.
-- [kustomize](https://kubectl.docs.kubernetes.io/installation/kustomize/)
-- [skaffold](https://skaffold.dev/docs/install/)
-
-### Setup 
-
-1. Set variables. 
-
-```
-PROJECT_ID = <your-project-id>
-ZONE = <your-zone>
-REGION = <your-region>
-GITHUB_USERNAME = <your-github-username>
-
-PROJECT_ID="krm-awareness"
-ZONE="us-east1-b"
-REGION="us-east1" 
-GITHUB_USERNAME="askmeegs"
+Complete demo [parts 1](/1-setup) and [2](/2-how-krm-works). 
 
 ```
 
-2. Create a development cluster. This will take a few minutes.
+git clone "https://github.com/${GITHUB_USERNAME}/cymbalbank-app-source"
+git clone "https://github.com/GoogleCloudPlatform/bank-of-anthos"
+cp -r bank-of-anthos/* cymbalbank-app-source/ 
+rm -rf bank-of-anthos 
+
+cp build/cloudbuild-ci-pr.yaml cymbalbank-app-source/
+cp build/cloudbuild-ci-main.yaml cymbalbank-app-source/
+cp build/skaffold.yaml cymbalbank-app-source/
+
+cd cymbalbank-app-source/ 
+git checkout main
+git add .
+git commit -m "Initialize app source repo"
+git push origin main 
+cd ..
 
 ```
-gcloud container clusters create cymbalbank-dev \
---project=${PROJECT_ID} --zone=${ZONE} \
---machine-type=e2-standard-4 --num-nodes=4 \
---workload-pool="${PROJECT_ID}.svc.id.goog"
-```
 
-3. Make sure you're in the root of this repository `intro-to-krm/`, then clone the CymbalBank source code. 
+
+### Steps 
+
+1. Set vars. 
 
 ```
-git clone https://github.com/googlecloudplatform/bank-of-anthos
+export PROJECT_ID=<your-project-id>
+export GITHUB_USERNAME=<your-github-username>
 ```
 
-Note: your app config rep, `cymbalbank-app-config`, should already be cloned to the `intro-to-krm/` root directory, from the Setup demo before. If it's not, clone it. 
-
-```
-git clone https://github.com/${GITHUB_USERNAME}/cymbalbank-app-config
-```
-
-4. Create the Cloud SQL test database, and populate with test data. This script takes 5-10 minutes to complete. 
-
-```
-./3-kustomize/setup-cloudsql.sh
-```
+1. Clone and initialize the app source repo. 
 
 
-### Using Kustomize for KRM Hydration 
+1. Clone the app config repo inside the app source repo, as a Git submodule. The reason for doing this is so that `skaffold`, the tool that builds the Docker images, needs YAML files. Note that the app developer won't commit directly to the app config repo - this is only writeable from the automated CI. 
 
 
-### Using skaffold for continuous development 
+1. Check out a new local branch, and update the frontend source code. For instance, let's add a banner to the login page advertising a new interest rate on all checking accounts. 
+
+
+
+
+1. Push the code to the new branch, and put out a pull request in the app source repo. 
+
+
+1. Merge the PR. 

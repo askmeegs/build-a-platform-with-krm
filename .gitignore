@@ -1,8 +1,8 @@
 megan.tfvars
-2-setup/cymbalbank-app-config
+2-how-krm-works/cymbalbank-app-config/*
 .terraform
 *.tfstate*
 *.lock.hcl
 .DS_Store
-bank-of-anthos/
+3/app-dev/bank-of-anthos/
 terraform.tfvars

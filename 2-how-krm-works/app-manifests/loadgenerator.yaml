@@ -17,16 +17,17 @@ spec:
     metadata:
       labels:
         app: loadgenerator
+        org: cymbal-bank
       annotations:
         sidecar.istio.io/rewriteAppHTTPProbers: "true"
     spec:
-      serviceAccountName: cymbal-test-ksa
+      serviceAccountName: cymbal-ksa
       terminationGracePeriodSeconds: 5
       restartPolicy: Always
       containers:
       - name: loadgenerator
-        # image: gcr.io/bank-of-anthos/loadgenerator:v0.4.3
-        image: loadgenerator
+        image: gcr.io/bank-of-anthos/loadgenerator:v0.4.3
+        # image: loadgenerator
         env:
         - name: FRONTEND_ADDR
           value: "frontend:80"

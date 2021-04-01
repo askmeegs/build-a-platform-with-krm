@@ -120,8 +120,4 @@ kubectx cymbal-prod
 kubectl get nodes
 ```
 
-13.  **Set up your app repos**. 
-
-```
-./repo-setup.sh 
-```
+🎊 Congrats! You just set up your base-layer Kubernetes environment, which you'll use in the rest of the demos.
