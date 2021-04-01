@@ -2,8 +2,6 @@
 
 This demo shows an example App Developer workflow in a KRM environment, using the `skaffold` and `kustomize` tools to build app features without writing any new YAML files. 
 
-In this scenario, Alice is an app developer
-
 ### Prerequisites 
 
 Complete demo [parts 1](/1-setup) and [2](/2-how-krm-works). 
