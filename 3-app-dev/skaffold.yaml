@@ -24,9 +24,12 @@ build:
   local:
     concurrency: 0
 deploy:
+  kustomize: {}
   statusCheckDeadlineSeconds: 300
-  kubectl:
-    manifests:
-    - ./cymbalbank-app-config/manifests/*
+  # kubectl:
+  #   manifests:
+  #   - ./cymbalbank-app-config/manifests/*
+# https://skaffold.dev/docs/environment/profiles/ 
 profiles:
-  - name: local-code
+  - name: dev 
+  - name: staging 

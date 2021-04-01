@@ -2,6 +2,10 @@
 
 This demo shows a basic deployment of a Kubernetes application, formatted as KRM, and deployed via Google Cloud Build.
 
+By the end of this demo, you'll have the following setup: 
+
+![demo arch](screenshots/basic-deploy.png)
+
 ### Prerequisites 
 
 - Complete [part 1](/1-setup) to bootstrap your environment. 
@@ -50,7 +54,11 @@ steps:
 cp cloudbuild-cd-prod.yaml cymbalbank-app-config/
 ```
 
-1. **Explore the CymbalBank app manifests.** 
+1. **Explore the CymbalBank app.** 
+
+![cymbal arch](screenshots/cymbal-arch.png)
+
+1. **View the CymbalBank app manifests.** 
 
 ```
 cat app-manifests/userservice.yaml
@@ -104,4 +112,17 @@ cd ..
 
 ```
 kubectx cymbal-prod; kubectl get pods --all-namespaces --selector=org=cymbal-bank
+```
+
+Expected output: 
+
+```
+NAMESPACE            NAME                                  READY   STATUS    RESTARTS   AGE
+balancereader        balancereader-f68c878c5-fgz4q         2/2     Running   0          32m
+contacts             contacts-7b858c69dd-n5wp2             2/2     Running   0          32m
+frontend             frontend-6997bd6bb9-h5vcm             1/1     Running   0          32m
+ledgerwriter         ledgerwriter-55bd67f97-7zmxs          2/2     Running   0          32m
+loadgenerator        loadgenerator-c449f87cb-gnbq2         1/1     Running   0          32m
+transactionhistory   transactionhistory-55f4cd4767-8655g   2/2     Running   0          32m
+userservice          userservice-5cc7849549-tf5gr          2/2     Running   0          32m
 ```

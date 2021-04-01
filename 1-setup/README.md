@@ -1,4 +1,4 @@
-# 2 - Setup 
+# 1 - Setup 
 
 This directory contains Terraform and Cloud Build resources to set up a basic GKE cluster with the CymbalBank app's KRM resources deployed to it. 
 
