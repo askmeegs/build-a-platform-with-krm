@@ -30,6 +30,7 @@ Once the Terraform script completes, the subsequent steps in this README will sh
 - [kubectl](https://cloud.google.com/sdk/gcloud/reference/components/install) - you can install this via gcloud: `gcloud components install kubectl`
 - [kubectx](https://github.com/ahmetb/kubectx#installation)
 - [terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli) 
+- tree - `brew install tree` 
 
 4. A Github Personal Access token that Terraform can use to create a Github repo on your behalf. See instructions [here](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token). 
 
