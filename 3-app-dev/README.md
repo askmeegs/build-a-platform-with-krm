@@ -2,11 +2,11 @@
 
 This demo shows how an app developer can develop features in a Kubernetes environment using GKE, skaffold, and kustomize, without having to directly work with any YAML (KRM) files. 
 
-### Prerequisites 
+## Prerequisites 
 
 Complete demo [parts 1](/1-setup) and [2](/2-how-krm-works). 
 
-### Part A - Setup  
+## Part A - Setup  
 
 1. **Set variables.**
 
@@ -78,12 +78,15 @@ cp cloudbuild-ci-main.yaml cymbalbank-app-source/
 
 ```
 cd cymbalbank-app-source/ 
+git init
 git add .
 git commit -m "Add cloudbuild.yaml"
-git push origin main 
+git branch -M main
+git remote add origin "https://github.com/${GITHUB_USERNAME}/cymbalbank-app-source.git" 
+git push -u origin main
 ```
 
-### Part B - Build + Test a Feature
+## Part B - Add an Application Feature 
 
 In this section, we'll make an update to the CymbalBank frontend source code, test it using a local Kubernetes toolchain, then put out a Pull Request to trigger the CI/CD workflow described above. 
 
@@ -95,15 +98,23 @@ In this section, we'll make an update to the CymbalBank frontend source code, te
 git checkout -b frontend-banner 
 ```
 
-2. **Update the frontend source code** by adding a banner to the login page advertising a new interest rate on all checking accounts. In an IDE, open `cymbalbank-app-source/src/frontend/templates/login.html`. Under line , add the following code: 
+2. **Update the frontend source code** by adding a banner to the login page advertising a new interest rate on all checking accounts. In an IDE, open `cymbalbank-app-source/src/frontend/templates/login.html`. Under line 71, add the following code: 
 
 ```
-
+          <div class="col-lg-6 offset-lg-3">
+            <div class="card">
+              <div class="card-body">
+                <h5><strong>New!</strong> 0.20% APY on all new checking accounts. <a href="/signup">Sign up today.</a></h5>
+              </div>
+            </div>
+          </div>
 ```
 
-3. **Get ready to test your code changes** in the dev GKE cluster. We'll use a tool called [skaffold](https://skaffold.dev) to build Docker images and deploy to the dev GKE cluster. Install skaffold to your local environment by [following the steps here](https://skaffold.dev/docs/install/). 
+## Part C - Test the feature 
 
-4. **View the `skaffold.yaml` file**. 
+1. **Get ready to test your code changes** in the dev GKE cluster. We'll use a tool called [skaffold](https://skaffold.dev) to build Docker images and deploy to the dev GKE cluster. Install skaffold to your local environment by [following the steps here](https://skaffold.dev/docs/install/). 
+
+2. **View the `skaffold.yaml` file**. 
 
 
 ```
@@ -162,13 +173,13 @@ Some info on how this file works:
 - Skaffold uses KRM to define its own API - meaning, you're using KRM (this config file) to deploy KRM (the manifests in `cymbalbank-app-config`). More specifically, skaffold defines its own Kubernetes API (`skaffold`), versioned at `v2alpha4`, with a `kind` and various subfields. 
 
 
-5. **Copy `skaffold.yaml`** into your app source repo. 
+3. **Copy `skaffold.yaml`** into your app source repo. 
 
 ```
 cp ../skaffold.yaml .
 ```
 
-6. **Explore the cymbalbank-app-config**  manifests. Once skaffold builds the container images for the various CymbalBank services, it will use these Kubernetes resources to deploy to the dev cluster. 
+4. **Explore the cymbalbank-app-config**  manifests. Once skaffold builds the container images for the various CymbalBank services, it will use these Kubernetes resources to deploy to the dev cluster. 
 
 One way to deploy KRM to a cluster is simply putting YAML files in a directory and running `kubectl apply -f my-directory/`. Here instead, we're using kustomize to define a `base` set of application KRM and two `overlays`, `dev` and `prod`. In kustomize, the base config is shared config - in this case, most of the Deployment and Service files we need. Overlays are specific "flavors" of configuration representing different environments or use cases, such as ["enterprise" vs. "community" edition](https://kubectl.docs.kubernetes.io/guides/config_management/components/) of an app. 
 
@@ -217,10 +228,10 @@ cymbalbank-app-config
 4 directories, 28 files
 ```
 
-7. **View a `kustomization.yaml` file**. Each kustomize directory must have a [`kustomization.yaml` file](https://kubectl.docs.kubernetes.io/references/kustomize/kustomization/). This is another piece of KRM configuration that lists what files should be deployed: 
+5. **View a `kustomization.yaml` file**. Each kustomize directory must have a [`kustomization.yaml` file](https://kubectl.docs.kubernetes.io/references/kustomize/kustomization/). This is another piece of KRM configuration that lists what files should be deployed: 
 
 ```
-cat cymbal-app-config/base/kustomization.yaml
+cat cymbalbank-app-config/base/kustomization.yaml
 ```
 
 Expected output: 
@@ -240,7 +251,7 @@ resources:
 - frontend.yaml
 ```
 
-7. **Explore the kustomize overlays.** 
+6. **Explore the kustomize overlays.** 
 
 The `dev` and `prod` overlays add custom configuration for the following CymbalBank fields: 
 
@@ -278,12 +289,12 @@ spec:
 The rest of the frontend Deployment fields are defined in the `base/frontend.yaml` file. 
 
 
-8. **Explore an overlay's `kustomization.yaml` file.** 
+7. **Explore an overlay's `kustomization.yaml` file.** 
 
 Each overlay also has a `kustomization.yaml` file that defines where the base config lives, the "patches," or config overrides, to apply, as well as any overlay-specific labels. In this case we'll apply `environment: dev` to all the KRM resources deployed with the dev overlay. 
 
 ```
-cat cymbal-app-config/overlays/dev/kustomization.yaml
+cat cymbalbank-app-config/overlays/dev/kustomization.yaml
 ```
 
 Expected output: 
@@ -305,7 +316,7 @@ commonLabels:
   environment: dev
 ```
 
-9. **Use skaffold to build images + deploy the using the `dev` overlay.** 
+8. **Use skaffold to build images + deploy the using the `dev` overlay.** 
 
 While you can manually deploy a kustomize overlay like this: `kubectl apply -k overlays/dev` (much like the standard `kubectl apply -f`), we'll use skaffold to automatically deploy the `overlays/dev` overlay.  
 
@@ -324,7 +335,7 @@ Press Ctrl+C to exit
 Watching for changes...
 ```
 
-10.  View your newly-built pods. 
+9.  View your newly-built pods. 
 
 ```
 kubectl get pods --all-namespaces --selector=org=cymbal-bank
@@ -343,7 +354,7 @@ transactionhistory   transactionhistory-68c4b9ccd6-nwh24   2/2     Running   0  
 userservice          userservice-558fcc7fc4-fndgm          2/2     Running   0          111s
 ```
 
-11. View the new frontend banner by copying the `EXTERNAL_IP` of your frontned services, pasting it on a browser, and navigating to the frontend UI. 
+10. View the new frontend banner by copying the `EXTERNAL_IP` of your frontned services, pasting it on a browser, and navigating to the frontend UI. 
 
 ```
 kubectl get svc -n frontend frontend 
@@ -353,7 +364,10 @@ You should see your new banner at the top of the login screen:
 
 ![screenshot](screenshots/login-banner.png)
 
-### Part C - Pull Request --> Staging
+11. Exit the `skaffold dev` command by pressing `Ctrl+C`. This will remove the Kubernetes manifests from the dev cluster.
+
+
+## Part C - Pull Request --> Staging
 
 ![screeenshot](screenshots/pull-request-ci.png)
  
@@ -375,14 +389,14 @@ cd ..
 
 1. Merge the PR. Watch Cloud Build - CI - Main. 
 
-### Part D - Main CI 
+## Part E - Main CI 
 
 ![screenshot](screenshots/main-ci.png)
 
 1. Merge the PR. Watch Cloud Build - CI - Main. 
 
 
-#### Part E - CD 
+## Part F - Continuous Deployment  
 
 ![screenshot](screenshots/prod-cd.png)
 
@@ -392,9 +406,13 @@ cd ..
 1. View the new frontend banner running in production. 
 
 
+## Deep Dives - 
 
+- What happens when multiple devs need a dev cluster? 
+- Options ^^ dedicated namespaces, or spin up new clusters, or use local clusters like minikube 
+- self-serve for compliant clusters 
 
-### Learn More 
+## Learn More 
 
 https://kustomize.io/
 

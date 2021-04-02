@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: contacts
+  namespace: contacts
+spec:
+  selector:
+    matchLabels:
+      app: contacts
+  template: 
+    spec: 
+      containers:
+      - name: contacts
+        env:
+        - name: ENABLE_TRACING
+          value: "false"
+        - name: ENABLE_METRICS
+          value: "false"
+        - name: LOG_LEVEL
+          value: "debug"

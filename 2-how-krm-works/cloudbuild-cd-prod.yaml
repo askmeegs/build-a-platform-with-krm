@@ -3,8 +3,8 @@ steps:
   id: Deploy
   args:
   - 'apply'
-  - '-f'
-  - 'manifests/'
+  - '-k'
+  - 'overlays/prod/'
   env:
   - 'CLOUDSDK_COMPUTE_ZONE=us-west1-a'
   - 'CLOUDSDK_CONTAINER_CLUSTER=cymbal-prod'

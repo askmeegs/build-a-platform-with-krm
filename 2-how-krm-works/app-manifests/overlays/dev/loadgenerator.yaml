@@ -1,0 +1,16 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: loadgenerator
+  namespace: loadgenerator
+spec:
+  selector:
+    matchLabels:
+      app: loadgenerator
+  template: 
+    spec: 
+      containers:
+      - name: loadgenerator
+        env:
+        - name: LOG_LEVEL
+          value: "debug"

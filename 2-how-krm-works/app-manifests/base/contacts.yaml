@@ -1,29 +1,28 @@
 # apiVersion: v1
 # kind: Namespace
 # metadata:
-#   name: frontend
+#   name: contacts
 # ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: frontend
-  namespace: frontend
+  name: contacts
+  namespace: contacts
 spec:
   selector:
     matchLabels:
-      app: frontend
+      app: contacts
   template:
     metadata:
       labels:
-        app: frontend
+        app: contacts
         org: cymbal-bank
     spec:
       serviceAccountName: cymbal-ksa
       terminationGracePeriodSeconds: 5
       containers:
-      - name: front
-        image: gcr.io/bank-of-anthos/frontend:v0.4.3
-        # image: frontend
+      - name: contacts
+        image: contacts
         volumeMounts:
         - name: publickey
           mountPath: "/root/.ssh"
@@ -35,46 +34,15 @@ spec:
           value: "8080"
         - name: ENABLE_TRACING
           value: "true"
-        - name: SCHEME
-          value: "http"
-         # Valid levels are debug, info, warning, error, critical. If no valid level is set, gunicorn will default to info.
+        # Valid levels are debug, info, warning, error, critical.
+        # If no valid level is set, will default to info.
         - name: LOG_LEVEL
           value: "info"
-        # Set to "true" to enable the CymbalBank logo + title
-        - name: CYMBAL_LOGO
-          value: "true"
-        # Customize the bank name used in the header. Defaults to 'Bank of Anthos' - when CYMBAL_LOGO is true, uses 'CymbalBank'
-        # - name: BANK_NAME
-        #   value: ""
-        - name: DEFAULT_USERNAME
-          valueFrom:
-            configMapKeyRef:
-              name: demo-data-config
-              key: DEMO_LOGIN_USERNAME
-        - name: DEFAULT_PASSWORD
-          valueFrom:
-            configMapKeyRef:
-              name: demo-data-config
-              key: DEMO_LOGIN_PASSWORD
         envFrom:
         - configMapRef:
             name: environment-config
         - configMapRef:
-            name: service-api-config
-        readinessProbe:
-          httpGet:
-            path: /ready
-            port: 8080
-          initialDelaySeconds: 10
-          periodSeconds: 5
-          timeoutSeconds: 10
-        livenessProbe:
-          httpGet:
-            path: /ready
-            port: 8080
-          initialDelaySeconds: 60
-          periodSeconds: 15
-          timeoutSeconds: 30
+            name: accounts-db-config
         resources:
           requests:
             cpu: 100m
@@ -82,6 +50,29 @@ spec:
           limits:
             cpu: 500m
             memory: 256Mi
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 8080
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 10
+      - name: cloudsql-proxy
+        resources:
+          limits:
+            cpu: "200m"
+            memory: "100Mi"
+        image: gcr.io/cloudsql-docker/gce-proxy:1.19.0-alpine
+        env:
+        - name: CONNECTION_NAME
+          valueFrom:
+            secretKeyRef:
+              name: cloud-sql-admin
+              key: connectionName
+        command: ["/cloud_sql_proxy",
+                  "-instances=$(CONNECTION_NAME)=tcp:5432"]
+        securityContext:
+          runAsNonRoot: true
       volumes:
       - name: publickey
         secret:
@@ -93,24 +84,24 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: frontend
-  namespace: frontend
+  name: contacts
+  namespace: contacts
   labels:
     org: cymbal-bank
 spec:
-  type: LoadBalancer
+  type: ClusterIP
   selector:
-    app: frontend
+    app: contacts
   ports:
   - name: http
-    port: 80
+    port: 8080
     targetPort: 8080
 ---
 apiVersion: v1
 kind: Secret
 metadata:
   name: jwt-key
-  namespace: frontend
+  namespace: contacts
   labels:
     org: cymbal-bank
 type: Opaque
@@ -122,7 +113,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: environment-config
-  namespace: frontend
+  namespace: contacts
   labels:
     org: cymbal-bank
 data:
@@ -132,26 +123,11 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: service-api-config
-  namespace: frontend
+  name: accounts-db-config
+  namespace: contacts
   labels:
+    app: accounts-db
     org: cymbal-bank
 data:
-  TRANSACTIONS_API_ADDR: "ledgerwriter.ledgerwriter.svc.cluster.local:8080"
-  BALANCES_API_ADDR: "balancereader.balancereader.svc.cluster.local:8080"
-  HISTORY_API_ADDR: "transactionhistory.transactionhistory.svc.cluster.local:8080"
-  CONTACTS_API_ADDR: "contacts.contacts.svc.cluster.local:8080"
-  USERSERVICE_API_ADDR: "userservice.userservice.svc.cluster.local:8080"
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: demo-data-config
-  namespace: frontend
-  labels:
-    org: cymbal-bank
-data:
-  USE_DEMO_DATA: "True"
-  DEMO_LOGIN_USERNAME: "testuser"
-  # All demo user accounts are hardcoded to use the login password 'password'
-  DEMO_LOGIN_PASSWORD: "password"
+  # Updated to use CloudSQL Proxy
+  ACCOUNTS_DB_URI: postgresql://admin:admin@127.0.0.1:5432/accounts-db

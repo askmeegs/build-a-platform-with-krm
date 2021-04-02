@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: balancereader
+  namespace: balancereader
+spec:
+  selector:
+    matchLabels:
+      app: balancereader
+  template: 
+    spec: 
+      containers:
+      - name: balancereader
+        image: gcr.io/bank-of-anthos/balancereader:v0.4.3
+        env:
+        - name: ENABLE_TRACING
+          value: "true"
+        - name: ENABLE_METRICS
+          value: "true"
+        - name: LOG_LEVEL
+          value: "info"

@@ -27,7 +27,7 @@ export GITHUB_USERNAME=<your-github-username>
 git clone "https://github.com/${GITHUB_USERNAME}/cymbalbank-app-config"
 ```
 
-1. **View the Continous Deployment pipeline.** This pipeline will run in Google Cloud Build, and it deploys the CymbalBank application manifests, formatted as KRM, to the production cluster created during setup. 
+1. **View the Continous Deployment pipeline.** This pipeline will run in Google Cloud Build, and it deploys the CymbalBank application manifests, formatted as KRM, to the production cluster created during setup. The `-k` flag passed to kubectl apply means that kubectl is invoking the kustomize tool to "hydrate" KRM manifests for production - we'll learn more about this in the next demo. For now, the key points are that this Cloud Build pipeline is taking KRM and applying it to a Kubernetes cluster in order to deploy the CymbalBank app. 
 
 ```
 cat cloudbuild-cd-prod.yaml
@@ -41,11 +41,11 @@ steps:
   id: Deploy
   args:
   - 'apply'
-  - '-f'
-  - 'manifests/'
+  - '-k'
+  - 'overlays/prod/'
   env:
   - 'CLOUDSDK_COMPUTE_ZONE=us-west1-a'
-  - 'CLOUDSDK_CONTAINER_CLUSTER=cymbal-prod
+  - 'CLOUDSDK_CONTAINER_CLUSTER=cymbal-prod'
 ```
 
 1. **Copy the cloud build Continuous Deployment (CD) pipeline into the repo.**
@@ -61,7 +61,7 @@ cp cloudbuild-cd-prod.yaml cymbalbank-app-config/
 1. **View the CymbalBank app manifests.** 
 
 ```
-cat app-manifests/userservice.yaml
+cat app-manifests/base/userservice.yaml
 ```
 
 Expected output: 
@@ -91,8 +91,7 @@ spec:
 1. **Copy the app manifests.** Note that for now, we're using release manifests with images that have already been pushed to Google Container Registry. (The next demo will walk through making code changes and deploying new images to staging, then production.) 
 
 ```
-mkdir cymbalbank-app-config/manifests/; 
-cp -r app-manifests/* cymbalbank-app-config/manifests/ 
+cp -r app-manifests/* cymbalbank-app-config/
 ```
 
 1. **Push to the app config repo `main` branch**. This will trigger the CD pipeline in Cloud Build. 

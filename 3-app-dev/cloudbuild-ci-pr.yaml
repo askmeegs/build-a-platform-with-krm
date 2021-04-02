@@ -1,3 +1,4 @@
+# https://skaffold.dev/docs/tutorials/ci_cd/
 steps:
 - name: 'gcr.io/k8s-skaffold/skaffold:latest'
   id: Deploy to Staging Cluster

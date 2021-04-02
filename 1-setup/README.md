@@ -42,7 +42,7 @@ Once the Terraform script completes, the subsequent steps in this README will sh
 
 ```
 git clone https://github.com/askmeegs/intro-to-krm
-cd intro-to-krm/2-setup/ 
+cd intro-to-krm/1-setup/ 
 ```
 
 3. **Set vars**. 
@@ -59,9 +59,7 @@ gcloud config set project ${PROJECT_ID}
 gcloud services enable container.googleapis.com cloudbuild.googleapis.com sqladmin.googleapis.com
 ```
 
-5. Open Cloud Build in the Google Cloud console and authenticate Cloud Build to your Github account. 
-
-6. **Return to the terminal. Replace the values in `terraform.tfvars`** with the values corresponding to your project. 
+5. **Replace the values in `terraform.tfvars`** with the values corresponding to your project. 
 
 ```
 project_id = ""
@@ -79,13 +77,26 @@ gcloud auth application-default login
 8. **Run `terraform init`.** This downloads the providers (Github, Google Cloud) needed for setup. On success, you should see: 
 
 ```
+terraform init 
+```
+
+Expected output: 
+
+```
 Terraform has been successfully initialized!
 ```
 
 9. **Run `terraform plan`.** This looks at the `.tf` files in the directory and tells you what it will deploy to your Google Cloud project. 
 
+
 ```
-Plan: 31 to add, 0 to change, 0 to destroy.
+terraform plan
+```
+
+Expected output: 
+
+```
+Plan: 28 to add, 0 to change, 0 to destroy.
 
 Changes to Outputs:
   + kubernetes_admin_cluster_name   = "cymbal-admin"
@@ -94,7 +105,13 @@ Changes to Outputs:
   + kubernetes_staging_cluster_name = "cymbal-staging"
 ```
 
-10. **Run `terraform apply`,** and enter `yes` when prompted. It will take a few minutes for Terraform to set up the cluster and the Cloud Build pipeline. When the command completes, you should see something similar to this: 
+1.  **Run `terraform apply`** to create the resources. It will take a few minutes for Terraform to set up the cluster and the Cloud Build pipeline. When the command completes, you should see something similar to this: 
+
+```
+terraform apply -auto-approve
+```
+
+Expected output: 
 
 ```
 Apply complete! Resources: 31 added, 0 changed, 0 destroyed.

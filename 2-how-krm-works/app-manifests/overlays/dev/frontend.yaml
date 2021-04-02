@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  namespace: frontend 
+spec:
+  selector:
+    matchLabels:
+      app: frontend
+  replicas: 1
+  template: 
+    spec: 
+      containers:
+      - name: front
+        env:
+        - name: ENABLE_TRACING
+          value: "false"
+        - name: LOG_LEVEL
+          value: "debug"

@@ -1,29 +1,28 @@
 # apiVersion: v1
 # kind: Namespace
 # metadata:
-#   name: transactionhistory
+#   name: frontend
 # ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: transactionhistory
-  namespace: transactionhistory
+  name: frontend
+  namespace: frontend
 spec:
   selector:
     matchLabels:
-      app: transactionhistory
+      app: frontend
   template:
     metadata:
       labels:
-        app: transactionhistory
+        app: frontend
         org: cymbal-bank
     spec:
       serviceAccountName: cymbal-ksa
       terminationGracePeriodSeconds: 5
       containers:
-      - name: transactionhistory
-        image: gcr.io/bank-of-anthos/transactionhistory:v0.4.3
-        # image: transactionhistory
+      - name: front
+        image: frontend
         volumeMounts:
         - name: publickey
           mountPath: "/root/.ssh"
@@ -35,72 +34,53 @@ spec:
           value: "8080"
         - name: ENABLE_TRACING
           value: "true"
-        - name: ENABLE_METRICS
-          value: "true"
-        - name: POLL_MS
-          value: "100"
-        - name: CACHE_SIZE
-          value: "1000"
-        - name: CACHE_MINUTES
-          value: "60"
-        - name: HISTORY_LIMIT
-          value: "100"
-          # tell Java to obey container memory limits
-        - name: JVM_OPTS
-          value: "-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap"
-        #- name: EXTRA_LATENCY_MILLIS
-        #  value: "5000"
-        # Valid levels are debug, info, warn, error, fatal.
-        # If no valid level is set, will default to info.
+        - name: SCHEME
+          value: "http"
+         # Valid levels are debug, info, warning, error, critical. If no valid level is set, gunicorn will default to info.
         - name: LOG_LEVEL
           value: "info"
-        - name: NAMESPACE
+        # Set to "true" to enable the CymbalBank logo + title
+        - name: CYMBAL_LOGO
+          value: "true"
+        # Customize the bank name used in the header. Defaults to 'Bank of Anthos' - when CYMBAL_LOGO is true, uses 'CymbalBank'
+        # - name: BANK_NAME
+        #   value: ""
+        - name: DEFAULT_USERNAME
           valueFrom:
-            fieldRef:
-              fieldPath: metadata.namespace
+            configMapKeyRef:
+              name: demo-data-config
+              key: DEMO_LOGIN_USERNAME
+        - name: DEFAULT_PASSWORD
+          valueFrom:
+            configMapKeyRef:
+              name: demo-data-config
+              key: DEMO_LOGIN_PASSWORD
         envFrom:
         - configMapRef:
             name: environment-config
-        # add ledger-db credentials from ConfigMap
         - configMapRef:
-            name: ledger-db-config
-        resources:
-          requests:
-            cpu: 100m
-            memory: 512Mi
-          limits:
-            cpu: 500m
-            memory: 1Gi
+            name: service-api-config
         readinessProbe:
           httpGet:
             path: /ready
             port: 8080
-          initialDelaySeconds: 60
+          initialDelaySeconds: 10
           periodSeconds: 5
           timeoutSeconds: 10
         livenessProbe:
           httpGet:
-            path: /healthy
+            path: /ready
             port: 8080
-          initialDelaySeconds: 120
-          periodSeconds: 5
-          timeoutSeconds: 10
-      - name: cloudsql-proxy
+          initialDelaySeconds: 60
+          periodSeconds: 15
+          timeoutSeconds: 30
         resources:
+          requests:
+            cpu: 100m
+            memory: 64Mi
           limits:
-            cpu: "200m"
-            memory: "100Mi"
-        image: gcr.io/cloudsql-docker/gce-proxy:1.19.0-alpine
-        env:
-        - name: CONNECTION_NAME
-          valueFrom:
-            secretKeyRef:
-              name: cloud-sql-admin
-              key: connectionName
-        command: ["/cloud_sql_proxy",
-                  "-instances=$(CONNECTION_NAME)=tcp:5432"]
-        securityContext:
-          runAsNonRoot: true
+            cpu: 500m
+            memory: 256Mi
       volumes:
       - name: publickey
         secret:
@@ -112,24 +92,24 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: transactionhistory
-  namespace: transactionhistory
+  name: frontend
+  namespace: frontend
   labels:
     org: cymbal-bank
 spec:
-  type: ClusterIP
+  type: LoadBalancer
   selector:
-    app: transactionhistory
+    app: frontend
   ports:
   - name: http
-    port: 8080
+    port: 80
     targetPort: 8080
 ---
 apiVersion: v1
 kind: Secret
 metadata:
   name: jwt-key
-  namespace: transactionhistory
+  namespace: frontend
   labels:
     org: cymbal-bank
 type: Opaque
@@ -141,7 +121,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: environment-config
-  namespace: transactionhistory
+  namespace: frontend
   labels:
     org: cymbal-bank
 data:
@@ -151,16 +131,26 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: ledger-db-config
-  namespace: transactionhistory
+  name: service-api-config
+  namespace: frontend
   labels:
-    app: postgres
     org: cymbal-bank
 data:
-  POSTGRES_DB: postgresdb
-  POSTGRES_USER: admin
-  POSTGRES_PASSWORD: admin
-  # Updated to use CloudSQL Proxy
-  SPRING_DATASOURCE_URL: jdbc:postgresql://127.0.0.1:5432/ledger-db
-  SPRING_DATASOURCE_USERNAME: admin # should match POSTGRES_USER
-  SPRING_DATASOURCE_PASSWORD: admin # should match POSTGRES_PASSWORD
+  TRANSACTIONS_API_ADDR: "ledgerwriter.ledgerwriter.svc.cluster.local:8080"
+  BALANCES_API_ADDR: "balancereader.balancereader.svc.cluster.local:8080"
+  HISTORY_API_ADDR: "transactionhistory.transactionhistory.svc.cluster.local:8080"
+  CONTACTS_API_ADDR: "contacts.contacts.svc.cluster.local:8080"
+  USERSERVICE_API_ADDR: "userservice.userservice.svc.cluster.local:8080"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: demo-data-config
+  namespace: frontend
+  labels:
+    org: cymbal-bank
+data:
+  USE_DEMO_DATA: "True"
+  DEMO_LOGIN_USERNAME: "testuser"
+  # All demo user accounts are hardcoded to use the login password 'password'
+  DEMO_LOGIN_PASSWORD: "password"

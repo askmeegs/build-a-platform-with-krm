@@ -1,29 +1,28 @@
 # apiVersion: v1
 # kind: Namespace
 # metadata:
-#   name: contacts
+#   name: balancereader
 # ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: contacts
-  namespace: contacts
+  name: balancereader
+  namespace: balancereader
 spec:
   selector:
     matchLabels:
-      app: contacts
+      app: balancereader
   template:
     metadata:
       labels:
-        app: contacts
+        app: balancereader
         org: cymbal-bank
     spec:
       serviceAccountName: cymbal-ksa
       terminationGracePeriodSeconds: 5
       containers:
-      - name: contacts
-        image: gcr.io/bank-of-anthos/contacts:v0.4.3
-        # image: contacts
+      - name: balancereader
+        image: balancereader
         volumeMounts:
         - name: publickey
           mountPath: "/root/.ssh"
@@ -33,29 +32,51 @@ spec:
           value: "v0.4.3"
         - name: PORT
           value: "8080"
+        # toggle Cloud Trace export
         - name: ENABLE_TRACING
           value: "true"
-        # Valid levels are debug, info, warning, error, critical.
+        - name: ENABLE_METRICS
+          value: "true"
+        - name: POLL_MS
+          value: "100"
+        - name: CACHE_SIZE
+          value: "1000000"
+        # tell Java to obey container memory limits
+        - name: JVM_OPTS
+          value: "-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap"
+        # Valid levels are debug, info, warn, error, fatal.
         # If no valid level is set, will default to info.
         - name: LOG_LEVEL
           value: "info"
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
         envFrom:
         - configMapRef:
             name: environment-config
+        # add ledger-db credentials from ConfigMap
         - configMapRef:
-            name: accounts-db-config
+            name: ledger-db-config
         resources:
           requests:
             cpu: 100m
-            memory: 64Mi
+            memory: 512Mi
           limits:
             cpu: 500m
-            memory: 256Mi
+            memory: 1Gi
         readinessProbe:
           httpGet:
             path: /ready
             port: 8080
-          initialDelaySeconds: 10
+          initialDelaySeconds: 60
+          periodSeconds: 5
+          timeoutSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /healthy
+            port: 8080
+          initialDelaySeconds: 120
           periodSeconds: 5
           timeoutSeconds: 10
       - name: cloudsql-proxy
@@ -85,14 +106,14 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: contacts
-  namespace: contacts
+  name: balancereader
+  namespace: balancereader
   labels:
     org: cymbal-bank
 spec:
   type: ClusterIP
   selector:
-    app: contacts
+    app: balancereader
   ports:
   - name: http
     port: 8080
@@ -102,7 +123,7 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: jwt-key
-  namespace: contacts
+  namespace: balancereader
   labels:
     org: cymbal-bank
 type: Opaque
@@ -114,9 +135,9 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: environment-config
-  namespace: contacts
+  namespace: balancereader
   labels:
-    org: cymbal-bank
+    org: cymbal-bank  
 data:
   LOCAL_ROUTING_NUM: "883745000"
   PUB_KEY_PATH: "/root/.ssh/publickey"
@@ -124,11 +145,16 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: accounts-db-config
-  namespace: contacts
+  name: ledger-db-config
+  namespace: balancereader
   labels:
-    app: accounts-db
+    app: postgres
     org: cymbal-bank
 data:
+  POSTGRES_DB: postgresdb
+  POSTGRES_USER: admin
+  POSTGRES_PASSWORD: admin
   # Updated to use CloudSQL Proxy
-  ACCOUNTS_DB_URI: postgresql://admin:admin@127.0.0.1:5432/accounts-db
+  SPRING_DATASOURCE_URL: jdbc:postgresql://127.0.0.1:5432/ledger-db
+  SPRING_DATASOURCE_USERNAME: admin # should match POSTGRES_USER
+  SPRING_DATASOURCE_PASSWORD: admin # should match POSTGRES_PASSWORD

@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: transactionhistory
+  namespace: transactionhistory
+spec:
+  selector:
+    matchLabels:
+      app: transactionhistory
+  template: 
+    spec: 
+      containers:
+      - name: transactionhistory
+        image: gcr.io/bank-of-anthos/transactionhistory:v0.4.3
+        env:
+        - name: ENABLE_TRACING
+          value: "true"
+        - name: ENABLE_METRICS
+          value: "true"
+        - name: LOG_LEVEL
+          value: "info"
