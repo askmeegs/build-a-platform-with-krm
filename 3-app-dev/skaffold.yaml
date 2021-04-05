@@ -21,14 +21,31 @@ build:
     context: src/loadgenerator
   tagPolicy:
     gitCommit: {}
+  local: 
+    concurrency: 4 
 deploy:
-  statusCheckDeadlineSeconds: 600
+  statusCheckDeadlineSeconds: 300
   kustomize: {}
+portForward:
+- resourceType: deployment
+  resourceName: frontend
+  namespace: frontend
+  port: 8080
+  address: 127.0.0.1
+  localPort: 80
 profiles:
   - name: dev
     deploy: 
       kustomize: 
         paths:
           - "cymbalbank-app-config/overlays/dev"
-  - name: staging 
-  - name: prod 
+  - name: staging
+    deploy: 
+      kustomize: 
+        paths:
+          - "cymbalbank-app-config/overlays/prod"
+  - name: prod
+    deploy: 
+      kustomize: 
+        paths:
+          - "cymbalbank-app-config/overlays/prod"

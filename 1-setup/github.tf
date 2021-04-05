@@ -68,6 +68,30 @@ resource "google_secret_manager_secret_version" "github-username-version" {
   secret_data = var.github_username
 }
 
+# secret manager - github-email
+resource "google_secret_manager_secret" "github-username" {
+  secret_id = "github-email"
+
+  replication {
+      user_managed {
+        replicas {
+          location = "us-central1"
+        }
+        replicas {
+          location = "us-east1"
+        }
+        replicas {
+          location = "us-west1"
+        }
+      }
+    }
+}
+resource "google_secret_manager_secret_version" "github-email-version" {
+  secret = google_secret_manager_secret.github-email.id
+
+  secret_data = var.github_email
+}
+
 
 # App Source Repo 
 resource "github_repository" "app-source" {

@@ -17,6 +17,7 @@ This demo comes with an automated Terraform setup - all you need is a Google Clo
 - [Kubernetes Engine (GKE)](https://cloud.google.com/kubernetes-engine)
 - [Cloud Code](https://cloud.google.com/code)
 - [Cloud Build](https://cloud.google.com/build)
+- [Secret Manager](https://cloud.google.com/secret-manager)
 - [Container Registry](https://cloud.google.com/container-registry)
 - [Cloud SQL](https://cloud.google.com/sql/)
 - [Config Sync](https://cloud.google.com/kubernetes-engine/docs/add-on/config-sync/overview)

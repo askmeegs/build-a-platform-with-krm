@@ -1,11 +1,19 @@
-# https://skaffold.dev/docs/tutorials/ci_cd/
-steps:
+steps: 
 - name: 'gcr.io/k8s-skaffold/skaffold:latest'
-  id: Deploy to Staging Cluster
+  id: Deploy to Staging Cluster 
+  entrypoint: /bin/sh
   args:
-  - 'run'
-  - '--default-repo'
-  - 'gcr.io/${PROJECT_ID}/cymbal-bank/${BRANCH_NAME}'
+  - '-c'
+  - |
+    gcloud container clusters get-credentials ${CLUSTER_NAME} --zone ${CLUSTER_ZONE} --project ${PROJECT_ID} 
+    skaffold run --default-repo="gcr.io/${PROJECT_ID}/cymbal-bank/${BRANCH_NAME}" --tail=false
+    kubectl wait --for=condition=available --timeout=300s deployment/frontend -n fronted 
+    kubectl wait --for=condition=available --timeout=300s deployment/contacts -n contacts 
+    kubectl wait --for=condition=available --timeout=300s deployment/userservice -n userservice 
+    kubectl wait --for=condition=available --timeout=300s deployment/ledgerwriter -n ledgerwriter 
+    kubectl wait --for=condition=available --timeout=300s deployment/transactionhistory -n transactionhistory 
+    kubectl wait --for=condition=available --timeout=300s deployment/balancereader -n balancereader 
+    kubectl wait --for=condition=available --timeout=300s deployment/loadgenerator -n loadgenerator
   env:
-  - 'CLOUDSDK_COMPUTE_ZONE=us-central1-a'
-  - 'CLOUDSDK_CONTAINER_CLUSTER=cymbal-staging'
+  - 'CLUSTER_NAME=cymbal-staging'
+  - 'CLUSTER_ZONE=us-central1-a'

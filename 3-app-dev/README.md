@@ -1,6 +1,6 @@
 # 3 - App Development with KRM   
 
-This demo shows how an app developer can develop features in a Kubernetes environment using GKE, skaffold, and kustomize, without having to directly work with any YAML (KRM) files. 
+This demo shows how an app developer can develop features in a Kubernetes environment using GKE, Cloud Code, skaffold, and kustomize, without having to create or edit any KRM (YAML). This demo also shows a CI/CD pipeline, using Cloud Build, that shows how features get from development to production in a Kubernetes environment.
 
 **Tools and products covered in this demo:**
 - GKE 

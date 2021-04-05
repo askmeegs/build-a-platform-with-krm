@@ -6,4 +6,4 @@ megan.tfvars
 .DS_Store
 3/app-dev/bank-of-anthos/
 terraform.tfvars
-.vscode/launch.json 
+.vscode/*
