@@ -8,6 +8,19 @@ This demo shows how an app developer can develop features in a Kubernetes enviro
 - Cloud Code / skaffold 
 - Cloud Build 
 
+## Contents 
+
+- [3 - App Development with KRM](#3---app-development-with-krm)
+  - [Contents](#contents)
+  - [Prerequisites](#prerequisites)
+  - [Part A - Setup](#part-a---setup)
+  - [Part B - Add an Application Feature](#part-b---add-an-application-feature)
+  - [Part C - Test the feature](#part-c---test-the-feature)
+  - [Part D - Pull Request --> Staging](#part-d---pull-request----staging)
+  - [Part E - Main CI](#part-e---main-ci)
+  - [Part F - Continuous Deployment](#part-f---continuous-deployment)
+  - [Learn More](#learn-more)
+
 ## Prerequisites 
 
 Complete demo [parts 1](/1-setup) and [2](/2-how-krm-works). 
@@ -48,25 +61,6 @@ cd cymbalbank-app-source
 git clone "https://github.com/${GITHUB_USERNAME}/cymbalbank-app-config"
 cd ..
 ```
-<!-- 
-7. **Copy the Cloud Build pipelines into the source repo.** We will watch these pipelines run later in this demo. 
-
-```
-cp cloudbuild-ci-pr.yaml cymbalbank-app-source/
-cp cloudbuild-ci-main.yaml cymbalbank-app-source/
-``` -->
-
-<!-- 8. **Push the Cloud Build pipelines to the main branch** of your app source repo. 
-
-```
-cd cymbalbank-app-source/ 
-git init
-git add .
-git commit -m "Add cloudbuild.yaml"
-git branch -M main
-git remote add origin "https://github.com/${GITHUB_USERNAME}/cymbalbank-app-source.git" 
-git push -u origin main
-``` -->
 
 ## Part B - Add an Application Feature 
 
@@ -320,22 +314,13 @@ It's possible to manually deploy a kustomize overlay (with `kubectl apply -k my-
 
 A terminal should open up within VSCode that shows the skaffold logs, as it builds images and deploys to the dev cluster. 
 
-<!-- **Note** that you can manually run the skaffold command line tool to accomplish the same thing: 
-
-```
-skaffold dev --profile=dev --default-repo=gcr.io/${PROJECT_ID}/cymbal-bank --tail=false 
-``` -->
-
 Expected Cloud Code output: 
 
 ```
-Resource userservice:deployment/userservice status completed successfully
-Resource contacts:deployment/contacts status completed successfully
-Resource frontend:deployment/frontend status completed successfully
-...
+
 ```
 
-9.  Open a new terminal window and **view your newly-built pods**. 
+1.  Open a new terminal window and **view your newly-built pods**. 
 
 ```
 kubectl get pods --all-namespaces --selector=org=cymbal-bank
@@ -365,7 +350,7 @@ You should see your new banner at the top of the login screen:
 ![screenshot](screenshots/login-banner.png)
 
 
-## Part C - Pull Request --> Staging
+## Part D - Pull Request --> Staging
 
 ![screeenshot](screenshots/pull-request-ci.png)
  
