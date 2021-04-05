@@ -24,13 +24,13 @@ Once the Terraform script completes, the subsequent steps in this README will sh
 
 1. A Google Cloud project 
 2. A Github account (you will be creating 3 new repositories overall). 
-3. The following tools installed in your local environment: 
+3. The following tools installed in your local environment. (Note - these demos support both MacOS and Linux) 
 - git
 - [gcloud](https://cloud.google.com/sdk/docs/install)
 - [kubectl](https://cloud.google.com/sdk/gcloud/reference/components/install) - you can install this via gcloud: `gcloud components install kubectl`
 - [kubectx](https://github.com/ahmetb/kubectx#installation)
 - [terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli) 
-- tree - `brew install tree` 
+- **tree** - `brew install tree` (MacOS)
 
 4. A Github Personal Access token that Terraform can use to create a Github repo on your behalf. See instructions [here](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token). 
 
@@ -56,7 +56,7 @@ export GITHUB_USERNAME="<your-github-username>"
 
 ```
 gcloud config set project ${PROJECT_ID}
-gcloud services enable container.googleapis.com cloudbuild.googleapis.com sqladmin.googleapis.com
+gcloud services enable container.googleapis.com cloudbuild.googleapis.com sqladmin.googleapis.com secretmanager.googleapis.com 
 ```
 
 5. **Replace the values in `terraform.tfvars`** with the values corresponding to your project. 

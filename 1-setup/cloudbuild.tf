@@ -24,6 +24,16 @@ resource "google_project_iam_binding" "cloud-build-iam-binding" {
   ]
 }
 
+# to allow Cloud Build to commit to a user's Github account using a github token secret 
+resource "google_project_iam_binding" "cloud-build-iam-binding-secrets" {
+  project = var.project_id
+  role    = "roles/secretmanager.secretAccessor"
+
+  members = [
+    "serviceAccount:${var.project_number}@cloudbuild.gserviceaccount.com",
+  ]
+}
+
 # 🏁 CI trigger  - app source repo - PR - deploy to Staging 
 resource "google_cloudbuild_trigger" "ci-pr" {
   name = "app-source-pull-request"

@@ -1,0 +1,15 @@
+{
+    "configurations": [
+        {
+            "name": "Kubernetes: Run/Debug - dev",
+            "type": "cloudcode.kubernetes",
+            "request": "launch",
+            "skaffoldConfig": "${workspaceFolder}/3-app-dev/cymbalbank-app-source/skaffold.yaml",
+            "profile": "dev",
+            "watch": true,
+            "cleanUp": true,
+            "portForward": true,
+            "imageRegistry": "gcr.io/krm-test-3/cymbal-bank"
+        }
+    ]
+}
