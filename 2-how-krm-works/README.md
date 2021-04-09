@@ -33,13 +33,13 @@ Now that you have a Kubernetes environment to work with, let's deploy the Cymbal
 
 ## Part A - Setup  
 
-1. `cd` into this directory. 
+#### 1. `cd` into this directory. 
 
 ```
 cd 2-how-krm-works/
 ```
 
-2. **Set variables.**
+#### 2. **Set variables.**
 
 ```
 export PROJECT_ID=<your-project-id>
@@ -47,7 +47,9 @@ export GITHUB_USERNAME=<your-github-username>
 ```
 
 
-3. **Clone the app config repo.** This Github repo should have been created in your account during setup. This repo will contain the Kubernetes manifests (KRM) for the CymbalBank application. 
+#### 3. **Clone the app config repo.** 
+
+This Github repo should have been created in your account during setup. This repo will contain the Kubernetes manifests (KRM) for the CymbalBank application. 
 
 ```
 git clone "https://github.com/${GITHUB_USERNAME}/cymbalbank-app-config"
@@ -66,7 +68,10 @@ Your cymbalbank-app-config/ repo now contains multiple Kubernetes manifests. Kub
 
 KRM was created with the Kubernetes architecture in mind - because Kubernetes is a declarative system, each KRM resource represents a declarative object with your desired state. Said another way, a KRM resource is a "noun" - for instance, a Deployment - that the Kubernetes control plane will take action on ("verbs") so that your desired state in that YAML file matches the live state in your cluster. (This model will be familiar if you're ever worked with a REST API, or CRUD operations.) For instance, if you have a Deployment YAML stating that you want 3 replicas of a `nginx` Docker image, and one of the replicas fails, Kubernetes will notice that, and will bring another replica back online. Let's try that in action. 
 
-1. `nginx-deployment.yaml` contains a Deployment manifest ([source](https://kubernetes.io/docs/tasks/run-application/run-stateless-application-deployment/)). **Open the file** in an IDE. 
+#### 1. **View the nginx deployment.** 
+
+
+`nginx-deployment.yaml` contains a Deployment manifest ([source](https://kubernetes.io/docs/tasks/run-application/run-stateless-application-deployment/)). **Open the file** in an IDE. 
 
 ```YAML
 apiVersion: apps/v1
@@ -96,13 +101,15 @@ All [Kubernetes objects](https://kubernetes.io/docs/concepts/overview/working-wi
 - `metadata` - information about the object - like labels, annotations, name, [namespace](https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/). When you create this resource in a cluster, Kubernetes will add its own metadata, including a unique ID, `UID`, for that specific object. 
 - `spec` - the fields specific to that object. In a Deployment spec, for instance, you have to define the container `image` you want to use. Also notice how we'll deploy 3 `replicas` of the same container - this allows for basic scaling.     
 
-2. **Change your local kubecontext** to the `cymbal-dev` cluster. 
+#### 2. **Change your local kubecontext** to the `cymbal-dev` cluster. 
 
 ```
 kubectx cymbal-dev
 ```
 
-3. **Use `kubectl` to "apply" `nginx-deployment.yaml` to your cluster**. The `kubectl` tool is a command-line interface between a user and a running Kubernetes API server. (All 4 of your GKE clusters have their own API servers.) The `apply` command is like a a REST `put` command - it will create the resource if it doesn't exist, or update it, if the resource already exists. 
+#### 3. Apply `nginx-deployment.yaml` to the cluster**. 
+
+The `kubectl` tool is a command-line interface between a user and a running Kubernetes API server. (All 4 of your GKE clusters have their own API servers.) The `apply` command is like a a REST `put` command - it will create the resource if it doesn't exist, or update it, if the resource already exists. 
 
 ```
 kubectl apply -f nginx-deployment.yaml
@@ -114,7 +121,9 @@ Expected output:
 deployment.apps/nginx-deployment created
 ```
 
-4. **View the running Pods** in the cymbal-dev cluster. Pods are the smallest deployable unit of Kubernetes. Each Pod contains one or more running containers - in this case, each of the 3 nginx pods contain 1 nginx container. 
+#### 4. **View the running Pods** in the cymbal-dev cluster. 
+
+Pods are the smallest deployable unit of Kubernetes. Each Pod contains one or more running containers - in this case, each of the 3 nginx pods contain 1 nginx container. 
 
 ```
 kubectl get pods 
@@ -129,7 +138,9 @@ nginx-deployment-6b474476c4-knmkr   1/1     Running   0          21s
 nginx-deployment-6b474476c4-q77jr   1/1     Running   0          21s
 ```
 
-5. **Try deleting one of the pods** in your nginx deployment, then re-run `kubectl get pods`. You should see that Kubernetes noticed that the actual state diverged from your desired state in `nginx-deployment.yaml`, and brought a new nginx Pod back online. 
+#### 5. **Try deleting one of the pods** in your nginx deployment.
+
+Then re-run `kubectl get pods`. You should see that Kubernetes noticed that the actual state diverged from your desired state in `nginx-deployment.yaml`, and brought a new nginx Pod back online. 
 
 ```
 kubectl delete pod nginx-deployment-6b474476c4-h4j4q 
@@ -166,7 +177,7 @@ So when you ran `kubectl apply -f`, a series of events happened ([in-depth steps
 
 Now that we know that every Kubernetes actor, including you, ultimately interacts with the same object in etcd, let's look at our deployment after Kubernetes has taken action on it. 
 
-8. **Get your deployment out of the APIServer using `kubectl`**. 
+#### 6. **Get your deployment out of the APIServer using `kubectl`**. 
 
 ```
 kubectl get deployment nginx-deployment -o yaml 
@@ -216,13 +227,13 @@ The CymbalBank app ([open-sourced here](https://github.com/GoogleCloudPlatform/b
 
 Each CymbalBank service represents one Kubernetes workload. Let's explore the pre-provided Kubernetes manifests for the app. 
 
-4. **Copy the Kubernetes manifests** for CymbalBank into the cymbalbank-app-config repo. 
+#### 1. **Copy the Kubernetes manifests** for CymbalBank into the cymbalbank-app-config repo. 
 
 ```
 cp -r app-manifests/* cymbalbank-app-config/
 ```
 
-5. **Explore the cymbalbank-app-config repo.** 
+#### 2. **Explore the cymbalbank-app-config repo.** 
 
 Unlike the nginx example where we used `kubectl` to directly apply a Deployment to a cluster, we'll instead use a tool called [kustomize](https://kubectl.docs.kubernetes.io/guides/introduction/kustomize/). kustomize allows you to "customize" KRM without custom templating language. Kustomize is now built directly into kubectl, meaning you can run kustomize commands with `kubectl apply -k`. 
 
@@ -273,7 +284,7 @@ cymbalbank-app-config/
 
 Here, we can see that there's a `base` directory, with YAML files for each CymbalBank service, plus two `overlay` directories, `dev` and `prod`, each with their own YAML file per CymbalBank service. What's going on here? 
 
-6. **Explore the CymbalBank kustomize overlays.** 
+#### 3. **Explore the CymbalBank kustomize overlays.** 
 
 kustomize allows for pre-baked "flavors" of a set of Kubernetes manifests, called [overlays](https://kubectl.docs.kubernetes.io/guides/config_management/components/), which helps reduce manual editing of YAML files, while allowing multiple flavors to use the same source YAML. The README in the `cymbalbank-app-config` root directory details the differences between the prod and dev overlays (different # of deployment replicas, and different `env` variable values.) 
 
@@ -323,7 +334,7 @@ spec:
 
 When kustomize is invoked to apply the full set of resources to the cluster, kustomize will combine the base contacts Deployment with the overlay patch above, resulting in one fully "hydrated" Deployment it will then apply to the cluster. 
 
-7. **Explore kustomization.yaml**. 
+#### 4. **Explore kustomization.yaml**. 
 
 The last thing to know about kustomize, for the purpose of this demo, is that each kustomize directory needs a [`kustomization.yaml` file](https://kubectl.docs.kubernetes.io/references/kustomize/glossary/#kustomization). This provides the config for kustomize itself, telling it where your config lives and how to merge together your base and overlays. 
 
@@ -362,7 +373,9 @@ Now, instead of manually deploying the resources to a cluster like we did for `n
 
 Let's implement a simple, GitOps-style continuous deployment pipeline for CymbalBank using Google Cloud Build. 
 
-1. **View the continuous deployment pipeline**. This YAML file defines a Google Cloud Build pipeline that runs the `kubectl apply -k` command described above, effectively deploying the prod overlay in the `cymbalbank-app-config` repo to the `cymbal-prod` cluster. 
+#### 1. **View the continuous deployment pipeline**. 
+  
+This YAML file defines a Google Cloud Build pipeline that runs the `kubectl apply -k` command described above, effectively deploying the prod overlay in the `cymbalbank-app-config` repo to the `cymbal-prod` cluster. 
 
 ```
 cat cymbalbank-app-config/cloudbuild-cd-prod.yaml 
@@ -385,7 +398,9 @@ steps:
 
 (Note that in a real production environment, you'd likely want to set up a progressive deployment into prod, using something like a [Rolling Update](https://kubernetes.io/docs/tutorials/kubernetes-basics/update/update-intro/) or a [Canary Deployment](https://www.istiobyexample.dev/canary), to safeguard against downtime or potential outages.)
 
-2. **Set up Cloud Build authentication to Github**. This allows Cloud Build to watch the Github repositories in your account.  
+#### 2. **Set up Cloud Build authentication to Github**. 
+
+This allows Cloud Build to watch the Github repositories in your account.  
 
 - [Open Cloud Build](https://console.cloud.google.com/cloud-build) in the Google Cloud Console. 
 - Ensure that in the top menubar drop-down, your demo project is correctly selected. 
@@ -396,7 +411,7 @@ steps:
 - Click **Connect.** 
 - Click **Done**. 
 
-3. **Create a Cloud Build trigger for cymbalbank-app-config**. 
+#### 3. **Create a Cloud Build trigger for cymbalbank-app-config**. 
 
 - In the Triggers menu, click **Create Trigger.** 
 - Name it `continuous-deployment-prod`
@@ -410,7 +425,7 @@ You should now see the trigger appear in the Cloud Build menu.
 ![trigger](screenshots/trigger.png)
 
 
-4. **Trigger the build by pushing the manifests to your config repo.** 
+#### 4. **Trigger the build by pushing the manifests to your config repo.** 
 
 ```
 cd cymbalbank-app-config/
@@ -420,13 +435,15 @@ git push origin main
 cd .. 
 ```
 
-5. **Navigate back to Cloud Build and in the left sidebar, click History.** Watch the Cloud Build logs as the Continuous Deployment pipeline runs, using `kubectl apply -k` to apply the prod overlay and deploy to the `cymbal-prod` cluster: 
+#### 5. **Navigate back to Cloud Build and in the left sidebar, click History.** 
+
+Watch the Cloud Build logs as the Continuous Deployment pipeline runs, using `kubectl apply -k` to apply the prod overlay and deploy to the `cymbal-prod` cluster: 
 
 
 ![cd success](screenshots/cd-success.png)
 
 
-6. You should now have multiple Pods running in your production cluster. Get the pods in the `cymbal-prod` cluster: 
+#### 6. Return to a terminal and get the pods in the `cymbal-prod` cluster: 
 
 ```
 kubectx cymbal-prod; kubectl get pods --all-namespaces --selector=org=cymbal-bank
