@@ -8,7 +8,7 @@ The `/base` directory contains the base manifests for CymbalBank, including Conf
 
 ### `/overlays/` 
 
-The `overlays/` directory contains two deployment overlays (options) for CymbalBank, `dev/` and `prod/`. These overlays both use the `base` manifests but add special configuration for frontend repliacs, logging, tracing, and metrics export: 
+The `overlays/` directory contains two deployment overlays (options) for CymbalBank, `dev/` and `prod/`. These overlays both use the `base` manifests but add special configuration for the following Deployment fields:
 
 |      | 🔎 **Tracing** | 📊 **Metrics** | 📝 **Log Level** | 🏦 **Frontend Replicas** |
 |------|---------|---------|-----------|---------------------|
@@ -16,4 +16,4 @@ The `overlays/` directory contains two deployment overlays (options) for CymbalB
 | 🚀 **Prod** | on      | on      | `info`    | 3                   |
 
 
-Note that the staging pipeline for the intro-to-krm demo uses the `dev` overlay. 
+Note that the staging pipeline for the intro-to-krm demo uses the `prod` overlay. 

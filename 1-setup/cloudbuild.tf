@@ -7,11 +7,6 @@ variable "project_number" {
   description = "Google Cloud project number"
 }
 
-variable "github_username" {
-  type = string
-  description = "GitHub Username"
-}
-
 # https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/google_project_iam#google_project_iam_binding 
 
 # gcloud projects add-iam-policy-binding krm-awareness  --member='serviceAccount:536131318215@cloudbuild.gserviceaccount.com' --role='roles/container.developer'
@@ -34,53 +29,53 @@ resource "google_project_iam_binding" "cloud-build-iam-binding-secrets" {
   ]
 }
 
-# 🏁 CI trigger  - app source repo - PR - deploy to Staging 
-resource "google_cloudbuild_trigger" "ci-pr" {
-  name = "app-source-pull-request"
-  project = var.project_id 
-  github {
-    owner = var.github_username
-    name = "cymbalbank-app-source" 
-    pull_request {
-      branch = ".*"
-    }
-  }
+# # 🏁 CI trigger  - app source repo - PR - deploy to Staging 
+# resource "google_cloudbuild_trigger" "ci-pr" {
+#   name = "app-source-pull-request"
+#   project = var.project_id 
+#   github {
+#     owner = var.github_username
+#     name = "cymbalbank-app-source" 
+#     pull_request {
+#       branch = ".*"
+#     }
+#   }
 
-  filename = "cloudbuild-ci-pr.yaml"
-}
-
-
-# 🐳 CI trigger - app source repo - Main - build images + update app config repo 
-resource "google_cloudbuild_trigger" "ci-main" {
-  name = "app-source-main-branch"
-  project = var.project_id 
-  github {
-    owner = var.github_username
-    name = "cymbalbank-app-source" 
-    push {
-      branch = "main"
-    }
-  }
-
-  filename = "cloudbuild-ci-main.yaml"
-}
+#   filename = "cloudbuild-ci-pr.yaml"
+# }
 
 
+# # 🐳 CI trigger - app source repo - Main - build images + update app config repo 
+# resource "google_cloudbuild_trigger" "ci-main" {
+#   name = "app-source-main-branch"
+#   project = var.project_id 
+#   github {
+#     owner = var.github_username
+#     name = "cymbalbank-app-source" 
+#     push {
+#       branch = "main"
+#     }
+#   }
 
-# 🚀 CD trigger - app config repo - Main -  deploy to prod  
-# https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/cloudbuild_trigger 
-resource "google_cloudbuild_trigger" "cd-prod" {
-  name = "app-config-continuous-deployment"
-  project = var.project_id 
-  github {
-    owner = var.github_username
-    name = "cymbalbank-app-config" 
-    push {
-      branch = "main"
-    }
-  }
+#   filename = "cloudbuild-ci-main.yaml"
+# }
 
-  filename = "cloudbuild-cd-prod.yaml"
-}
+
+
+# # 🚀 CD trigger - app config repo - Main -  deploy to prod  
+# # https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/cloudbuild_trigger 
+# resource "google_cloudbuild_trigger" "cd-prod" {
+#   name = "app-config-continuous-deployment"
+#   project = var.project_id 
+#   github {
+#     owner = var.github_username
+#     name = "cymbalbank-app-config" 
+#     push {
+#       branch = "main"
+#     }
+#   }
+
+#   filename = "cloudbuild-cd-prod.yaml"
+# }
 
 

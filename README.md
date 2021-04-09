@@ -2,17 +2,17 @@
 
 This repo contains demos for the "Build a Platform with the Kubernetes Resource Model" content series. 
 
-### Demo Architecture
+## Demo Architecture
 
 ![screenshot](screenshots/architecture.png)
 
-### Running the demos 
+## Running the demos 
 
 This demo comes with an automated Terraform setup - all you need is a Google Cloud project. To get started, see the [Setup directory](/1-setup).
 
-### Tools + Infrastructure Used 
+## Products and Tools Used
 
-#### Google Cloud Products 
+### Google Cloud Products 
 
 - [Kubernetes Engine (GKE)](https://cloud.google.com/kubernetes-engine)
 - [Cloud Code](https://cloud.google.com/code)
@@ -24,7 +24,7 @@ This demo comes with an automated Terraform setup - all you need is a Google Clo
 - [Config Connector](https://cloud.google.com/config-connector/docs/overview)
 - [Policy Controller](https://cloud.google.com/anthos-config-management/docs/concepts/policy-controller) 
 
-#### Open-Source Tools 
+### Open-Source Tools 
 
 - [Terraform](https://www.terraform.io/)
 - [Github](https://github.com) 
