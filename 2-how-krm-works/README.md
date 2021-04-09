@@ -477,11 +477,11 @@ Notice how each service uses `ClusterIP` (enable in-cluster routing only) except
 
 ## Further Reading
 
-- https://kubernetes.io/docs/concepts/overview/working-with-objects/kubernetes-objects/
-- https://github.com/kubernetes/community/blob/master/contributors/design-proposals/architecture/resource-management.md
-- https://github.com/jamiehannaford/what-happens-when-k8s 
-- https://cloud.google.com/kubernetes-engine/docs/concepts/cluster-architecture#control_plane 
-- https://kubernetes.io/docs/concepts/architecture/controller/ 
-- https://kubectl.docs.kubernetes.io/guides/introduction/kustomize/ 
-- https://www.weave.works/technologies/gitops/
-- https://cloud.google.com/build/docs/deploying-builds/deploy-gke
+- [Kubernetes docs - working with Kubernetes objects](https://kubernetes.io/docs/concepts/overview/working-with-objects/kubernetes-objects/)
+- [Github - Kubernetes - the Kubernetes Resource Model](https://github.com/kubernetes/community/blob/master/contributors/design-proposals/architecture/resource-management.md)
+- [Github - jamiehannaford - what-happens-when-k8s](https://github.com/jamiehannaford/what-happens-when-k8s)
+- [Google Cloud - GKE Cluster Architecture](https://cloud.google.com/kubernetes-engine/docs/concepts/cluster-architecture#control_plane)
+- [Kubernetes Docs - Architecture - Controllers](https://kubernetes.io/docs/concepts/architecture/controller/)
+- [Kustomize docs - Introduction](https://kubectl.docs.kubernetes.io/guides/introduction/kustomize/)
+- [WeaveWorks Guide to GitOps](https://www.weave.works/technologies/gitops/)
+- [Google Cloud Build - Deploying to GKE](https://cloud.google.com/build/docs/deploying-builds/deploy-gke)
