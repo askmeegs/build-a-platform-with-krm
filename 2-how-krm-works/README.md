@@ -179,7 +179,7 @@ For starters, it's helpful to understand what's inside a Kubernetes cluster - in
 
 All Kubernetes components, and all outside actors - including you, executing `kubectl` commands - interact with the **APIServer**. The API Server, with its storage backend, **etcd**, is the single source of truth for a cluster. This is where both the intended and actual state of each KRM resource lives. 
 
-The **Resource controllers** inside the GKE control plane are basically a set of loops that periodically check "what needs to be done." For instance, if the [Deployment controller]() sees that you just applied a new Deployment to the cluster, it will update that resource as "to be scheduled - 3 pods". Then the **Scheduler**, also periodically checking the API Server, will schedule those 3 pods to the available **Nodes** in your cluster. Each Node runs a process called **kubelet**. The job of the kubelet is to start and stop containers, effectively doing the "last mile" of action to get the cluster's state match your desired state. The kubelet periodically queries the APIServer to see if it has any jobs to do - for instance, start or stop a container using its container runtime (eg. Docker, or in the case of GKE, [containerd](https://cloud.google.com/kubernetes-engine/docs/concepts/using-containerd))
+The **Resource controllers** inside the GKE control plane are basically a set of loops that periodically check "what needs to be done." For instance, if the Deployment controller sees that you just applied a new Deployment to the cluster, it will update that resource as "to be scheduled - 3 pods". Then the **Scheduler**, also periodically checking the API Server, will schedule those 3 pods to the available **Nodes** in your cluster. Each Node runs a process called **kubelet**. The job of the kubelet is to start and stop containers, effectively doing the "last mile" of action to get the cluster's state match your desired state. The kubelet periodically queries the APIServer to see if it has any jobs to do - for instance, start or stop a container using its container runtime (eg. Docker, or in the case of GKE, [containerd](https://cloud.google.com/kubernetes-engine/docs/concepts/using-containerd))
 
 So when you ran `kubectl apply -f`, a series of events happened ([in-depth steps here](https://github.com/jamiehannaford/what-happens-when-k8s)): 
 1. `kubectl` validated your Deployment file
@@ -301,7 +301,7 @@ Here, we can see that there's a `base` directory, with YAML files for each Cymba
 
 #### 3. **Explore the CymbalBank kustomize overlays.** 
 
-kustomize allows for pre-baked "flavors" of a set of Kubernetes manifests, called [overlays](https://kubectl.docs.kubernetes.io/guides/config_management/components/), which helps reduce manual editing of YAML files, while allowing multiple flavors to use the same source YAML. The README in the `cymbalbank-app-config` root directory details the differences between the prod and dev overlays (different # of deployment replicas, and different `env` variable values.) 
+kustomize allows for pre-baked "flavors" of a set of Kubernetes manifests, called [overlays](https://kubectl.docs.kubernetes.io/guides/config_management/components/), which helps reduce manual editing of YAML files, while allowing multiple flavors to use the same source YAML. The README in the `cymbalbank-app-config` root directory details the differences between the demo, prod, and dev overlays (different # of deployment replicas, and different `env` variable values.) 
 
 Both overlays rely on the same base manifests for each CymbalBank service. For instance, view the `userservice` base manifests: 
 
@@ -392,7 +392,7 @@ Let's implement a simple, GitOps-style continuous deployment pipeline for Cymbal
 
 #### 1. **View the continuous deployment pipeline**. 
   
-This YAML file defines a Google Cloud Build pipeline that runs the `kubectl apply -k` command described above, effectively deploying the prod overlay in the `cymbalbank-app-config` repo to the `cymbal-prod` cluster. 
+This YAML file defines a Google Cloud Build pipeline that runs the `kubectl apply -k` command described above, effectively deploying the demo overlay in the `cymbalbank-app-config` repo to the `cymbal-prod` cluster. 
 
 ```
 cat cymbalbank-app-config/cloudbuild-cd-prod.yaml 
@@ -454,7 +454,7 @@ cd ..
 
 #### 5. **Navigate back to Cloud Build and in the left sidebar, click History.** 
 
-Watch the Cloud Build logs as the Continuous Deployment pipeline runs, using `kubectl apply -k` to apply the prod overlay and deploy to the `cymbal-prod` cluster: 
+Watch the Cloud Build logs as the Continuous Deployment pipeline runs, using `kubectl apply -k` to apply the demo overlay and deploy to the `cymbal-prod` cluster: 
 
 
 ![cd success](screenshots/cd-success.png)
@@ -505,11 +505,31 @@ Notice how each service uses `ClusterIP` (enable in-cluster routing only) except
 
 ![screenshot](screenshots/cymbal-login.png)
 
+### Clean Up 
+
+1. To prepare for the next demo, update `cloudbuild-cd-prod` and replace `overlays/demo` in line 7 with: 
+
+```
+  - 'overlays/prod/'
+```
+
+This will prepare you to deploy images from source code, rather than pre-baked demo images.
+
+2. Push to the main branch. 
+
+```
+git add .
+git commit -m "CD pipeline - use prod overlay
+git push origin main 
+```
+
+Note that if you check back into your `cymbal-prod` cluster and get pods, you'll see `ImagePullBackOff` errors - this is expected and we'll resolve this in Part 3 when we build some new images! 
+
 🥳 **Well done! You just learned how KRM works, and how to deploy Kubernetes resources to a cluster using GitOps best practices.**
 
 
 
-## Further Reading
+## Learn More 
 
 - [Kubernetes docs - working with Kubernetes objects](https://kubernetes.io/docs/concepts/overview/working-with-objects/kubernetes-objects/)
 - [Github - Kubernetes - the Kubernetes Resource Model](https://github.com/kubernetes/community/blob/master/contributors/design-proposals/architecture/resource-management.md)

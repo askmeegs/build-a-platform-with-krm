@@ -10,33 +10,33 @@ This demo shows how an app developer can develop features in a Kubernetes enviro
   - [What you'll learn](#what-youll-learn)
   - [Prerequisites](#prerequisites)
   - [Part A - Setup](#part-a---setup)
-      - [1. Open a Terminal and **set variables.**](#1-open-a-terminal-and-set-variables)
-      - [2. Switch to the `cymbal-dev` kubecontext.](#2-switch-to-the-cymbal-dev-kubecontext)
+      - [1. **Open a Terminal and set variables.**](#1-open-a-terminal-and-set-variables)
+      - [2. **Switch to the `cymbal-dev` kubecontext.**](#2-switch-to-the-cymbal-dev-kubecontext)
       - [3. **Clone and initialize the app source repo**.](#3-clone-and-initialize-the-app-source-repo)
-    - [4. Copy the CymbalBank source code into the app source repo.](#4-copy-the-cymbalbank-source-code-into-the-app-source-repo)
-      - [5. **Clone the app config repo** inside the app source repo.](#5-clone-the-app-config-repo-inside-the-app-source-repo)
+    - [4. **Copy the CymbalBank source code into the app source repo.**](#4-copy-the-cymbalbank-source-code-into-the-app-source-repo)
+      - [5. **Clone the app config repo inside the app source repo.**](#5-clone-the-app-config-repo-inside-the-app-source-repo)
   - [Part B - Add an Application Feature](#part-b---add-an-application-feature)
       - [1. **Update the frontend source code**.](#1-update-the-frontend-source-code)
   - [Part C - Test the feature](#part-c---test-the-feature)
       - [1. **View the provided `skaffold.yaml` file**.](#1-view-the-provided-skaffoldyaml-file)
       - [2. **Copy `skaffold.yaml`** into your app source repo.](#2-copy-skaffoldyaml-into-your-app-source-repo)
       - [3. **Build and deploy the images to the dev cluster**.](#3-build-and-deploy-the-images-to-the-dev-cluster)
-      - [4. Open a new terminal window and **view your newly-built pods**.](#4-open-a-new-terminal-window-and-view-your-newly-built-pods)
-      - [5. View the new frontend banner by copying the `EXTERNAL_IP` of your frontend services, pasting it on a browser, and navigating to the frontend UI.](#5-view-the-new-frontend-banner-by-copying-the-external_ip-of-your-frontend-services-pasting-it-on-a-browser-and-navigating-to-the-frontend-ui)
+      - [4. **Open a new terminal window and view your newly-built pods**.](#4-open-a-new-terminal-window-and-view-your-newly-built-pods)
+      - [5. View the new frontend banner running on the dev cluster.](#5-view-the-new-frontend-banner-running-on-the-dev-cluster)
   - [Part D - Continuous Integration (Pull Request)](#part-d---continuous-integration-pull-request)
       - [1. **View the Cloud Build pipeline for Pull Requests to the app source repo**.](#1-view-the-cloud-build-pipeline-for-pull-requests-to-the-app-source-repo)
-      - [2. Create the Continuous Integration - PR trigger.](#2-create-the-continuous-integration---pr-trigger)
-      - [3. Return to the terminal and push your local frontend-banner branch to remote.](#3-return-to-the-terminal-and-push-your-local-frontend-banner-branch-to-remote)
-      - [4. Navigate to Github > cymbalbank-app-source and open a pull request in your `frontend-banner` branch. This will trigger the `cloudbuild-ci-pr.yaml` Cloud Build pipeline.](#4-navigate-to-github--cymbalbank-app-source-and-open-a-pull-request-in-your-frontend-banner-branch-this-will-trigger-the-cloudbuild-ci-pryaml-cloud-build-pipeline)
-      - [5. Navigate back to Cloud Build and watch the Continuous Integration - Pull Request pipeline run.](#5-navigate-back-to-cloud-build-and-watch-the-continuous-integration---pull-request-pipeline-run)
-      - [6. Switch to the staging cluster and view the frontend banner in staging by getting the `EXTERNAL_IP` of the frontend service, and navigating to that IP in a browser. You should see the login screen with your new banner. This is because skaffold built the frontend container image using the source code in your Pull Request branch.](#6-switch-to-the-staging-cluster-and-view-the-frontend-banner-in-staging-by-getting-the-external_ip-of-the-frontend-service-and-navigating-to-that-ip-in-a-browser-you-should-see-the-login-screen-with-your-new-banner-this-is-because-skaffold-built-the-frontend-container-image-using-the-source-code-in-your-pull-request-branch)
+      - [2. **Create the Continuous Integration - PR trigger.**](#2-create-the-continuous-integration---pr-trigger)
+      - [3. **Return to the terminal and push your local frontend-banner branch to remote.**](#3-return-to-the-terminal-and-push-your-local-frontend-banner-branch-to-remote)
+      - [4. **Navigate to Github > cymbalbank-app-source and open a pull request in your `frontend-banner` branch.**](#4-navigate-to-github--cymbalbank-app-source-and-open-a-pull-request-in-your-frontend-banner-branch)
+      - [5. **Navigate back to Cloud Build and watch the Continuous Integration - Pull Request pipeline run.**](#5-navigate-back-to-cloud-build-and-watch-the-continuous-integration---pull-request-pipeline-run)
+      - [6. **View the frontend banner in staging.**](#6-view-the-frontend-banner-in-staging)
   - [Part E - Main CI](#part-e---main-ci)
       - [1. **View the Cloud Build pipeline for commits to the `main` branch of the app source repo**](#1-view-the-cloud-build-pipeline-for-commits-to-the-main-branch-of-the-app-source-repo)
-      - [2. Copy the main CI pipeline into cymbalbank-app-source.](#2-copy-the-main-ci-pipeline-into-cymbalbank-app-source)
-      - [3. Create a CI main Cloud Build trigger](#3-create-a-ci-main-cloud-build-trigger)
-      - [4. Merge the frontend-banner pull request by navigating back to Github and clicking "Squash and Merge."](#4-merge-the-frontend-banner-pull-request-by-navigating-back-to-github-and-clicking-squash-and-merge)
-      - [5. Navigate back to Cloud Build in the Google Cloud Console, and watch the Continuous Integration - Main pipeline run.](#5-navigate-back-to-cloud-build-in-the-google-cloud-console-and-watch-the-continuous-integration---main-pipeline-run)
-      - [6.. When  completes, navigate to Github and open the cymbalbank-app-config repo.](#6-when--completes-navigate-to-github-and-open-the-cymbalbank-app-config-repo)
+      - [2. **Copy the main CI pipeline into cymbalbank-app-source.**](#2-copy-the-main-ci-pipeline-into-cymbalbank-app-source)
+      - [3. **Create a CI main Cloud Build trigger**](#3-create-a-ci-main-cloud-build-trigger)
+      - [**4. Merge the frontend-banner pull request**.](#4-merge-the-frontend-banner-pull-request)
+      - [5. **Watch the Continuous Integration - Main pipeline run in Cloud Build.**](#5-watch-the-continuous-integration---main-pipeline-run-in-cloud-build)
+      - [6. **When the build completes, navigate to Github and open the cymbalbank-app-config repo.**](#6-when-the-build-completes-navigate-to-github-and-open-the-cymbalbank-app-config-repo)
   - [Part F - Continuous Deployment](#part-f---continuous-deployment)
       - [1. Watch Cloud Build - CD - Prod.](#1-watch-cloud-build---cd---prod)
       - [2. View the new frontend banner running in production.](#2-view-the-new-frontend-banner-running-in-production)
@@ -59,7 +59,7 @@ This demo shows how an app developer can develop features in a Kubernetes enviro
 
 ## Part A - Setup  
 
-#### 1. Open a Terminal and **set variables.**
+#### 1. **Open a Terminal and set variables.**
 
 ```
 cd 3-app-dev/
@@ -67,7 +67,7 @@ export PROJECT_ID=<your-project-id>
 export GITHUB_USERNAME=<your-github-username>
 ```
 
-#### 2. Switch to the `cymbal-dev` kubecontext. 
+#### 2. **Switch to the `cymbal-dev` kubecontext.**
 
 ```
 kubectx cymbal-dev
@@ -88,7 +88,7 @@ git checkout -b frontend-banner
 cd .. 
 ```
 
-### 4. Copy the CymbalBank source code into the app source repo. 
+### 4. **Copy the CymbalBank source code into the app source repo.** 
 
 ```
 git clone "https://github.com/GoogleCloudPlatform/bank-of-anthos"
@@ -97,7 +97,7 @@ cp -r bank-of-anthos/ cymbalbank-app-source/
 rm -rf bank-of-anthos 
 ```
 
-#### 5. **Clone the app config repo** inside the app source repo. 
+#### 5. **Clone the app config repo inside the app source repo.**
 
 The reason for doing this is so that `skaffold`, the tool that builds the Docker images, has the YAML files it needs to deploy to the dev GKE cluster. 
 
@@ -230,7 +230,7 @@ Update succeeded
 ***********************************
 ```
 
-#### 4. Open a new terminal window and **view your newly-built pods**. 
+#### 4. **Open a new terminal window and view your newly-built pods**. 
 
 ```
 kubectl get pods --all-namespaces --selector=org=cymbal-bank
@@ -249,7 +249,9 @@ transactionhistory   transactionhistory-68c4b9ccd6-nwh24   2/2     Running   0  
 userservice          userservice-558fcc7fc4-fndgm          2/2     Running   0          111s
 ```
 
-#### 5. View the new frontend banner by copying the `EXTERNAL_IP` of your frontend services, pasting it on a browser, and navigating to the frontend UI. 
+#### 5. View the new frontend banner running on the dev cluster.
+
+Copy the `EXTERNAL_IP` of your frontend service, paste  it on a browser, and navigate to the frontend's login screen. 
 
 ```
 kubectl get svc -n frontend frontend 
@@ -308,7 +310,7 @@ availableSecrets:
 
 This Cloud Build pipeline will build the source code at the branch corresponding to that Pull Request. Then it deploys those images to the staging cluster, and makes sure the Pods come online. Note that this build uses the Secret Manager secret for `github-username`, deployed by Terraform during bootstrapping, in order to clone the app YAML inside the source directory like we did locally. 
 
-#### 2. Create the Continuous Integration - PR trigger. 
+#### 2. **Create the Continuous Integration - PR trigger.** 
 
 Reopen Cloud Build in the Google Cloud Console. Click Triggers > **Create Trigger**. 
 
@@ -319,7 +321,7 @@ Reopen Cloud Build in the Google Cloud Console. Click Triggers > **Create Trigge
 - Configuration: Cloud Build configuration - `/cloudbuild-ci-pr.yaml` 
 - Click **Create**. 
 
-#### 3. Return to the terminal and push your local frontend-banner branch to remote.
+#### 3. **Return to the terminal and push your local frontend-banner branch to remote.**
 
 ```
 git add .
@@ -327,14 +329,17 @@ git commit -m "Add frontend banner, PR CI pipeline"
 git push origin frontend-banner
 ```
 
-#### 4. Navigate to Github > cymbalbank-app-source and open a pull request in your `frontend-banner` branch. This will trigger the `cloudbuild-ci-pr.yaml` Cloud Build pipeline.  
+#### 4. **Navigate to Github > cymbalbank-app-source and open a pull request in your `frontend-banner` branch.** 
+
+This will trigger the `cloudbuild-ci-pr.yaml` Cloud Build pipeline.  
 
 ![github-pr](screenshots/github-open-pr.png)
 
-#### 5. Navigate back to Cloud Build and watch the Continuous Integration - Pull Request pipeline run. 
+#### 5. **Navigate back to Cloud Build and watch the Continuous Integration - Pull Request pipeline run.** 
 
+![ci-pr](screenshots/pull-request-ci.png)
 
-#### 6. Switch to the staging cluster and view the frontend banner in staging by getting the `EXTERNAL_IP` of the frontend service, and navigating to that IP in a browser. You should see the login screen with your new banner. This is because skaffold built the frontend container image using the source code in your Pull Request branch.  
+#### 6. **View the frontend banner in staging.**
 
 ```
 kubectx cymbal-staging; kubectl get svc frontend -n frontend
@@ -361,7 +366,7 @@ This pipeline runs when a pull request merges into the `main` branch. It does 4 
 
 Note that `cymbalbank-app-config` commits to the `main` branch trigger the Continuous Deployment pipeline we used in [Part 2](/2-how-krm-works). While we ran the Cloud Build trigger manually that time - using upstream release images rather than CI-generated images - this workflow will trigger it automatically. We'll see this in a few steps. 
 
-#### 2. Copy the main CI pipeline into cymbalbank-app-source. 
+#### 2. **Copy the main CI pipeline into cymbalbank-app-source.** 
 
 ```
 cp ../cloudbuild-ci-main.yaml .
@@ -370,7 +375,7 @@ git commit -m "Add cloudbuild CI main"
 git push origin frontend-banner
 ```
 
-#### 3. Create a CI main Cloud Build trigger
+#### 3. **Create a CI main Cloud Build trigger**
 
 Reopen Cloud Build in the Google Cloud Console. Click Triggers > **Create Trigger**. 
 
@@ -382,12 +387,14 @@ Reopen Cloud Build in the Google Cloud Console. Click Triggers > **Create Trigge
 - Click **Create**. 
 
 
-#### 4. Merge the frontend-banner pull request by navigating back to Github and clicking "Squash and Merge." 
+#### **4. Merge the frontend-banner pull request**.
 
-#### 5. Navigate back to Cloud Build in the Google Cloud Console, and watch the Continuous Integration - Main pipeline run. 
+Do this by navigating back to Github and clicking "Squash and Merge." 
+
+#### 5. **Watch the Continuous Integration - Main pipeline run in Cloud Build.**
 
 
-#### 6.. When  completes, navigate to Github and open the cymbalbank-app-config repo. 
+#### 6. **When the build completes, navigate to Github and open the cymbalbank-app-config repo.** 
 
 In the `base/` directory, and in each Deployment, you should see a new `image` tag, indicating that the CI pipeline injected the tag of the images built from the latest commit to `main`, which since your PR merged, includes the frontend banner source code.  
 
