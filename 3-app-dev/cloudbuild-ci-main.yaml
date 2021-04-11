@@ -8,32 +8,25 @@ steps:
     skaffold build --profile prod --default-repo="gcr.io/${PROJECT_ID}/cymbal-bank/release" --tag ${SHORT_SHA}
 - name: 'gcr.io/cloud-builders/gcloud'
   id: Image tags -> cymbalbank-app-config manifests 
-  entrypoint: 'bash'
+  entrypoint: /bin/sh
   args:
-   - '-eEuo'
-   - 'pipefail'
-   - '-c'
-   - |-
+  - '-c'
+  - |
+    set -x 
     git clone https://github.com/$$GITHUB_USERNAME/cymbalbank-app-config && \
-    cd cymbalbank-app-config 
-
+    cd cymbalbank-app-config && \
+    git checkout main 
+    
     git config user.email $$GITHUB_EMAIL
     git config user.name $$GITHUB_USERNAME 
     git remote set-url origin https://$$GITHUB_USERNAME:$$GITHUB_TOKEN@github.com/$$GITHUB_USERNAME/cymbalbank-app-config.git
 
-    for f in base/*; do 
-        if [[ "$f" == 'base/kustomization.yaml' ]]; then
-          continue
-        fi
-        svc="`basename $f .yaml`"
-        echo "🏦 Service name: $svc"
-        subst="image: gcr.io/${PROJECT_ID}/cymbal-bank/release/$svc:${SHORT_SHA}"
-
-        echo "🐳 Injecting image tag: $subst > $f"  
-        sed -i "s|image: $svc|$subst|g" $f 
-        
-        echo "📝 Done injecting image tag - $f"
-        cat $f | grep "image: "
+    for f in manifests/; do 
+        SERVICE_NAME="`basename $f .yaml`"
+        SUBST="image: gcr.io/${PROJECT_ID}/cymbal-bank/release/${SERVICE_NAME}:${SHORT_SHA}"
+        echo "Injecting image tag: $SUBST > $f"  
+        sed -i "s|image:*$SERVICE_NAME|$SUBST|g" $f 
+        cat $f 
     done 
 
     git add . && \
@@ -41,7 +34,6 @@ steps:
     Built from commit ${COMMIT_SHA} of repository cymbalbank-app-source - main branch 
     Author: $(git log --format='%an <%ae>' -n 1 HEAD)" && \
     git push origin main
-  secretEnv: ['GITHUB_EMAIL', 'GITHUB_USERNAME', 'GITHUB_TOKEN']
 availableSecrets:
   secretManager:
   - versionName: projects/${PROJECT_ID}/secrets/github-username/versions/1 

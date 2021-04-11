@@ -41,10 +41,6 @@ Now that you have a Kubernetes environment to work with, let's deploy the Cymbal
 - How to push KRM resources to a Git repo 
 - How to create a Continous Deployment pipeline triggered on a Git repo, to deploy KRM into production. 
 
-## Architecture
-
-![demo arch](screenshots/basic-deploy.png)
-
 ## Prerequisites 
 
 1. **Complete [part 1](/1-setup)** to bootstrap your environment. 
@@ -387,6 +383,8 @@ Here, we define where our base config lives, the set of patches we want to apply
 Now, instead of manually deploying the resources to a cluster like we did for `nginx-deployment`, let's set up a Continuous Deployment pipeline to deploy the resources automatically, from GitHub.  
 
 ## Part D - Create the Continuous Deployment pipeline 
+
+![demo arch](screenshots/basic-deploy.png)
 
 [**GitOps**](https://www.weave.works/technologies/gitops/) is an idea introduced by [WeaveWorks](https://www.weave.works/). It's an operating model for Kubernetes where you put your Kubernetes configuration in Git, then allow software - like CI/CD tools - to deploy. In this way, the only human interactions with the system are pull requests to the Github repo - these can be reviewed, approved, and audited - rather than imperative commands like `kubectl apply -f`, which are difficult to keep track of and may result in unwanted KRM landing in Kubernetes. The other benefit of GitOps is that there is one "source of truth" for what the desired Kubernetes state should be. 
 

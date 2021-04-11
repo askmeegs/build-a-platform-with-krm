@@ -1,6 +1,6 @@
 # 1 - Setup 
 
-This directory contains Terraform resources to set up a demo environment in a Google Cluod project, along with three Github repos. 
+This directory contains Terraform resources to set up a demo environment in a Google Cloud project, along with three Github repos. 
 
 ## Architecture 
 

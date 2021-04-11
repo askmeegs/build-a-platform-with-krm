@@ -2,79 +2,119 @@
 
 This demo shows how an app developer can develop features in a Kubernetes environment using GKE, Cloud Code, skaffold, and kustomize, without having to create or edit any KRM (YAML). This demo also shows a CI/CD pipeline, using Cloud Build, that shows how features get from development to production in a Kubernetes environment.
 
-**Tools and products covered in this demo:**
-- GKE 
-- kustomize 
-- Cloud Code / skaffold 
-- Cloud Build 
 
 ## Contents 
 
 - [3 - App Development with KRM](#3---app-development-with-krm)
   - [Contents](#contents)
+  - [What you'll learn](#what-youll-learn)
   - [Prerequisites](#prerequisites)
   - [Part A - Setup](#part-a---setup)
+      - [1. Open a Terminal and **set variables.**](#1-open-a-terminal-and-set-variables)
+      - [2. Switch to the `cymbal-dev` kubecontext.](#2-switch-to-the-cymbal-dev-kubecontext)
+      - [3. **Clone and initialize the app source repo**.](#3-clone-and-initialize-the-app-source-repo)
+    - [4. Copy the CymbalBank source code into the app source repo.](#4-copy-the-cymbalbank-source-code-into-the-app-source-repo)
+      - [5. **Clone the app config repo** inside the app source repo.](#5-clone-the-app-config-repo-inside-the-app-source-repo)
   - [Part B - Add an Application Feature](#part-b---add-an-application-feature)
+      - [1. **Update the frontend source code**.](#1-update-the-frontend-source-code)
   - [Part C - Test the feature](#part-c---test-the-feature)
-  - [Part D - Pull Request --> Staging](#part-d---pull-request----staging)
+      - [1. **View the provided `skaffold.yaml` file**.](#1-view-the-provided-skaffoldyaml-file)
+      - [2. **Copy `skaffold.yaml`** into your app source repo.](#2-copy-skaffoldyaml-into-your-app-source-repo)
+      - [3. **Build and deploy the images to the dev cluster**.](#3-build-and-deploy-the-images-to-the-dev-cluster)
+      - [4. Open a new terminal window and **view your newly-built pods**.](#4-open-a-new-terminal-window-and-view-your-newly-built-pods)
+      - [5. View the new frontend banner by copying the `EXTERNAL_IP` of your frontend services, pasting it on a browser, and navigating to the frontend UI.](#5-view-the-new-frontend-banner-by-copying-the-external_ip-of-your-frontend-services-pasting-it-on-a-browser-and-navigating-to-the-frontend-ui)
+  - [Part D - Continuous Integration (Pull Request)](#part-d---continuous-integration-pull-request)
+      - [1. **View the Cloud Build pipeline for Pull Requests to the app source repo**.](#1-view-the-cloud-build-pipeline-for-pull-requests-to-the-app-source-repo)
+      - [2. Create the Continuous Integration - PR trigger.](#2-create-the-continuous-integration---pr-trigger)
+      - [3. Return to the terminal and push your local frontend-banner branch to remote.](#3-return-to-the-terminal-and-push-your-local-frontend-banner-branch-to-remote)
+      - [4. Navigate to Github > cymbalbank-app-source and open a pull request in your `frontend-banner` branch. This will trigger the `cloudbuild-ci-pr.yaml` Cloud Build pipeline.](#4-navigate-to-github--cymbalbank-app-source-and-open-a-pull-request-in-your-frontend-banner-branch-this-will-trigger-the-cloudbuild-ci-pryaml-cloud-build-pipeline)
+      - [5. Navigate back to Cloud Build and watch the Continuous Integration - Pull Request pipeline run.](#5-navigate-back-to-cloud-build-and-watch-the-continuous-integration---pull-request-pipeline-run)
+      - [6. Switch to the staging cluster and view the frontend banner in staging by getting the `EXTERNAL_IP` of the frontend service, and navigating to that IP in a browser. You should see the login screen with your new banner. This is because skaffold built the frontend container image using the source code in your Pull Request branch.](#6-switch-to-the-staging-cluster-and-view-the-frontend-banner-in-staging-by-getting-the-external_ip-of-the-frontend-service-and-navigating-to-that-ip-in-a-browser-you-should-see-the-login-screen-with-your-new-banner-this-is-because-skaffold-built-the-frontend-container-image-using-the-source-code-in-your-pull-request-branch)
   - [Part E - Main CI](#part-e---main-ci)
+      - [1. **View the Cloud Build pipeline for commits to the `main` branch of the app source repo**](#1-view-the-cloud-build-pipeline-for-commits-to-the-main-branch-of-the-app-source-repo)
+      - [2. Copy the main CI pipeline into cymbalbank-app-source.](#2-copy-the-main-ci-pipeline-into-cymbalbank-app-source)
+      - [3. Create a CI main Cloud Build trigger](#3-create-a-ci-main-cloud-build-trigger)
+      - [4. Merge the frontend-banner pull request by navigating back to Github and clicking "Squash and Merge."](#4-merge-the-frontend-banner-pull-request-by-navigating-back-to-github-and-clicking-squash-and-merge)
+      - [5. Navigate back to Cloud Build in the Google Cloud Console, and watch the Continuous Integration - Main pipeline run.](#5-navigate-back-to-cloud-build-in-the-google-cloud-console-and-watch-the-continuous-integration---main-pipeline-run)
+      - [6.. When  completes, navigate to Github and open the cymbalbank-app-config repo.](#6-when--completes-navigate-to-github-and-open-the-cymbalbank-app-config-repo)
   - [Part F - Continuous Deployment](#part-f---continuous-deployment)
+      - [1. Watch Cloud Build - CD - Prod.](#1-watch-cloud-build---cd---prod)
+      - [2. View the new frontend banner running in production.](#2-view-the-new-frontend-banner-running-in-production)
   - [Learn More](#learn-more)
+
+## What you'll learn  
+- How to set up IDE-to-Kubernetes deployment using VSCode, Google Cloud Code
+- How skaffold works with container builders like Docker and Jib to auto-build source code
+- How to set up a multi-step CI/CD pipeline for Github pull requests using skaffold 
+- How to test and stage source code in GKE environments that mimic production 
 
 ## Prerequisites 
 
-Complete demo [parts 1](/1-setup) and [2](/2-how-krm-works). 
+1. [Docker desktop](https://www.docker.com/products/docker-desktop) (Mac) or [Docker Engine](https://docs.docker.com/engine/install/ubuntu/) (Linux)
+2. [skaffold](https://skaffold.dev/docs/install/). 
+3. [VSCode](https://code.visualstudio.com/Download)
+4. [Cloud Code Extension for VSCode](https://cloud.google.com/code/docs/vscode/install) 
+5. Complete demo [parts 1](/1-setup) and [2](/2-how-krm-works). 
+
 
 ## Part A - Setup  
 
-1. [Install VSCode](https://code.visualstudio.com/Download) on your local machine. This is the IDE you'll use to build and test a feature.
-
-2. Open VSCode and install the [Google Cloud Code extension](https://cloud.google.com/code/docs/vscode/install) by clicking on the Extensions icon in the left sidebar (4 blocks) and searching for "cloud code." Click "install."
-
-3. Open a Terminal and **set variables.**
+#### 1. Open a Terminal and **set variables.**
 
 ```
+cd 3-app-dev/
 export PROJECT_ID=<your-project-id>
 export GITHUB_USERNAME=<your-github-username>
 ```
 
-4. Switch to the `cymbal-dev` kubecontext. 
+#### 2. Switch to the `cymbal-dev` kubecontext. 
 
 ```
 kubectx cymbal-dev
 ```
 
+#### 3. **Clone and initialize the app source repo**.
 
-5. **Clone and initialize the app source repo** by copying the upstream [Bank of Anthos](https://github.com/googlecloudplatform/bank-of-anthos) sample app source code into your app-source-repo. Then remove the upstream Bank of Anthos repo from your local environment.  
+Do this by copying the upstream [Bank of Anthos](https://github.com/googlecloudplatform/bank-of-anthos) sample app source code into your app-source-repo. Then remove the upstream Bank of Anthos repo from your local environment.  
 
 ```
 git clone "https://github.com/${GITHUB_USERNAME}/cymbalbank-app-source"
+cd cymbalbank-app-source 
+touch README.md 
+git add README.md
+git commit -m "first commit"
+git push origin main
+git checkout -b frontend-banner
+cd .. 
+```
+
+### 4. Copy the CymbalBank source code into the app source repo. 
+
+```
 git clone "https://github.com/GoogleCloudPlatform/bank-of-anthos"
+cd bank-of-anthos; rm -rf .git; cd .. 
 cp -r bank-of-anthos/ cymbalbank-app-source/ 
 rm -rf bank-of-anthos 
 ```
 
-6. **Clone the app config repo** inside the app source repo, as a Git submodule. The reason for doing this is so that `skaffold`, the tool that builds the Docker images, has the YAML files it needs to deploy to the dev GKE cluster. 
+#### 5. **Clone the app config repo** inside the app source repo. 
+
+The reason for doing this is so that `skaffold`, the tool that builds the Docker images, has the YAML files it needs to deploy to the dev GKE cluster. 
 
 ```
-cd cymbalbank-app-source 
+cd cymbalbank-app-source; 
 git clone "https://github.com/${GITHUB_USERNAME}/cymbalbank-app-config"
-cd ..
 ```
 
 ## Part B - Add an Application Feature 
 
-In this section, we'll make an update to the CymbalBank frontend source code, test it using a local Kubernetes toolchain, then put out a Pull Request to trigger the CI/CD workflow described above. 
+In this section, we'll make an update to the CymbalBank frontend source code, test it using a local Kubernetes toolchain, then put out a Pull Request to trigger the a multi-part CI/CD workflow.  
 
 ![partB](screenshots/dev-test.png)
 
-1. **Check out a new local branch** in the cymbalbank-app-source repo. 
+#### 1. **Update the frontend source code**. 
 
-```
-git checkout -b frontend-banner 
-```
-
-2. **Update the frontend source code** by adding a banner to the login page advertising a new interest rate on all checking accounts. Return to VSCode and open `cymbalbank-app-source/src/frontend/templates/login.html`. Under line 71, add the following code: 
+Add a banner to the login page advertising a new interest rate on all checking accounts. Return to VSCode and open `cymbalbank-app-source/src/frontend/templates/login.html`. Under line 71, add the following code: 
 
 ```
           <div class="col-lg-6 offset-lg-3">
@@ -88,10 +128,11 @@ git checkout -b frontend-banner
 
 ## Part C - Test the feature 
 
-1. **Get ready to test your code changes** in the dev GKE cluster. We'll use Cloud Code, backed by a tool called [skaffold](https://skaffold.dev) to build Docker images and deploy to the dev GKE cluster. Install skaffold to your local environment by [following the steps here](https://skaffold.dev/docs/install/). 
+We'll use Cloud Code, backed by a tool called [`skaffold`](https://skaffold.dev/docs/quickstart/) to build and test the container images using the new frontend code we just added.
 
-2. **View the `skaffold.yaml` file**. 
+#### 1. **View the provided `skaffold.yaml` file**. 
 
+A skaffold.yaml file is the configuration for skaffold, telling it what images it needs to build, where the source code lives, and any custom "profiles". In this case, we define three profiles - `dev`, `staging`, and `prod` - that deploy the relevant kustomize overlays we explored in [Part 2](/2-how-krm-works/). Also note that the Java images will be built with [Jib](https://github.com/GoogleContainerTools/jib/), a container building tool for Java, and the Python images (frontend, userservice, contacts, loadgenerator) will be built with the default Docker. 
 
 ```
 cat ../skaffold.yaml 
@@ -149,178 +190,47 @@ profiles:
 
 ```
 
-More info: 
-- A skaffold.yaml file defines configuration that the skaffold tool will use to build container images. 
-- Skaffold uses KRM to define its own API - meaning, you're using KRM (this config file) to deploy KRM (the manifests in `cymbalbank-app-config`). More specifically, skaffold defines its own Kubernetes API (`skaffold`), versioned at `v2alpha4`, with a `kind` and various subfields. 
-- Here, we're telling skaffold to build multiple container images (`artifacts`) - frontend, ledgerwriter, etc.. 
-- The Java images will be built with [Jib](https://github.com/GoogleContainerTools/jib/), a container building tool for Java, and the Python images (frontend, userservice, contacts, loadgenerator) will be built with the default Docker. 
-- We define multiple [profiles](https://skaffold.dev/docs/environment/profiles/), including dev, staging, and prod. Each uses a different "flavor," or overlay, of the Kubernetes manifests stored in cymbalbank-app-config (Described in more detail in the `kustomize` section below.)
-
-
-3. **Copy `skaffold.yaml`** into your app source repo. 
+#### 2. **Copy `skaffold.yaml`** into your app source repo. 
 
 ```
 cp ../skaffold.yaml .
 ```
 
-4. **Explore the cymbalbank-app-config**  manifests. Once skaffold builds the container images for the various CymbalBank services, it will use these Kubernetes resources to deploy to the dev cluster. 
 
-One way to deploy KRM to a cluster is simply putting YAML files in a directory and running `kubectl apply -f my-directory/`. Here instead, we're using kustomize to define a `base` set of application KRM and two `overlays`, `dev` and `prod`. In kustomize, the base config is shared config - in this case, most of the Deployment and Service files we need. Overlays are specific "flavors" of configuration representing different environments or use cases, such as ["enterprise" vs. "community" edition](https://kubectl.docs.kubernetes.io/guides/config_management/components/) of an app. 
+#### 3. **Build and deploy the images to the dev cluster**. 
 
-
-```
-tree cymbalbank-app-config/ 
-```
-
-Expected output: 
-
-```
-cymbalbank-app-config
-├── README.md
-├── base
-│   ├── balancereader.yaml
-│   ├── contacts.yaml
-│   ├── frontend.yaml
-│   ├── kustomization.yaml
-│   ├── ledgerwriter.yaml
-│   ├── loadgenerator.yaml
-│   ├── populate-accounts-db.yaml
-│   ├── populate-ledger-db.yaml
-│   ├── transactionhistory.yaml
-│   └── userservice.yaml
-├── cloudbuild-cd-prod.yaml
-└── overlays
-    ├── dev
-    │   ├── balancereader.yaml
-    │   ├── contacts.yaml
-    │   ├── frontend.yaml
-    │   ├── kustomization.yaml
-    │   ├── ledgerwriter.yaml
-    │   ├── loadgenerator.yaml
-    │   ├── transactionhistory.yaml
-    │   └── userservice.yaml
-    └── prod
-        ├── balancereader.yaml
-        ├── contacts.yaml
-        ├── frontend.yaml
-        ├── kustomization.yaml
-        ├── ledgerwriter.yaml
-        ├── loadgenerator.yaml
-        ├── transactionhistory.yaml
-        └── userservice.yaml
-
-4 directories, 28 files
-```
-
-5. **View a `kustomization.yaml` file**. Each kustomize directory must have a [`kustomization.yaml` file](https://kubectl.docs.kubernetes.io/references/kustomize/kustomization/). This is another piece of KRM configuration that lists what files should be deployed: 
-
-```
-cat cymbalbank-app-config/base/kustomization.yaml
-```
-
-Expected output: 
-
-```
-apiVersion: kustomize.config.k8s.io/v1beta1
-kind: Kustomization
-resources:
-- balancereader.yaml
-- contacts.yaml
-- ledgerwriter.yaml
-- loadgenerator.yaml
-- populate-accounts-db.yaml
-- populate-ledger-db.yaml
-- transactionhistory.yaml
-- userservice.yaml
-- frontend.yaml
-```
-
-6. **Explore the kustomize overlays.** 
-
-The `dev` and `prod` overlays add custom configuration for the following CymbalBank fields: 
-
-|      | 🔎 **Tracing** | 📊 **Metrics** | 📝 **Log Level** | 🏦 **Frontend Replicas** |
-|------|---------|---------|-----------|---------------------|
-| 💻 **Dev**  | off     | off     | `debug`   | 1                   |
-| 🚀 **Prod** | on      | on      | `info`    | 3                   |
-
-In this case, the `ENABLE_TRACING`, `ENABLE_METRICS`, and `LOG_LEVEL` fields are environment variables in each service Deployment YAML. The frontend replicas field - or the number of frontend Pods we want deployed - is defined in the frontend Deployment spec. 
-
-You'll see from the output of the `tree` command above that  the `dev` and `prod` overlays each define their own flavor of each service. But in kustomize, you only need to override the fields you care about, meaning the `dev` overlay `frontend.yaml` is not a full Kubernetes Resource; it only overrides the fields in the table above: 
-
-```
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: frontend
-  namespace: frontend 
-spec:
-  selector:
-    matchLabels:
-      app: frontend
-  replicas: 1
-  template: 
-    spec: 
-      containers:
-      - name: front
-        env:
-        - name: ENABLE_TRACING
-          value: "false"
-        - name: LOG_LEVEL
-          value: "debug"
-```
-
-The rest of the frontend Deployment fields are defined in the `base/frontend.yaml` file. 
-
-
-7. **Explore an overlay's `kustomization.yaml` file.** 
-
-Each overlay also has a `kustomization.yaml` file that defines where the base config lives, the "patches," or config overrides, to apply, as well as any overlay-specific labels. In this case we'll apply `environment: dev` to all the KRM resources deployed with the dev overlay. 
-
-```
-cat cymbalbank-app-config/overlays/dev/kustomization.yaml
-```
-
-Expected output: 
-
-```
-apiVersion: kustomize.config.k8s.io/v1beta1
-kind: Kustomization
-bases:
-- ../../base
-patchesStrategicMerge:
-- balancereader.yaml
-- contacts.yaml
-- ledgerwriter.yaml
-- loadgenerator.yaml
-- transactionhistory.yaml
-- userservice.yaml
-- frontend.yaml
-commonLabels:
-  environment: dev
-```
-
-8. **Use Cloud Code and skaffold to build images + deploy the using the `dev` overlay.** 
-
-It's possible to manually deploy a kustomize overlay (with `kubectl apply -k my-app/` much like you'd manually deploy regular Kubernetes manifests with `kubectl apply -f`. Here instead, [we'll use Cloud Code](https://cloud.google.com/code/docs/vscode/running-an-application), backed by skaffold and kustomize, to deploy the `dev`  profile to the `cymbal-dev` cluster. To do this:  
-
-- Set the Google Container Registry repo where your test images will live
-- Press `shift-command-p` inside VSCode. 
+- With `skaffold.yaml` open in VSCode, press `shift-command-p`.
 - In the command prompt that appears, type `Cloud Code: Debug on Kubernetes`. A drop-down option should appear; click it. 
 - In the skaffold.yaml prompt that appears, choose `cymbalbank-app-source/skaffold.yaml` 
-- In the "profiles" prompt that appears, choose `dev`. 
-- In the kubecontext prompt that appears, choose `cymbal-dev` 
-- In the "image registry" prompt that appears, set to: `gcr.io/project-id/cymbal-bank/test`, replacing `project-id` with your project ID. 
 
-A terminal should open up within VSCode that shows the skaffold logs, as it builds images and deploys to the dev cluster. 
+![screenshot]  
+
+- In the "profiles" prompt that appears, choose `dev`. 
+
+![screenshots](screenshots/cloud-code-profiles.png)
+
+- In the kubecontext prompt that appears, choose `cymbal-dev` 
+
+![screenshot](screenshots/cc-kubectx.png)
+
+- In the "image registry" prompt that appears, set to: `gcr.io/<project-id></project-id>/cymbal-bank`, replacing `project-id` with your project ID. 
+
+![screenshot](screenshots/cc-gcr.png)
+
+A terminal should open up within VSCode that shows the skaffold logs, as it builds images and deploys to the dev cluster. This will take 3-5 minutes. 
 
 Expected Cloud Code output: 
 
 ```
-
+**************URLs*****************
+Debuggable container started pod/balancereader-7d87ddb588-mx25g:balancereader (balancereader)
+Debuggable container started pod/ledgerwriter-5f45c577-ndl55:ledgerwriter (ledgerwriter)
+Debuggable container started pod/transactionhistory-7984675b8d-5fpp7:transactionhistory (transactionhistory)
+Update succeeded
+***********************************
 ```
 
-1.  Open a new terminal window and **view your newly-built pods**. 
+#### 4. Open a new terminal window and **view your newly-built pods**. 
 
 ```
 kubectl get pods --all-namespaces --selector=org=cymbal-bank
@@ -339,7 +249,7 @@ transactionhistory   transactionhistory-68c4b9ccd6-nwh24   2/2     Running   0  
 userservice          userservice-558fcc7fc4-fndgm          2/2     Running   0          111s
 ```
 
-10. View the new frontend banner by copying the `EXTERNAL_IP` of your frontned services, pasting it on a browser, and navigating to the frontend UI. 
+#### 5. View the new frontend banner by copying the `EXTERNAL_IP` of your frontend services, pasting it on a browser, and navigating to the frontend UI. 
 
 ```
 kubectl get svc -n frontend frontend 
@@ -350,21 +260,25 @@ You should see your new banner at the top of the login screen:
 ![screenshot](screenshots/login-banner.png)
 
 
-## Part D - Pull Request --> Staging
+## Part D - Continuous Integration (Pull Request)
 
-![screeenshot](screenshots/pull-request-ci.png)
+Now we're ready to put out a Pull Request in the cymbalbank-app-source repo with our new frontend banner feature. We'll add a new Cloud Build trigger for all new pull requests in the source repo, so that we can auto-deploy the code to our staging GKE cluster, allowing any tests or code reviewers to verify that the changes work as intended with no bugs.  
+
+![screenshot](screenshots/pull-request-ci.png)
  
 
-1. **View the Cloud Build pipeline for Pull Requests to the app source repo**. 
+#### 1. **View the Cloud Build pipeline for Pull Requests to the app source repo**. 
+
+Run these commands from the cymbalbank-app-source root directory: 
 
 ```
+cp ../cloudbuild-ci-pr.yaml . 
 cat cloudbuild-ci-pr.yaml
 ```
 
-This pipeline will run when we put out a Pull Request in the app source repo. The pipeline builds and deploys the source code in the app developer's PR branch to the staging cluster. Note that in a real environment, we would add unit and integration tests to this pipeline as well. We can also run smoke tests (eg. ping tests, functional tests, load tests) on the staged GKE deployment, which mimics a prod environment. 
+Expected output: 
 
 ```
-# TODO - break into separate steps? 
 steps: 
 - name: 'gcr.io/google-samples/intro-to-krm/skaffold-mvn:latest'
   id: Deploy to Staging Cluster 
@@ -392,36 +306,51 @@ availableSecrets:
     env: 'GITHUB_USERNAME'
 ```
 
+This Cloud Build pipeline will build the source code at the branch corresponding to that Pull Request. Then it deploys those images to the staging cluster, and makes sure the Pods come online. Note that this build uses the Secret Manager secret for `github-username`, deployed by Terraform during bootstrapping, in order to clone the app YAML inside the source directory like we did locally. 
 
-2. Copy the cloud build PR pipeline, then push the source code to a remote branch. 
+#### 2. Create the Continuous Integration - PR trigger. 
+
+Reopen Cloud Build in the Google Cloud Console. Click Triggers > **Create Trigger**. 
+
+- Name: `continuous-integration-pr` 
+- Event: `Pull Request` 
+- Repository: `<github-username>/cymbalbank-app-source` 
+- Base branch: `.*` (any branch)
+- Configuration: Cloud Build configuration - `/cloudbuild-ci-pr.yaml` 
+- Click **Create**. 
+
+#### 3. Return to the terminal and push your local frontend-banner branch to remote.
 
 ```
-cp ../cloudbuild-ci-pr.yaml . 
-cp ../cloudbuild-ci-main.yaml .
 git add .
 git commit -m "Add frontend banner, PR CI pipeline" 
 git push origin frontend-banner
 ```
 
-3. Navigate to Github > cymbalbank-app-source and open a pull request in your `frontend-banner` branch. This will trigger the `cloudbuild-ci-pr.yaml` Cloud Build pipeline.  
+#### 4. Navigate to Github > cymbalbank-app-source and open a pull request in your `frontend-banner` branch. This will trigger the `cloudbuild-ci-pr.yaml` Cloud Build pipeline.  
 
 ![github-pr](screenshots/github-open-pr.png)
 
-4. Watch Cloud Build - CI - PR complete.  
+#### 5. Navigate back to Cloud Build and watch the Continuous Integration - Pull Request pipeline run. 
 
 
-5. Switch to the staging cluster and view the frontend banner in staging. 
+#### 6. Switch to the staging cluster and view the frontend banner in staging by getting the `EXTERNAL_IP` of the frontend service, and navigating to that IP in a browser. You should see the login screen with your new banner. This is because skaffold built the frontend container image using the source code in your Pull Request branch.  
 
+```
+kubectx cymbal-staging; kubectl get svc frontend -n frontend
+```
+
+![banner](screenshots/login-banner.png)
 
 ## Part E - Main CI 
 
 ![screenshot](screenshots/main-ci.png)
 
 
-1. **View the Cloud Build pipeline for commits to the `main` branch of the app source repo** 
+####  1. **View the Cloud Build pipeline for commits to the `main` branch of the app source repo** 
 
 ```
-cat cloudbuild-ci.main.yaml 
+cat ../cloudbuild-ci-main.yaml 
 ```
 
 This pipeline runs when a pull request merges into the `main` branch. It does 4 things: 
@@ -432,38 +361,65 @@ This pipeline runs when a pull request merges into the `main` branch. It does 4 
 
 Note that `cymbalbank-app-config` commits to the `main` branch trigger the Continuous Deployment pipeline we used in [Part 2](/2-how-krm-works). While we ran the Cloud Build trigger manually that time - using upstream release images rather than CI-generated images - this workflow will trigger it automatically. We'll see this in a few steps. 
 
-2. Merge the frontend-banner pull request. Watch Cloud Build - CI - Main. 
+#### 2. Copy the main CI pipeline into cymbalbank-app-source. 
+
+```
+cp ../cloudbuild-ci-main.yaml .
+git add .
+git commit -m "Add cloudbuild CI main" 
+git push origin frontend-banner
+```
+
+#### 3. Create a CI main Cloud Build trigger
+
+Reopen Cloud Build in the Google Cloud Console. Click Triggers > **Create Trigger**. 
+
+- Name: `continuous-integration-main` 
+- Event: `Push to a branch` 
+- Repository: `<github-username>/cymbalbank-app-source` 
+- Branch: `^main$`
+- Configuration: Cloud Build configuration - `/cloudbuild-ci-main.yaml` 
+- Click **Create**. 
 
 
-3. When it completes, navigate to Github and open the cymbalbank-app-config repo. In the `base/` Kubernetes manfiests, you should see a new image tag, committed seconds ago. 
+#### 4. Merge the frontend-banner pull request by navigating back to Github and clicking "Squash and Merge." 
+
+#### 5. Navigate back to Cloud Build in the Google Cloud Console, and watch the Continuous Integration - Main pipeline run. 
+
+
+#### 6.. When  completes, navigate to Github and open the cymbalbank-app-config repo. 
+
+In the `base/` directory, and in each Deployment, you should see a new `image` tag, indicating that the CI pipeline injected the tag of the images built from the latest commit to `main`, which since your PR merged, includes the frontend banner source code.  
 
 ## Part F - Continuous Deployment  
 
 ![screenshot](screenshots/prod-cd.png)
 
-The Cloud Build CD pipeline - which deploys the "hydrated" cymbalbank-app-config manifests to the prod cluster - is triggered by commits to cymbalbank-app-config's main branch, like the one that the CI pipeline just did. All this pipeline does is run `kubectl apply -k` on the prod overlay - remember that overlays use the base manifests, so the prod overlay will bring in the new images, and apply the prod-specific config (like a reduced log level, and enabling tracing) before deploy. 
+Back in Part 2, you set up the Continuous Deployment pipeline for cymbal-bank. This pipeline was simple: it looks at new commits to the `main` branch of `cymbalbank-app-config`, and runs `kubectl apply -k` on the `prod` overlay, deploying those manifests to the `cymbal-prod` cluster. 
 
-1. Watch Cloud Build - CD - Prod. 
+When you first initialized that pipeline, you used pre-built images as a demonstration and manually pushed to the config repo. Now, instead, your CI pipeline is the one that injected the new image tags and committed to the config repo. This better illustrates GitOps best practices, where automation handles the production manifests rather than a human - this reduces the possibility for errors and helps secure the software supply chain overall. (In practice, you might only allow a specific Git "bot" to push the config repo - for these demos, you're using your personal token in CI, so all the commits will show up as "you," including those commits from Cloud Build.)
 
+Also note that this CD pipeline is very simple, just one "kubectl apply" command. In reality, you'd likely have a progressive deploy to production - such as a Kubernetes rolling update or a Canary Deployment using a service mesh or similar tool. By slowly rolling out the new containers into the production GKE environment, and monitoring whether requests are successul, you can safeguard against a production outage or performance degradations. 
 
-2. View the new frontend banner running in production. 
+Let's watch your frontend banner feature land in production using the CD pipeline. 
 
+####  1. Watch Cloud Build - CD - Prod. 
 
+Navigate back to Cloud Build and ensure that the build ran successfully. 
 
-Note that this CD pipeline is very simple - in reality, you'd likely have a progressive deploy to production - such as a Kubernetes rolling update or a Canary Deployment using a service mesh or similar tool. By slowly rolling out the new containers into the production GKE environment, and monitoring whether requests are successul, you can safeguard against a production outage or performance degradations. 
+####  2. View the new frontend banner running in production. 
 
-🎉 Congrats! You just developed a new CymbalBank feature, tested it in a live Kubernetes environment, and deployed it into production. All without editing a single YAML file. 
+```
+kubectx cymbal-staging; kubectl get svc frontend -n frontend
+```
+
+🎉 **Congrats**! You just developed a new CymbalBank feature, tested it in a live Kubernetes environment, and deployed it into production. All without editing a single YAML file. 
 
 ## Learn More 
 
-https://kustomize.io/
-
-https://github.com/kubernetes-sigs/kustomize/tree/master/examples
-
-https://github.com/kubernetes-sigs/kustomize
-
-https://kubernetes.io/docs/tasks/manage-kubernetes-objects/kustomization/
-
-https://kubectl.docs.kubernetes.io/guides/config_management/components/
-
-https://cloud.google.com/code/docs/vscode/setting-up-an-existing-app#setting_up_configuration_for_applications_that_already_have_skaffoldyaml 
+- [Kustomize Documentation](https://kustomize.io/)
+- [Examples - Kustomize](https://github.com/kubernetes-sigs/kustomize/tree/master/examples)
+- [Kubernetes Docs - Mangaging Kubernetes Objects - Kustomize](https://kubernetes.io/docs/tasks/manage-kubernetes-objects/kustomization/)
+- [Kustomize Tutorial](https://kubectl.docs.kubernetes.io/guides/config_management/components/)
+- [Cloud Code Documentation](https://cloud.google.com/code/docs/vscode/setting-up-an-existing-app#setting_up_configuration_for_applications_that_already_have_skaffoldyaml)
+- [Google Cloud - GitOps-style continuous delivery with Cloud Build](https://cloud.google.com/kubernetes-engine/docs/tutorials/gitops-cloud-build)
