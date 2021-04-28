@@ -116,7 +116,7 @@ kubernetes_staging_cluster_name = "cymbal-staging"
 ```
 
 
-9. **Run the cluster setup script.** This sets up Kubernetes contexts, and sets up the Kubernetes namespaces you'll deploy the application into, in the next demo.
+9. **Run the cluster setup script.** This registers the clusters to the Anthos dashboard, sets up Kubernetes contexts, and sets up the Kubernetes namespaces you'll deploy the application into, in the next demo.
 
 ```
 ./cluster-setup.sh

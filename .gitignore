@@ -7,3 +7,5 @@ megan.tfvars
 3/app-dev/bank-of-anthos/
 terraform.tfvars
 .vscode/*
+*key.json
+config-sync-operator.yaml

@@ -396,7 +396,10 @@ Do this by navigating back to Github and clicking "Squash and Merge."
 
 #### 6. **When the build completes, navigate to Github and open the cymbalbank-app-config repo.** 
 
-In the `base/` directory, and in each Deployment, you should see a new `image` tag, indicating that the CI pipeline injected the tag of the images built from the latest commit to `main`, which since your PR merged, includes the frontend banner source code.  
+In the `base/` directory, and in each Deployment, you should see a new `image` tag, indicating that the CI pipeline injected the tag of the images built from the latest commit to `main`, which since your PR merged, includes the frontend banner source code. If you compare the image tag with the latest commit SHA to the `main` branch of `cymbalbank-app-source`, they should match. 
+
+![base-tag](screenshots/base-tag.png)
+
 
 ## Part F - Continuous Deployment  
 
@@ -404,7 +407,7 @@ In the `base/` directory, and in each Deployment, you should see a new `image` t
 
 Back in Part 2, you set up the Continuous Deployment pipeline for cymbal-bank. This pipeline was simple: it looks at new commits to the `main` branch of `cymbalbank-app-config`, and runs `kubectl apply -k` on the `prod` overlay, deploying those manifests to the `cymbal-prod` cluster. 
 
-When you first initialized that pipeline, you used pre-built images as a demonstration and manually pushed to the config repo. Now, instead, your CI pipeline is the one that injected the new image tags and committed to the config repo. This better illustrates GitOps best practices, where automation handles the production manifests rather than a human - this reduces the possibility for errors and helps secure the software supply chain overall. (In practice, you might only allow a specific Git "bot" to push the config repo - for these demos, you're using your personal token in CI, so all the commits will show up as "you," including those commits from Cloud Build.)
+When you first initialized that pipeline, you used the `demo` overlay (with pre-built images) manually pushed to the config repo to trigger the build, which deployed those pre-built images to the `cymbal-prod` cluster. Now, instead, your CI pipeline is the one that injected the new image tags and committed to the config repo. This better illustrates GitOps best practices, where automation handles the production manifests rather than a human - this reduces the possibility for errors and helps secure the software supply chain overall. (In practice, you might only allow a specific Git "bot" to push the config repo - for these demos, you're using your personal token in CI, so all the commits will show up as "you," including those commits from Cloud Build.)
 
 Also note that this CD pipeline is very simple, just one "kubectl apply" command. In reality, you'd likely have a progressive deploy to production - such as a Kubernetes rolling update or a Canary Deployment using a service mesh or similar tool. By slowly rolling out the new containers into the production GKE environment, and monitoring whether requests are successul, you can safeguard against a production outage or performance degradations. 
 
