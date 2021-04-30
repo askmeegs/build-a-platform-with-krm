@@ -33,6 +33,7 @@ Completed parts 1-3.
 
 ## Part B - A Tour of Config Sync 
 
+![screenshot](screenshots/sync-overview.png)
 
 1. View cluster sync status 
 
@@ -66,10 +67,10 @@ metadata:
 1. Push a new resource 
 
 
-1. Try to delete it + watch it be redeployed. 
+1. Try to delete it + watch it be redeployed. (Avoiding configuration drift)
 
 
-## Part C - Creating a Cluster-Scoped Resource with Config Sync 
+## Part C - Creating a Cluster-Scoped Resource
 
 
 ## Part D - Creating an Org-Wide Policy with Policy Controller 
