@@ -72,7 +72,7 @@ setup_cluster () {
     echo "⭐️ Done with cluster: ${CLUSTER_NAME}"
     }
 
-kubeconfig for admin cluster 
+# kubeconfig for admin cluster 
 gcloud config set project ${PROJECT_ID}
 
 echo "☁️  Connecting to the admin cluster for later..."
@@ -81,7 +81,6 @@ kubectx cymbal-admin=.
 
 echo "Enabling Anthos APIs..."
 gcloud services enable anthos.googleapis.com 
-gcloud alpha container hub config-management enable
 
 # Set up project for Anthos / project-wide service account
 echo "🔑 Creating Anthos registration service account..."

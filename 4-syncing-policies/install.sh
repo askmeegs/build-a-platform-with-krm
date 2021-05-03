@@ -33,8 +33,12 @@ install_config_sync () {
         --project=${PROJECT_ID}
 }
 
+# Enable config management feature in Anthos 
+gcloud config set project $PROJECT_ID
+gcloud alpha container hub config-management enable
+
 # Download Config Sync operator 
-# gsutil cp gs://config-management-release/released/latest/config-sync-operator.yaml config-sync-operator.yaml
+gsutil cp gs://config-management-release/released/latest/config-sync-operator.yaml config-sync-operator.yaml
 
 # Install Config Sync on dev, staging, and prod 
 install_config_sync "cymbal-dev" "us-east1-c" 
