@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: production-quota
+  namespace: balancereader
+  annotations:
+    configsync.gke.io/cluster-name-selector: cymbal-prod
+spec:
+  hard:
+    cpu: 700m
+    memory: 512Mi

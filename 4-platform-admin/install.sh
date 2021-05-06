@@ -27,10 +27,7 @@ install_config_sync () {
     gsed -i "s/GITHUB_USERNAME/${GITHUB_USERNAME}/g" $CRD_FILE
 
     # install config sync by applying the CRD 
-    gcloud alpha container hub config-management apply \
-        --membership=${CLUSTER_NAME} \
-        --config=config-management-crds/${CLUSTER_NAME}.yaml \
-        --project=${PROJECT_ID}
+    kubectl apply -f config-management-crds/${CLUSTER_NAME}.yaml
 }
 
 # Enable config management feature in Anthos 
@@ -42,5 +39,5 @@ gsutil cp gs://config-management-release/released/latest/config-sync-operator.ya
 
 # Install Config Sync on dev, staging, and prod 
 install_config_sync "cymbal-dev" "us-east1-c" 
-install_config_sync "cymbal-staging" "us-central1-a" 
-install_config_sync "cymbal-prod" "us-west1-a"
+# install_config_sync "cymbal-staging" "us-central1-a" 
+# install_config_sync "cymbal-prod" "us-west1-a"

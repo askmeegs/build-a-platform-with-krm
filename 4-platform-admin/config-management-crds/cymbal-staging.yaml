@@ -3,6 +3,7 @@ kind: ConfigManagement
 metadata:
   name: config-management
 spec:
+  clusterName: cymbal-staging
   sourceFormat: unstructured
   policyController:
     enabled: true

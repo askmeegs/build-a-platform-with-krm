@@ -3,9 +3,11 @@ kind: ConfigManagement
 metadata:
   name: config-management
 spec:
+  clusterName: cymbal-dev
   sourceFormat: unstructured
   policyController:
     enabled: true
+    templateLibraryInstalled: true
   git:
     syncRepo: https://github.com/askmeegs/cymbalbank-policy
     syncBranch: main
