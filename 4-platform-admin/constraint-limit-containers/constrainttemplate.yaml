@@ -1,0 +1,40 @@
+apiVersion: templates.gatekeeper.sh/v1beta1
+kind: ConstraintTemplate
+metadata:
+  name: k8slimitcontainersperpod
+spec:
+  crd:
+    spec:
+      names:
+        kind: K8sLimitContainersPerPod
+      validation:
+        openAPIV3Schema:
+          properties:
+            allowedNumContainers:
+              type: integer
+  targets:
+    - target: admission.k8s.gatekeeper.sh
+      rego: |
+        package k8slimitcontainersperpod
+
+        numTemplateContainers := count(input.review.object.spec.template.spec.containers)
+        numRunningContainers := count(input.review.object.spec.containers)
+        containerLimit := input.parameters.allowedNumContainers
+
+        template_containers_over_limit = true {
+          numTemplateContainers > containerLimit
+        }
+
+        running_containers_over_limit = true {
+          numRunningContainers > containerLimit
+        }
+
+        violation[{"msg": msg}] {
+          template_containers_over_limit
+          msg := sprintf("Number of containers in template (%v) exceeds the allowed limit (%v)", [numTemplateContainers, containerLimit])
+        }
+
+        violation[{"msg": msg}] {
+          running_containers_over_limit
+          msg := sprintf("Number of running containers (%v) exceeds the allowed limit (%v)", [numRunningContainers, containerLimit])
+        }

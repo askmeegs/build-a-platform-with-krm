@@ -251,7 +251,7 @@ Expected output:
 error: You must be logged in to the server (admission webhook "v1.admission-webhook.configsync.gke.io" denied the request: requester is not authorized to delete managed resources)
 ```
 
-## Part C - Using Policy Controller to Block External Services 
+## Part D - Using Policy Controller to Block External Services 
 
 Now that we've learned how to use Config Sync to make sure certain resources are deployed consistently across our Kubernetes environment (our first goal), let's address the second goal: preventing unsafe configuration from landing in any of the clusters. 
 
@@ -265,7 +265,7 @@ Policy Controller comes with a set of [default constraint templates](https://clo
 
 In this demo, we're going to create a policy for the `cymbal-dev` cluster that [blocks the creation of external services](https://cloud.google.com/anthos-config-management/docs/reference/constraint-template-library#k8snoexternalservices). This will help ensure that no sensitive code in development is exposed to the public.  
 
-![screenshot](screenshots/policycontroller.png)
+![screenshot](screenshots/block-ext-services.png)
 
 1. Switch to the `cymbal-dev` cluster, and verify that the Constraint Template library is installed. This is a set of Custom Resources (CRDs), each defining a ConstraintTemplate.   
 
@@ -291,19 +291,19 @@ spec:
 
 Notice how again, we're using Config Sync's `cluster-name-selector` annotation to scope this resource to the `cymbal-dev` cluster only.
 
-1. Create a new subdirectory in the `policy-repo`, `clusters/cymbal-dev`. This is where we'll keep cluster-wide policies, separate from namespace-specific directories. 
+3. Create a new subdirectory in the `policy-repo`, `clusters/cymbal-dev`. This is where we'll keep cluster-wide policies, separate from namespace-specific directories. 
 
 ```
 mkdir -p cymbalbank-policy/clusters/cymbal-dev
 ```
 
-1. Copy `constraint.yaml` into the new directory. 
+4. Copy `constraint.yaml` into the new directory. 
 
 ```
 cp constraint-ext-services/constraint.yaml cymbalbank-policy/clusters/cymbal-dev/
 ```
 
-1. Commit the resource 
+5. Commit the resource 
 
 ```
 cd cymbalbank-policy 
@@ -313,7 +313,7 @@ git push origin main
 cd .. 
 ```
 
-1. Verify that the policy has been synced to the `cymbal-dev` cluster using Config Sync. 
+6. Verify that the policy has been synced to the `cymbal-dev` cluster using Config Sync. 
 
 ```
 gcloud alpha container hub config-management status --project=${PROJECT_ID}
@@ -329,7 +329,7 @@ cymbal-prod     SYNCED         9ddcede            main         2021-05-06T15:25:
 cymbal-staging  SYNCED         9ddcede            main         2021-05-06T15:25:40Z  INSTALLED
 ```
 
-1. Verify that the constraint is deployed to the cymbal-dev cluster. 
+7. Verify that the constraint is deployed to the cymbal-dev cluster. 
 
 ```
 kubectl get constraint 
@@ -342,7 +342,7 @@ Expected output:
 k8snoexternalservices.constraints.gatekeeper.sh/dev-no-ext-services   47s
 ```
 
-2. Attempt to manually create a service type LoadBalancer in the `cymbal-dev` cluster, corresponding to the `contacts` service Deployment. You should get an error stating that the Policy Controller admission webhook is blocking the incoming resource. 
+8. Attempt to manually create a service type LoadBalancer in the `cymbal-dev` cluster, corresponding to the `contacts` service Deployment. You should get an error stating that the Policy Controller admission webhook is blocking the incoming resource. 
 
 ```
 kubectl apply -f constraint-ext-services/contacts-svc-lb.yaml
@@ -356,16 +356,184 @@ Name: "contacts", Namespace: "contacts"
 for: "constraint-ext-services/contacts-svc-lb.yaml": admission webhook "validation.gatekeeper.sh" denied the request: [denied by dev-no-ext-services] Creating services of type `LoadBalancer` without Internal annotation is not allowed
 ```
 
-Congrats! You just deployed your first Policy Controller policy via Config Sync. Policies like this can help platform admins reach the second goal discussed at the beginning of this demo, which is to monitor and prevent unsafe KRM in our environment.  
+**Congrats**! You just deployed your first Policy Controller policy via Config Sync. Policies like this can help platform admins reach the second goal discussed at the beginning of this demo, which is to monitor and prevent unsafe KRM in our environment.  
 
-## Part D - Enforcing Custom Policies with OPA and Rego 
+## Part D - Creating a Custom Constraint Template with Rego 
 
-In addition to the built-in Constraint Template library provided by PolicyController, you can also create custom policies with your own org-specific logic.  These policies don't just have to be related to compliance - they can be arbitrary business logic too, or platform requirements defined within Cymbal Bank. For example, let's create a policy that 
+In addition to the built-in Constraint Template library provided by PolicyController, you can also create [custom Constraint Templates](https://cloud.google.com/anthos-config-management/docs/how-to/write-a-constraint-template) with your own org-specific logic.  These policies don't just have to be related to compliance - they can be arbitrary business logic too, or platform requirements defined within Cymbal Bank.
 
-![screenshots](custom-policy.png)
+In this section, we'll write a custom Constraint Template that limits the total number of containers per pod to a set number. We'll then create a Constraint, using that template, that limits the number of containers to **2** per pod. There are certain valid use cases for adding additional ["sidecar" containers](https://kubernetes.io/blog/2015/06/the-distributed-system-toolkit-patterns/) in a Pod, particularly when for example, Cymbal Bank already attaches the [Cloud SQL proxy](https://cloud.google.com/sql/docs/mysql/sql-proxy) container to each backend service, allowing for secure communication to the databases.
+
+But too many containers packed into one Pod can increase the risk of outages - when one container crashes, the whole pod crashes - and it allows for less horizontal scaling (if 1 container in a pod exceeds its resource requirements, the entire pod must be replicated, even if the other container doesn't need to be replicated). To guard against this, we'll create a Constraint Template to enforce the number of containers allowed per Pod, across all the Cymbal Bank GKE clusters. 
+
+![screenshot](screenshots/num-allowed-containers.png)
 
 
-## Part E - Integrating Policy Controller with CI/CD 
+1. View the custom Constraint Template resource, which has been provided for you in the `constraint-limit-containers/` subdirectory. 
+
+```
+cat constraint-limit-containers/constrainttemplate.yaml 
+```
+
+Expected output: 
+
+```
+apiVersion: templates.gatekeeper.sh/v1beta1
+kind: ConstraintTemplate
+metadata:
+  name: k8slimitcontainersperpod
+spec:
+  crd:
+    spec:
+      names:
+        kind: K8sLimitContainersPerPod
+      validation:
+        openAPIV3Schema:
+          properties:
+            allowedNumContainers:
+              type: integer
+  targets:
+    - target: admission.k8s.gatekeeper.sh
+      rego: |
+        package k8slimitcontainersperpod
+
+        numTemplateContainers := count(input.review.object.spec.template.spec.containers)
+        numRunningContainers := count(input.review.object.spec.containers)
+        containerLimit := input.parameters.allowedNumContainers
+
+        template_containers_over_limit = true {
+          numTemplateContainers > containerLimit
+        }
+
+        running_containers_over_limit = true {
+          numRunningContainers > containerLimit
+        }
+
+        violation[{"msg": msg}] {
+          template_containers_over_limit
+          msg := sprintf("Number of containers in template (%v) exceeds the allowed limit (%v)", [numTemplateContainers, containerLimit])
+        }
+
+        violation[{"msg": msg}] {
+          running_containers_over_limit
+          msg := sprintf("Number of running containers (%v) exceeds the allowed limit (%v)", [numRunningContainers, containerLimit])
+        }
+```
+
+This resource might look a little scary or unfamiliar, so let's unpack how this template works.  PolicyController Constraint Templates are written in a programming language called [Rego](https://www.openpolicyagent.org/docs/latest/policy-language/). Unlike raw KRM, which is OpenAPI-compliant JSON or YAML, Rego is a full-featured programming language, created by the [OpenPolicyAgent](https://www.openpolicyagent.org/) project. Rego is a query language designed specifically for creating policies. Rego [supports](https://www.openpolicyagent.org/docs/latest/policy-reference/) objects, arrays, conditionals, functions, regular expressions, and other general-purpose language features, but it's structured differently from a language like Python or Java in that it's designed to take [some inputs (in our case, a KRM resource)](https://www.openpolicyagent.org/docs/latest/kubernetes-primer/#input-document), reason about the contents of that resource, and return an output, ultimately a boolean value - should this KRM resource be allowed into the cluster, or not?
+
+So you can think of Rego code as statements that are evaluated from top to bottom, with a conclusion made at the end. In the ConstraintTemplate above, for example, the following statement is a conditional setting `template_containers_over_limit` to `true` **if** `numTemplateContainers` is greater than `containerLimit`. Then in the `violation` below that, the statement `template_containers_over_limit` actually means, **if** `template_containers_over_limit` is `true`, **then** throw the policy violation `msg` and reject the resource for defining too many containers per pod. 
+
+```
+  template_containers_over_limit = true {
+    numTemplateContainers > containerLimit
+  }
+```
+Overall, if we look at a Kubernetes resource and evaluate the intended number of containers per pod, and the number of running containers per pod, and decide that they're both within the allowed number, we throw no policy `violations`. This is what the Policy Controller pod (`gatekeeper`) will do automatically for every resource coming into any of the clusters. 
+
+2. View the Constraint, which implements the `K8sLimitContainersPerPod` Constraint Template. 
+
+```
+cat constraint-limit-containers/constraint.yaml 
+```
+
+Expected output: 
+
+```
+apiVersion: constraints.gatekeeper.sh/v1beta1
+kind: K8sLimitContainersPerPod
+metadata:
+  name: limit-two-containers
+spec:
+  parameters:
+    allowedNumContainers: 2
+```
+
+Note that this constraint has no `cluster-selector` annotations, so Config Sync will apply it to all of the clusters. 
+
+3. Commit both resources to the cymbalbank-policy repo. 
+
+```
+cp constraint-limit-containers/constrainttemplate.yaml cymbalbank-policy/clusters/
+cp constraint-limit-containers/constraint.yaml cymbalbank-policy/clusters/
+cd cymbalbank-policy/
+git add .
+git commit -m "Add Constraint Template - K8sLimitContainersPerPod"
+git push origin main
+cd ..
+```
+
+4. Return to the dev cluster. Verify that the second Constraint, `limit-two-containers`, has been created. 
+
+```
+kubectx cymbal-dev
+kubectl get constraint
+```
+
+Expected output: 
+
+```
+NAME                                                                  AGE
+k8snoexternalservices.constraints.gatekeeper.sh/dev-no-ext-services   8h
+
+NAME                                                                      AGE
+k8slimitcontainersperpod.constraints.gatekeeper.sh/limit-two-containers   3m42s
+```
+
+5. View the test workload. This is a Deployment where each Pod has 3 containers, each running `nginx`. 3 containers exceeds our limit of 2 containers per pod, so we would expect Policy Controller to reject this resource. 
+
+```
+cat constraint-limit-containers/test-workload.yaml
+```
+
+Expected output: 
+
+```YAML
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-cubed
+spec:
+  selector:
+    matchLabels:
+      app: sleep
+  replicas: 1 
+  template:
+    metadata:
+      labels:
+        app: sleep
+    spec:
+      containers:
+      - name: nginx1
+        image: nginx:1.14.2
+        ports:
+        - containerPort: 8080
+      - name: nginx2
+        image: nginx:1.14.2
+        ports:
+        - containerPort: 8081
+      - name: nginx3
+        image: nginx:1.14.2
+        ports:
+        - containerPort: 8082
+```
+
+6. Attempt to apply the test workload to the dev cluster. You should see an error message. 
+
+```
+kubectl apply -f constraint-limit-containers/test-workload.yaml
+```
+
+Expected output: 
+
+```
+Error from server ([denied by limit-two-containers] Number of containers in template (3) exceeds the allowed limit (2)): error when creating "constraint-limit-containers/test-workload.yaml": admission webhook "validation.gatekeeper.sh" denied the request: [denied by limit-two-containers] Number of containers in template (3) exceeds the allowed limit (2)
+```
+
+**Well done!** You just used the Rego policy language to deploy your own custom policy for the Cymbal Bank platform. 
+
+
+## Part E - Add Policy Checks to CI/CD
 
 https://cloud.google.com/anthos-config-management/docs/tutorials/policy-agent-ci-pipeline#unstructured_1
 
@@ -382,7 +550,7 @@ Let's see how to integrate policy checks into the app-config-repo CI/CD pipeline
 
 ### Config Sync 
 
-- [Config Sync documentation](https://cloud.google.com/kubernetes-engine/docs/add-on/config-sync/config-sync-overview?hl=sv-SESee)
+- [Config Sync - Overview](https://cloud.google.com/kubernetes-engine/docs/add-on/config-sync/config-sync-overview?hl=sv-SESee)
 - [Config Sync samples](https://github.com/GoogleCloudPlatform/anthos-config-management-samples)
 - [Config Sync - Configuring Only a Subset of Clusters](https://cloud.google.com/kubernetes-engine/docs/add-on/config-sync/how-to/clusterselectors)
 - [GKE Best practices - RBAC](https://cloud.google.com/kubernetes-engine/docs/how-to/hardening-your-cluster#use_namespaces_and_rbac_to_restrict_access_to_cluster_resources)
@@ -390,5 +558,10 @@ Let's see how to integrate policy checks into the app-config-repo CI/CD pipeline
 
 ### Policy Controller
 
-- [Policy Controller documentation](https://cloud.google.com/anthos-config-management/docs/concepts/policy-controller)
-- [Policy Controller - Creating Constraints](https://cloud.google.com/anthos-config-management/docs/how-to/creating-constraints)
+- [Policy Controller - Overview](https://cloud.google.com/anthos-config-management/docs/concepts/policy-controller)
+- [Policy Controller - Creating Constraints using the default Constraint Template library](https://cloud.google.com/anthos-config-management/docs/how-to/creating-constraints)
+- [Policy Controller - Writing Constraint Templates with Rego](https://cloud.google.com/anthos-config-management/docs/how-to/write-a-constraint-template)
+- [OpenPolicyAgent - Kubernetes Primer](https://www.openpolicyagent.org/docs/latest/kubernetes-primer)
+- [OpenPolicyAgent - Rego language](https://www.openpolicyagent.org/docs/latest/policy-language/)
+- [OpenPolicyAgent - The Rego Playground](https://play.openpolicyagent.org/)
+- [Policy Controller - Using Policy Controller in a CI Pipeline](https://cloud.google.com/anthos-config-management/docs/tutorials/policy-agent-ci-pipeline)

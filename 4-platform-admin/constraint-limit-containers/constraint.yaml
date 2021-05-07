@@ -1,0 +1,7 @@
+apiVersion: constraints.gatekeeper.sh/v1beta1
+kind: K8sLimitContainersPerPod
+metadata:
+  name: limit-two-containers
+spec:
+  parameters:
+    allowedNumContainers: 2
