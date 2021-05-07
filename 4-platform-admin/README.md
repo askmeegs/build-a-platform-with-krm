@@ -535,16 +535,25 @@ Error from server ([denied by limit-two-containers] Number of containers in temp
 
 ## Part E - Add Policy Checks to CI/CD
 
-https://cloud.google.com/anthos-config-management/docs/tutorials/policy-agent-ci-pipeline#unstructured_1
+Policy Controller provides a powerful, flexible way to automatically check incoming resources against org policies. But Policy Controller's setup - as a Kubernetes admission controller, at the gate of the API - means that it can only "catch" (and block) out-of-policy resources on the fly, as they are trying to be deployed through `kubectl`, CI/CD, or some other means. 
 
-https://cloud.google.com/anthos-config-management/docs/tutorials/app-policy-validation-ci-pipeline
+For app developers or operators who need to create or edit application YAML files - including those in the cymbalbank-app-config repo, outside of the policy repo - this setup isn't ideal. Because it means that they only know their resources are out of policy at the very moment they get deployed. For policies that only apply to production, they may not know their resources are out of policy until they go through all the effort to write and test code, get PR reviews, run unit tests, etc., only to have to double back and create another PR or roll back the commit. 
 
-Policy Controller provides 
-But by default, it only enforces those policies at runtime - said another way, Policy Controller can only "catch" (and subsequently block) an out-of-policy resource as it enters the cluster. As a platform admin, ideally I want multiple layers of enforcement, so that a developer knows if their resources are non-compliant, and can fix them before merging them into repo.  
+So as a platform admin, I want to empower all the developers in my org to know if and when their resources are non-compliant, and have a chance to make changes. And ideally I want multiple layers of enforcement against the same set of policies. Lucky for us, there's a way to integrate Policy Controller into our existing CI, on top of the "at deploy time" enforcement Policy Controller already does. Let's see how. 
 
-Let's see how to integrate policy checks into the app-config-repo CI/CD pipeline, to vet the Cymbal Bank app KRM against the policies we set up in the previous sections. 
+1. View the updated `cloudbuild-ci-pr` resource provided for you in the `app-ci` subdirectory. 
 
+```
+cat app-ci/cloudbuild-ci-pr-policy.yaml 
+```
 
+Expected output: 
+
+```
+
+```
+
+This is the same "deploy to staging" pipeline we created in part 3, with additional steps defined before we allow the PR images to be deployed. 
 
 ## Learn More 
 
