@@ -4,49 +4,56 @@
 
 ## What you'll learn 
 
-- How GitOps promotes SecOps best practices 
+- How GitOps promotes security best practices
 - How to use Config Sync to sync KRM from Github to multiple GKE clusters
 - When to use Config Sync for KRM, vs. CI/CD 
-- How to scope resources to only apply to the dev or prod environments 
+- How to scope resources to only apply to certain GKE clusters
 - How Policy Controller promotes compliance in a Kubernetes environment
 - How to use Policy Controller to define org-wide policies, synced with ConfigSync.
+- How to write your own Policy Controller policies to enforce custom logic
+- How to integrate Policy Controller checks into CI/CD for an extra layer of checks  
 
 ## Prerequisites 
 
-Completed parts 1-3. 
+- Complete parts 1-3. 
 
 ## Introduction 
 
-In [part 2](/2-how-krm-works), we learned how the Kubernetes API works, and how to apply resources with `kubectl apply -f`. Then in [part 3](/3-app-dev), we learned how to set up automation around deploying KRM resources using CI/CD, skaffold, and kustomize. 
+In [part 2](/2-how-krm-works), we learned how the Kubernetes API works, and how to apply resources with `kubectl apply -f`. Then in [part 3](/3-app-dev), we learned how to automatically deploy KRM using skaffold and Cloud Build, with the help of kustomize. 
 
-These two use cases cover Kubernetes app development use cases well. But now imagine that you're a platform developer or administrator, responsible not just for one of the CymbalBank services, but for the entire Kubernetes environment, including the `dev`, `staging`, and `prod` clusters. An app developer may care most about testing their code and getting features into production with minimal friction, but your concerns are probably different. You care about consistency across the whole platform - that certain baseline resources are always deployed and in sync across all the clusters. (You do *not* want a developer to `kubectl apply -f` one of those resources by mistake, and you especially don't want that to happen without anyone knowing.) You also care about compliance with the financial services regulations CymbalBank is subject to, and you might work directly with Cymbal's security and compliance team to make sure the necessary policies are in place. 
+These two use cases cover Kubernetes app development pretty well. But now imagine that you're a platform developer or administrator, responsible for not just one of the CymbalBank services, but for the entire Kubernetes environment, including the `dev`, `staging`, and `prod` clusters. An app developer may care most about testing their code and getting features into production with minimal friction, but your concerns are probably different. You care about consistency across the whole platform - that certain baseline resources are always deployed and in sync across all the clusters. (You do *not* want a developer to `kubectl apply -f` one of those resources by mistake, and you especially don't want that to happen without anyone knowing.) You also care about compliance with the financial services regulations CymbalBank is subject to, and you might work directly with Cymbal's security team to make sure the necessary policies are in place. 
 
-So if I'm a platform admin, I really care about two things with KRM: 1) Consistency, and 2) Protect the clusters from unsafe configuration. This demo explores how two Google Cloud tools - **Config Sync** and **Policy Controller** - help platform admins accomplish those two goals. 
+So if I'm a platform admin, I really care about two things with KRM: 1) **Consistency**, and 2) **Protect the clusters from unsafe configuration**. This demo explores how two Google Cloud tools - **Config Sync** and **Policy Controller** - help platform admins accomplish those two goals. 
 
 ## Part A - Install Config Sync and Policy Controller 
 
 ![screenshot](screenshots/sync-overview.png)
 
-1. Set variables. 
+1. **Set variables.** 
 
 ```
 export PROJECT_ID=[your-project-id]
+export GITHUB_USERNAME=[your-github-username]
 ```
 
-2. Initialize the policy repo you created during setup. This repo is located at `github.com/YOUR-USERNAME/cymbalbank-policy` and it's currently empty. This script populates the repo with namespaces corresponding to each of the CymbalBank services. These namespaces were created manually during setup, initially. Now we're preparing to bringing those namespaces into Config Sync's management domain, guarding against manual editing or deletion.   
+2. **Initialize the cymbalbank-policy repo**.
+
+You created this repo during setup. This repo is located at `github.com/YOUR-USERNAME/cymbalbank-policy` and it's currently empty. This script populates the repo with namespaces corresponding to each of the CymbalBank services. These namespaces were created with a shell script, initially. Now we're preparing to bringing those namespaces into Config Sync's management domain, guarding against manual editing or deletion.   
 
 ```
 ./policy-repo-setup.sh
 ```
 
-3. Install ConfigSync on the dev, staging, and prod clusters. **TODO** - currently not using this script because PC stuck in pending. Using UI install to install both CS and PC at once. 
+3. **Install Config Sync on the dev, staging, and prod clusters.** 
+  
+4. **TODO** - currently not using this script because PC stuck in pending. Using UI install to install both CS and PC at once. 
 
 
 ```
 ./install.sh
 ```
 
-4. Get the install status for all clusters in your project. 
+4. **Get the Config Sync install status for all clusters in your project.**
 
 ```
 gcloud alpha container hub config-management status --project=${PROJECT_ID}
@@ -66,13 +73,15 @@ Notice that each of the `cymbal-dev`, `cymbal-staging`, and `cymbal-prod` cluste
 
 ## Part B - Administering KRM with Config Sync
 
-It's worth noting early on that Config Sync/Policy Controller are not a replacement for the CI/CD pipeline we set up in part 3 - these toolchains are complementary, and we'll actually see later in this demo how to apply Policy Controller checks to our existing CI/CD setup. Further, while Config Sync and CI/CD theoretically can handle all kinds of KRM config, a good rule of thumb is that Config Sync (cymbalbank-policy repo) is best used for policy configuration (eg. RBAC) and platform-level workloads (eg. Prometheus). Whereas CI/CD (cymbalbank-app-config repo) is best used for application workload config (eg. Deployments, Services). Plus we have application source code that lives in a totally separate repo (cymbalbank-app-source) and has no KRM of its own. 
+It's worth noting early on that Config Sync and Policy Controller are not a replacement for the CI/CD pipeline we set up in part 3 - these toolchains are complementary, and we'll actually see later in this demo how to apply Policy Controller checks to our existing CI/CD setup. Further, while Config Sync and CI/CD theoretically can handle all kinds of KRM config, a good rule of thumb is that Config Sync (cymbalbank-policy repo) is best used for policy configuration (eg. RBAC) and platform-level workloads (eg. Prometheus). Whereas CI/CD (cymbalbank-app-config repo) is best used for application workload config (eg. Deployments, Services). Plus we have application source code that lives in a totally separate repo (cymbalbank-app-source) and has no KRM of its own. 
 
-The benefit of this setup is that all KRM lives in Git - so no matter what kind of resources live in each repo, we can see the Git commit history, add CI, and treat all of this KRM as code.
+The benefit of this setup is that all KRM lives in Git - so no matter what kind of resources live in each repo, we can see the Git commit history, add CI, and treat all of this configuration as code.
 
-Let's explore the "platform level configuration" we can deploy via Config Sync to achieve consistency across all the GKE clusters. 
+Let's explore how we can use Config Sync to keep the same resources constantly deployed across all three Cymbal Bank clusters.  
 
-1. Get the `frontend` namespace in the `cymbal-dev` cluster. We created this namespace manually during part 1, but now it's being managed by Config Sync.  
+1. **Get the `frontend` namespace in the `cymbal-dev` cluster.** 
+  
+We created this namespace manually during part 1, but now it's being managed by Config Sync.  
 
 ```
 kubectx cymbal-dev
@@ -93,9 +102,9 @@ metadata:
 
 You can see that a set of new `configmanagement` annotations have been added to the existing namespace, including  `configmanagement.gke.io/managed: enabled` which indicates that Config Sync is responsible for managing this resource, keeping it synced with the policy repo. 
 
-Where did this resource come from? 
+Where did this resource come from? Let's explore the structure of the policy repo. 
 
-2. Explore the structure of the policy repo by running the `tree` command. 
+2. **Run the `tree` command on the newly-initialized `cymbalbank-policy` repo.** 
 
 ```
 tree cymbalbank-policy/
@@ -125,7 +134,7 @@ cymbalbank-policy
 8 directories, 8 files
 ```
 
-This repo is what's called an **[unstructured](https://cloud.google.com/kubernetes-engine/docs/add-on/config-sync/how-to/unstructured-repo)** repo in Config Sync. This means that we can set up the repo however we want to, with whatever subdirectory structure suits the Cymbal org best, and Config Sync will. The alternative for Config Sync is to use a **[hierarchical](https://cloud.google.com/kubernetes-engine/docs/add-on/config-sync/concepts/hierarchical-repo)** repo, which has a structure you must adhere to (for instance, with cluster-scoped resources in a `cluster/` subdirectory).
+This repo is what's called an **[unstructured](https://cloud.google.com/kubernetes-engine/docs/add-on/config-sync/how-to/unstructured-repo)** repo in Config Sync. This means that we can set up the repo however we want to, with whatever subdirectory structure suits the Cymbal org best, and Config Sync will deploy all the resources in the subdirectories. The alternative for Config Sync is to use a **[hierarchical](https://cloud.google.com/kubernetes-engine/docs/add-on/config-sync/concepts/hierarchical-repo)** repo, which has a structure you must adhere to (for instance, with cluster-scoped resources in a `cluster/` subdirectory).
 
 By default, resources committed to a policy repo will be synced all clusters that use it as a sync source - so here, each of the Cymbal Bank namespaces we've committed will be synced to the dev, staging and prod clusters, because each of those clusters is set up to sync from this repo. 
 
@@ -135,11 +144,13 @@ We can also scope configs to only be applied to certain clusters. Let's see how.
 
 ![screenshot](screenshots/resourcequotas.png)
 
-[Kubernetes Resource Quotas](https://kubernetes.io/docs/concepts/policy/resource-quotas/) help ensure that multiple 'tenants' on one cluster - in our case, different Cymbal Bank services - don't clobber each other by eating up too many cluster resources, which can result in evicted pods and potential outages. For example purposes, we'll create this resource only in the `cymbal-prod` cluster, which we specify using the `cluster-name-selector` annotation below. This way, if our CD pipeline tries to deploy resources that violate the quota constraint, the prod cluster will not accept the resource, throwing a `403 - Forbidden` error.
+[Kubernetes Resource Quotas](https://kubernetes.io/docs/concepts/policy/resource-quotas/) help ensure that multiple tenants on one cluster - in our case, different Cymbal Bank services/app teams - don't clobber each other by eating up too many cluster resources, which can result in evicted pods and potential outages. For example purposes, we'll create this resource only in the `cymbal-prod` cluster, which we specify using the `cluster-name-selector` annotation below. This way, if our CD pipeline tries to deploy resources that violate the quota constraint, the prod cluster will not accept the resource, throwing a `403 - Forbidden` error.
 
 The `production-quotas/` directory contains resource quotas for all Cymbal Bank app namespaces. 
 
-1. View the frontend Resource Quota YAML. 
+1. **View the frontend Resource Quota YAML.** 
+
+Each Cymbal Bank namespace will get one of these.  
 
 ```
 cat production-quotas/frontend.yaml
@@ -162,7 +173,7 @@ spec:
     pods: "10"
 ```
 
-2. Copy all the Resource Quota resources into your cloned policy repo.
+2. **Copy all the Resource Quota resources into your cloned policy repo.**
 
 ```
 cp production-quotas/balancereader/quota.yaml cymbalbank-policy/namespaces/balancereader/
@@ -174,7 +185,7 @@ cp production-quotas/transactionhistory/quota.yaml cymbalbank-policy/namespaces/
 cp production-quotas/userservice/quota.yaml cymbalbank-policy/namespaces/userservice/
 ```
 
-3. Commit the ResourceQuotas to the main branch of the cymbalbank-policy repo. 
+3. **Commit the ResourceQuotas to the `main` branch of the cymbalbank-policy repo.**
 
 ```
 cd cymbalbank-policy/
@@ -193,7 +204,7 @@ To https://github.com/askmeegs/cymbalbank-policy
    e2bca67..cdfbaae  main -> main
 ```
 
-4. View the sync status. The `Last_Synced_Token` should correspond to the Git commit sha from your latest commit to the policy repo, which you can find using `git log` or by navigating to the repo on Github. 
+4. **View the Config Sync status again.**
 
 ```
 gcloud alpha container hub config-management status --project=${PROJECT_ID}
@@ -209,7 +220,10 @@ cymbal-prod     SYNCED         cdfbaae            main         2021-05-05T20:01:
 cymbal-staging  SYNCED         cdfbaae            main         2021-05-05T20:01:44Z  INSTALLED
 ```
 
-5. Get the resource quotes on the prod cluster. 
+Here the `Last_Synced_Token` should correspond to the Git commit sha from your latest commit to the policy repo, which you can find using `git log` or by navigating to the repo on Github. 
+
+
+5. **Get the resource quotas on the prod cluster.** 
 
 ```
 kubectx cymbal-prod
@@ -231,14 +245,18 @@ contacts                       production-quota      6m56s   cpu: 300m/700m, mem
 
 You can see that every namespace as the `production-quota` we just committed, along with a default [GKE resource quota](https://cloud.google.com/kubernetes-engine/quotas#resource_quotas) which limits, for example, the total number of pods that can be deployed to each namespace. 
 
-6. Try to get the same set of resources on the cymbal-dev cluster. You should see only ResourceQuotas prefixed with `gke-`, and not the production-quotas. This is because we scoped the production quota resources to only be deployed to the `cymbal-prod` cluster. 
+6. **Get the resource quotas on the dev cluster.** 
+  
+You should see only ResourceQuotas prefixed with `gke-`, and not the production-quotas. This is because we scoped the production quota resources to only be deployed to the `cymbal-prod` cluster. 
 
 ```
 kubectx cymbal-prod
 kubectl get resourcequotas --all-namespaces
 ```
 
-7. Return to the prod context and attempt to delete one of the ResourceQuotas manually. You should see an error, [which is ConfigSync saying, "only I can administer this resource"](https://cloud.google.com/anthos-config-management/docs/quickstart#attempt_to_manually_modify_a_managed_object). This enforcement helps you, the platform admin, avoid "configuration drift" (or "shadow ops") in your environment, where any Config Sync-managed resource cannot be deleted with kubectl, by you or anyone -- meaning that the live state of the resource should always reflect the committed resource in Git. 
+7. **Return to the prod context and attempt to delete one of the ResourceQuotas manually.**
+
+You should see an error, [which is ConfigSync saying, "only I can administer this resource"](https://cloud.google.com/anthos-config-management/docs/quickstart#attempt_to_manually_modify_a_managed_object). This enforcement helps you, the platform admin, avoid "configuration drift" (or "shadow ops") in your environment, where any Config Sync-managed resource cannot be deleted with kubectl, by you or anyone -- meaning that the live state of the resource should always reflect the committed resource in Git. 
 
 ```
 kubectx cymbal-prod
@@ -267,9 +285,30 @@ In this demo, we're going to create a policy for the `cymbal-dev` cluster that [
 
 ![screenshot](screenshots/block-ext-services.png)
 
-1. Switch to the `cymbal-dev` cluster, and verify that the Constraint Template library is installed. This is a set of Custom Resources (CRDs), each defining a ConstraintTemplate.   
+1. **Switch to the `cymbal-dev` cluster, and verify that the Constraint Template library is installed.** 
+  
+This is a set of a few dozen Custom Resources (CRDs), each defining a ConstraintTemplate.   
 
-2. View the `K8sNoExternalServices` Constrant resource, provided for you in the `constraint-ext-services` directory. This Constraint implements the `[K8sNoExternalServices](https://cloud.google.com/anthos-config-management/docs/reference/constraint-template-library#k8snoexternalservices)` Constraint Template with concrete information about our environment. 
+```
+kubectl get constrainttemplates \
+    -l="configmanagement.gke.io/configmanagement=config-management"
+```
+
+Expected output: 
+
+```
+NAME                                      AGE
+allowedserviceportname                    2d9h
+destinationruletlsenabled                 2d9h
+disallowedauthzprefix                     2d9h
+gcpstoragelocationconstraintv1            2d9h
+k8sallowedrepos                           2d9h
+...
+```
+
+2. **View the `K8sNoExternalServices` Constrant resource, provided for you in the `constraint-ext-services` directory.** 
+
+This Constraint implements the `[K8sNoExternalServices](https://cloud.google.com/anthos-config-management/docs/reference/constraint-template-library#k8snoexternalservices)` Constraint Template with concrete information about our environment. 
 
 ```
 cat constraint-ext-services/constraint.yaml
@@ -291,19 +330,21 @@ spec:
 
 Notice how again, we're using Config Sync's `cluster-name-selector` annotation to scope this resource to the `cymbal-dev` cluster only.
 
-3. Create a new subdirectory in the `policy-repo`, `clusters/cymbal-dev`. This is where we'll keep cluster-wide policies, separate from namespace-specific directories. 
+**3. Create a new subdirectory in the `policy-repo`, `clusters/cymbal-dev`.**
+
+This is where we'll keep cluster-wide policies, separate from namespace-specific directories. 
 
 ```
 mkdir -p cymbalbank-policy/clusters/cymbal-dev
 ```
 
-4. Copy `constraint.yaml` into the new directory. 
+**4. Copy `constraint.yaml` into the new directory.**
 
 ```
 cp constraint-ext-services/constraint.yaml cymbalbank-policy/clusters/cymbal-dev/
 ```
 
-5. Commit the resource 
+**5. Commit the Constraint to the main branch of the policy repo.**
 
 ```
 cd cymbalbank-policy 
@@ -313,7 +354,7 @@ git push origin main
 cd .. 
 ```
 
-6. Verify that the policy has been synced to the `cymbal-dev` cluster using Config Sync. 
+**6. Verify that the policy has been synced to the `cymbal-dev` cluster.**
 
 ```
 gcloud alpha container hub config-management status --project=${PROJECT_ID}
@@ -329,7 +370,7 @@ cymbal-prod     SYNCED         9ddcede            main         2021-05-06T15:25:
 cymbal-staging  SYNCED         9ddcede            main         2021-05-06T15:25:40Z  INSTALLED
 ```
 
-7. Verify that the constraint is deployed to the cymbal-dev cluster. 
+**7. Verify that the constraint is deployed to the cymbal-dev cluster.** 
 
 ```
 kubectl get constraint 
@@ -342,7 +383,9 @@ Expected output:
 k8snoexternalservices.constraints.gatekeeper.sh/dev-no-ext-services   47s
 ```
 
-8. Attempt to manually create a service type LoadBalancer in the `cymbal-dev` cluster, corresponding to the `contacts` service Deployment. You should get an error stating that the Policy Controller admission webhook is blocking the incoming resource. 
+**8. Attempt to manually create a service type LoadBalancer in the `cymbal-dev` cluster, corresponding to the `contacts` service Deployment.**
+  
+You should get an error stating that the Policy Controller admission webhook is blocking the incoming resource. 
 
 ```
 kubectl apply -f constraint-ext-services/contacts-svc-lb.yaml
@@ -369,7 +412,7 @@ But too many containers packed into one Pod can increase the risk of outages - w
 ![screenshot](screenshots/num-allowed-containers.png)
 
 
-1. View the custom Constraint Template resource, which has been provided for you in the `constraint-limit-containers/` subdirectory. 
+**1. View the custom Constraint Template resource, which has been provided for you in the `constraint-limit-containers/` subdirectory.** 
 
 ```
 cat constraint-limit-containers/constrainttemplate.yaml 
@@ -431,7 +474,7 @@ So you can think of Rego code as statements that are evaluated from top to botto
 ```
 Overall, if we look at a Kubernetes resource and evaluate the intended number of containers per pod, and the number of running containers per pod, and decide that they're both within the allowed number, we throw no policy `violations`. This is what the Policy Controller pod (`gatekeeper`) will do automatically for every resource coming into any of the clusters. 
 
-2. View the Constraint, which implements the `K8sLimitContainersPerPod` Constraint Template. 
+**2. View the Constraint, which implements the `K8sLimitContainersPerPod` Constraint Template.** 
 
 ```
 cat constraint-limit-containers/constraint.yaml 
@@ -443,15 +486,15 @@ Expected output:
 apiVersion: constraints.gatekeeper.sh/v1beta1
 kind: K8sLimitContainersPerPod
 metadata:
-  name: limit-two-containers
+  name: limit-three-containers
 spec:
   parameters:
-    allowedNumContainers: 2
+    allowedNumContainers: 3
 ```
 
 Note that this constraint has no `cluster-selector` annotations, so Config Sync will apply it to all of the clusters. 
 
-3. Commit both resources to the cymbalbank-policy repo. 
+**3. Commit both resources to the cymbalbank-policy repo.** 
 
 ```
 cp constraint-limit-containers/constrainttemplate.yaml cymbalbank-policy/clusters/
@@ -463,7 +506,7 @@ git push origin main
 cd ..
 ```
 
-4. Return to the dev cluster. Verify that the second Constraint, `limit-two-containers`, has been created. 
+**4. Return to the dev cluster. Verify that the second Constraint, `limit-two-containers`, has been created.** 
 
 ```
 kubectx cymbal-dev
@@ -480,7 +523,9 @@ NAME                                                                      AGE
 k8slimitcontainersperpod.constraints.gatekeeper.sh/limit-two-containers   3m42s
 ```
 
-5. View the test workload. This is a Deployment where each Pod has 3 containers, each running `nginx`. 3 containers exceeds our limit of 2 containers per pod, so we would expect Policy Controller to reject this resource. 
+**5. View the test workload.**
+
+This is a Deployment where each Pod has 4 containers, each running `nginx`. 4 containers exceeds our limit of 23 containers per pod, so we would expect Policy Controller to reject this resource. 
 
 ```
 cat constraint-limit-containers/test-workload.yaml
@@ -492,16 +537,16 @@ Expected output:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: nginx-cubed
+  name: nginx
 spec:
   selector:
     matchLabels:
-      app: sleep
+      app: nginx
   replicas: 1 
   template:
     metadata:
       labels:
-        app: sleep
+        app: nginx
     spec:
       containers:
       - name: nginx1
@@ -516,9 +561,15 @@ spec:
         image: nginx:1.14.2
         ports:
         - containerPort: 8082
+      - name: nginx4
+        image: nginx:1.14.2
+        ports:
+        - containerPort: 8084
 ```
 
-6. Attempt to apply the test workload to the dev cluster. You should see an error message. 
+**6. Attempt to apply the test workload to the dev cluster.**
+
+You should see an error message. 
 
 ```
 kubectl apply -f constraint-limit-containers/test-workload.yaml
@@ -527,7 +578,7 @@ kubectl apply -f constraint-limit-containers/test-workload.yaml
 Expected output: 
 
 ```
-Error from server ([denied by limit-two-containers] Number of containers in template (3) exceeds the allowed limit (2)): error when creating "constraint-limit-containers/test-workload.yaml": admission webhook "validation.gatekeeper.sh" denied the request: [denied by limit-two-containers] Number of containers in template (3) exceeds the allowed limit (2)
+TODO
 ```
 
 **Well done!** You just used the Rego policy language to deploy your own custom policy for the Cymbal Bank platform. 
@@ -541,19 +592,115 @@ For app developers or operators who need to create or edit application YAML file
 
 So as a platform admin, I want to empower all the developers in my org to know if and when their resources are non-compliant, and have a chance to make changes. And ideally I want multiple layers of enforcement against the same set of policies. Lucky for us, there's a way to integrate Policy Controller into our existing CI, on top of the "at deploy time" enforcement Policy Controller already does. Let's see how. 
 
-1. View the updated `cloudbuild-ci-pr` resource provided for you in the `app-ci` subdirectory. 
+![screenshot](screenshots/app-config-ci.png)
+
+**1. Clone the `cymbalbank-app-config` repo in this directory.** 
 
 ```
-cat app-ci/cloudbuild-ci-pr-policy.yaml 
+git clone https://github.com/$GITHUB_USERNAME/cymbalbank-app-config
+```
+
+**2. View the `cloudbuild-ci-pr-policy.yaml` file in the `app-ci` directory.** 
+
+```
+cat/app-ci/cloudbuild-ci-pr-policy.yaml
 ```
 
 Expected output: 
 
 ```
-
+# Source: github.com/GoogleCloudPlatform/anthos-config-management-samples/tree/main/ci-app/app-repo/cloudbuild.yaml
+steps:
+- id: 'Render prod manifests'
+  name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  entrypoint: '/bin/sh'
+  args: ['-c', 'mkdir hydrated-manifests && kubectl kustomize overlays/prod > hydrated-manifests/prod.yaml']
+- id: 'Clone cymbalbank-policy repo'
+  name: 'gcr.io/kpt-dev/kpt'
+  entrypoint: '/bin/sh'
+  args: ['-c', 'kpt pkg get https://github.com/$$GITHUB_USERNAME/cymbalbank-policy.git@main constraints
+                  && kpt fn source constraints/ hydrated-manifests/ > hydrated-manifests/kpt-manifests.yaml']
+  secretEnv: ['GITHUB_USERNAME']
+- id: 'Validate prod manifests against policies'
+  name: 'gcr.io/config-management-release/policy-controller-validate'
+  args: ['--input', 'hydrated-manifests/kpt-manifests.yaml']
+availableSecrets:
+  secretManager:
+  - versionName: projects/${PROJECT_ID}/secrets/github-username/versions/1 
+    env: 'GITHUB_USERNAME'
+timeout: '1200s' #timeout - 20 minutes
 ```
 
-This is the same "deploy to staging" pipeline we created in part 3, with additional steps defined before we allow the PR images to be deployed. 
+This pipeline has three steps: 
+1. **Render prod manifests** - Remember that the cymbalbank-app-config repo has a `base/` directory and two overlays, `dev/` and `prod/`. We'll generate
+2. **Clone the cymbalbank-policy repo** - Also remember that this build is running in the cymbalbank-app-config repo, so in order to check those manifests against our policies, we have to clone them in from the policy repo. Also notice that there is a `kpt fn source` command. [**kpt**](https://googlecontainertools.github.io/kpt/) is a KRM package management tool that's still in early development at the time of writing this demo, so we aren't covering it much. All you need to know for the purpose of this build, is that `kpt fn source` means, "run a function called `[source](https://googlecontainertools.github.io/kpt/guides/consumer/function/catalog/sources/)`" to write the compiled policies in `cymbalbank-policy` to the `hydrated-manifests/` directory. 
+3. **Validate prod manifests against policies** - Up to now, we've seen Policy Controller work at the admission control level of our GKE clusters. Here, the Policy Controller logic is actually running in a container called `policy-controller-validate`. It can do the same thing that the Admission Controller does - take some incoming KRM (in this case, the contents of the cymbalbank-app-config pull request) and check them against the Constraints in our polciy repo. 
+
+**3. Copy the Cloud Build pipeline into the `cymbalbank-app-config` root and push to the `main branch`.** 
+
+```
+cp app-ci/cloudbuild-ci-pr-policy.yaml cymbalbank-app-config/
+cd cymbalbank-app-config
+git add . 
+git commit -m "Add CI for pull requests - policy check"
+git push origin main
+```
+
+**4. Create a new Cloud Build trigger corresponding to this new policy check pipeline, by navigating to the Console > Cloud Build > Triggers > Create.**
+
+We want to run this pipeline anytime someone puts out a pull request with updated application YAML. 
+
+- **Name**: `continuous-integration-app-policy`
+- **Event**: Pull Request
+- **Source**: `cymbalbank-app-config`
+- **Base Branch**: `^main$`
+- **Configuration**: `Cloud Build configuration file` 
+- **Cloud Build configuration file location**: `cloudbuild-ci-pr-policy.yaml`
+
+Click **Create**. 
+
+**5. Return to the terminal, and still in the `cymbalbank-app-config` root dir, check out a new branch, `nginx`.**
+
+```
+git checkout -b nginx
+```
+
+**6. Copy the `test-workload.yaml` Service we used earlier in this demo into the `cymbalbank-app-config` repo, under the `base/` manifests.**
+
+Given that we committed a policy to `cymbalbank-policy` stating that only up to 2 containers are allowed per Pod, we expect the pipeline to fail, with the same Policy Controller error we saw when trying to `kubectl apply -f` this same Deployment. Also update the base `kustomization.yaml` to bring the nginx Deployment into the baseline manifests it knows about. 
+
+```
+cp ../constraint-limit-containers/test-workload.yaml ./base/
+echo "\n- test-workload.yaml" >> ./base/kustomization.yaml
+```
+
+**7. Commit the file to the `nginx` branch.**
+
+```
+git add .
+git commit -m "Add nginx Deployment"
+git push origin nginx
+```
+
+**8. In a browser, navigate to `github.com/your-github-username/cymbalbank-app-config`.**
+
+Put out a new Pull Request for the `nginx` branch, into the `main` branch. 
+
+**9.  Navigate back to Cloud Build > History, and watch the build run.** 
+
+You should see an error in the third step, matching the Policy Controller error you saw when trying to `kubectl apply -f` the nginx resource earlier. 
+
+```
+Status: Downloaded newer image for gcr.io/config-management-release/policy-controller-validate:latest
+gcr.io/config-management-release/policy-controller-validate:latest
+Error: Found 1 violations:
+
+[1] Number of containers in template (4) exceeds the allowed limit (3)
+```
+
+**TODO** - how to make the policy controller validate image know about constraint template `K8sNoExternalServices` ? 
+
+**🎊 Nice work!** You just added a second layer of policy checks to your Kubernetes platform, helping app developers understand if their resources are in compliance, even before their PRs are reviewed. 
 
 ## Learn More 
 

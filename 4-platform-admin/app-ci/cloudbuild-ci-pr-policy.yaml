@@ -1,37 +1,18 @@
-steps: 
-- id: 'Prepare config'
+# Source: github.com/GoogleCloudPlatform/anthos-config-management-samples/tree/main/ci-app/app-repo/cloudbuild.yaml
+steps:
+- id: 'Render prod manifests'
   name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
   entrypoint: '/bin/sh'
-  args: ['-c', 'mkdir hydrated-manifests && kubectl kustomize config/prod > hydrated-manifests/prod.yaml']
-- id: 'Download policies into a single file'
+  args: ['-c', 'mkdir hydrated-manifests && kubectl kustomize overlays/prod > hydrated-manifests/prod.yaml']
+- id: 'Clone cymbalbank-policy repo'
   name: 'gcr.io/kpt-dev/kpt'
   entrypoint: '/bin/sh'
-  args: ['-c', 'kpt pkg get https://github.com/GoogleCloudPlatform/anthos-config-management-samples.git/ci-app/acm-repo/cluster@1.0.0 constraints
+  args: ['-c', 'kpt pkg get https://github.com/$$GITHUB_USERNAME/cymbalbank-policy.git@main constraints
                   && kpt fn source constraints/ hydrated-manifests/ > hydrated-manifests/kpt-manifests.yaml']
-- id: 'Validate against policies'
+  secretEnv: ['GITHUB_USERNAME']
+- id: 'Validate prod manifests against policies'
   name: 'gcr.io/config-management-release/policy-controller-validate'
   args: ['--input', 'hydrated-manifests/kpt-manifests.yaml']
-
-- name: 'gcr.io/google-samples/intro-to-krm/skaffold-mvn:latest'
-  id: Deploy to Staging Cluster 
-  entrypoint: /bin/sh
-  args:
-  - '-c'
-  - |
-    git clone "https://github.com/$$GITHUB_USERNAME/cymbalbank-app-config"
-    gcloud container clusters get-credentials ${_CLUSTER_NAME} --zone ${_CLUSTER_ZONE} --project ${PROJECT_ID} 
-    skaffold run --profile=staging --default-repo="gcr.io/${PROJECT_ID}/cymbal-bank/${BRANCH_NAME}" --tail=false
-    kubectl wait --for=condition=available --timeout=300s deployment/frontend -n frontend 
-    kubectl wait --for=condition=available --timeout=300s deployment/contacts -n contacts 
-    kubectl wait --for=condition=available --timeout=300s deployment/userservice -n userservice 
-    kubectl wait --for=condition=available --timeout=300s deployment/ledgerwriter -n ledgerwriter 
-    kubectl wait --for=condition=available --timeout=300s deployment/transactionhistory -n transactionhistory 
-    kubectl wait --for=condition=available --timeout=300s deployment/balancereader -n balancereader 
-    kubectl wait --for=condition=available --timeout=300s deployment/loadgenerator -n loadgenerator
-  secretEnv: ['GITHUB_USERNAME']
-substitutions:
-  _CLUSTER_NAME: 'cymbal-staging'
-  _CLUSTER_ZONE: 'us-central1-a'
 availableSecrets:
   secretManager:
   - versionName: projects/${PROJECT_ID}/secrets/github-username/versions/1 
