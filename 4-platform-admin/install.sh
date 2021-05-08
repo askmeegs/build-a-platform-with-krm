@@ -39,5 +39,6 @@ gsutil cp gs://config-management-release/released/latest/config-sync-operator.ya
 
 # Install Config Sync on dev, staging, and prod 
 install_config_sync "cymbal-dev" "us-east1-c" 
-# install_config_sync "cymbal-staging" "us-central1-a" 
-# install_config_sync "cymbal-prod" "us-west1-a"
+install_config_sync "cymbal-staging" "us-central1-a" 
+install_config_sync "cymbal-prod" "us-west1-a"
+install_config_sync "cymbal-admin" "us-central1-f"

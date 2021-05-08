@@ -46,7 +46,12 @@ export GITHUB_USERNAME="<your-github-username>"
 
 ```
 gcloud config set project ${PROJECT_ID}
-gcloud services enable container.googleapis.com cloudbuild.googleapis.com sqladmin.googleapis.com secretmanager.googleapis.com 
+gcloud services enable \
+  container.googleapis.com \ 
+  cloudbuild.googleapis.com \
+  sqladmin.googleapis.com \
+  secretmanager.googleapis.com \
+  cloudasset.googleapis.com 
 ```
 
 4. **Replace the values in `terraform.tfvars`** with the values corresponding to your project. 
