@@ -2,6 +2,21 @@
 
 ## Contents 
 
+- [4 - Admin Workflow with Config Sync and Policy Controller](#4---admin-workflow-with-config-sync-and-policy-controller)
+  - [Contents](#contents)
+  - [What you'll learn](#what-youll-learn)
+  - [Prerequisites](#prerequisites)
+  - [Introduction](#introduction)
+  - [Part A - Install Config Sync and Policy Controller](#part-a---install-config-sync-and-policy-controller)
+  - [Part B - Administering KRM with Config Sync](#part-b---administering-krm-with-config-sync)
+  - [Part C - Creating Cluster-Scoped Resources](#part-c---creating-cluster-scoped-resources)
+  - [Part D - Using Policy Controller to Block External Services](#part-d---using-policy-controller-to-block-external-services)
+  - [Part E - Creating a Custom Constraint Template with Rego](#part-e---creating-a-custom-constraint-template-with-rego)
+  - [Part F - Add Policy Checks to CI/CD](#part-f---add-policy-checks-to-cicd)
+  - [Learn More](#learn-more)
+    - [Config Sync](#config-sync)
+    - [Policy Controller](#policy-controller)
+
 ## What you'll learn 
 
 - How GitOps promotes security best practices
@@ -401,7 +416,7 @@ for: "constraint-ext-services/contacts-svc-lb.yaml": admission webhook "validati
 
 **Congrats**! You just deployed your first Policy Controller policy via Config Sync. Policies like this can help platform admins reach the second goal discussed at the beginning of this demo, which is to monitor and prevent unsafe KRM in our environment.  
 
-## Part D - Creating a Custom Constraint Template with Rego 
+## Part E - Creating a Custom Constraint Template with Rego 
 
 In addition to the built-in Constraint Template library provided by PolicyController, you can also create [custom Constraint Templates](https://cloud.google.com/anthos-config-management/docs/how-to/write-a-constraint-template) with your own org-specific logic.  These policies don't just have to be related to compliance - they can be arbitrary business logic too, or platform requirements defined within Cymbal Bank.
 
@@ -584,7 +599,7 @@ TODO
 **Well done!** You just used the Rego policy language to deploy your own custom policy for the Cymbal Bank platform. 
 
 
-## Part E - Add Policy Checks to CI/CD
+## Part F - Add Policy Checks to CI/CD
 
 Policy Controller provides a powerful, flexible way to automatically check incoming resources against org policies. But Policy Controller's setup - as a Kubernetes admission controller, at the gate of the API - means that it can only "catch" (and block) out-of-policy resources on the fly, as they are trying to be deployed through `kubectl`, CI/CD, or some other means. 
 
