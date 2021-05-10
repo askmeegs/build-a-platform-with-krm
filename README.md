@@ -21,8 +21,10 @@ This demo comes with an automated Terraform setup - all you need is a Google Clo
 - [Container Registry](https://cloud.google.com/container-registry)
 - [Cloud SQL](https://cloud.google.com/sql/)
 - [Config Sync](https://cloud.google.com/kubernetes-engine/docs/add-on/config-sync/overview)
-- [Config Connector](https://cloud.google.com/config-connector/docs/overview)
 - [Policy Controller](https://cloud.google.com/anthos-config-management/docs/concepts/policy-controller) 
+- [Config Connector](https://cloud.google.com/config-connector/docs/overview)
+- [Compute Engine](https://cloud.google.com/compute/docs/quickstart-linux)
+- [BigQuery](https://cloud.google.com/bigquery/docs/introduction)
 
 ### Open-Source Tools 
 
