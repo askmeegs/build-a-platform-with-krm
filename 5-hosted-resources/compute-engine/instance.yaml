@@ -1,0 +1,104 @@
+apiVersion: compute.cnrm.cloud.google.com/v1beta1
+kind: ComputeInstance
+metadata:
+  annotations:
+    cnrm.cloud.google.com/allow-stopping-for-update: "true"
+  name: secadmin-debian
+  labels:
+    created-from: "image"
+    network-type: "subnetwork"
+spec:
+  machineType: n1-standard-1
+  zone: us-west1-a
+  bootDisk:
+    initializeParams:
+      size: 24
+      type: pd-ssd
+      sourceImageRef:
+        external: debian-cloud/debian-9
+  networkInterface:
+    - subnetworkRef:
+        name: computeinstance-dep-cloudmachine
+      aliasIpRange:
+        - ipCidrRange: /24
+          subnetworkRangeName: cloudrange
+  attachedDisk:
+    - sourceDiskRef:
+        name: computeinstance-dep1-cloudmachine
+      mode: READ_ONLY
+      deviceName: proxycontroldisk
+      diskEncryptionKeyRaw:
+        valueFrom:
+          secretKeyRef:
+            name: computeinstance-dep-cloudmachine
+            key: diskEncryptionKey
+    - sourceDiskRef:
+        name: computeinstance-dep2-cloudmachine
+      mode: READ_WRITE
+      deviceName: persistentdisk
+  minCpuPlatform: "Intel Skylake"
+  serviceAccount:
+    serviceAccountRef:
+      name: inst-dep-cloudmachine
+    scopes:
+    - compute-rw
+    - logging-write
+---
+apiVersion: compute.cnrm.cloud.google.com/v1beta1
+kind: ComputeDisk
+metadata:
+  name: computeinstance-dep1-cloudmachine
+spec:
+  description: a sample encrypted, blank disk
+  physicalBlockSizeBytes: 4096
+  size: 1
+  type: pd-ssd
+  location: us-west1-a
+  diskEncryptionKey:
+    rawKey:
+      valueFrom:
+        secretKeyRef:
+          name: computeinstance-dep-cloudmachine
+          key: diskEncryptionKey
+---
+apiVersion: compute.cnrm.cloud.google.com/v1beta1
+kind: ComputeDisk
+metadata:
+  name: computeinstance-dep2-cloudmachine
+spec:
+  size: 1
+  type: pd-ssd
+  location: us-west1-a
+---
+apiVersion: compute.cnrm.cloud.google.com/v1beta1
+kind: ComputeNetwork
+metadata:
+  name: computeinstance-dep-cloudmachine
+spec:
+  routingMode: REGIONAL
+  autoCreateSubnetworks: false
+---
+apiVersion: compute.cnrm.cloud.google.com/v1beta1
+kind: ComputeSubnetwork
+metadata:
+  name: computeinstance-dep-cloudmachine
+spec:
+  networkRef:
+    name: computeinstance-dep-cloudmachine
+  ipCidrRange: 10.2.0.0/16
+  region: us-west1
+  secondaryIpRange:
+    - rangeName: cloudrange
+      ipCidrRange: 10.3.16.0/20
+---
+apiVersion: iam.cnrm.cloud.google.com/v1beta1
+kind: IAMServiceAccount
+metadata:
+  name: inst-dep-cloudmachine
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: computeinstance-dep-cloudmachine
+stringData:
+  diskEncryptionKey: "SGVsbG8gZnJvbSBHb29nbGUgQ2xvdWQgUGxhdGZvcm0="

@@ -1,0 +1,7 @@
+apiVersion: constraints.gatekeeper.sh/v1beta1
+kind: BigQueryDatasetAllowName
+metadata:
+  name: bigquery-allow-mock-only
+spec:
+  parameters:
+    allowedName: cymbalmockdataset

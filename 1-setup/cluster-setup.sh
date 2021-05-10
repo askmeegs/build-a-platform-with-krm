@@ -50,7 +50,7 @@ setup_cluster () {
         # boostrap ksa 
         kubectl create serviceaccount --namespace $ns $KSA_NAME
 
-        # connect KSA to GSA (many to 1)
+        # connect KSA to GSA (many KSAs to 1 GSA)
         echo "☁️ Allowing KSA: ${KSA_NAME} to act as GSA: ${GSA_NAME}"
         kubectl annotate serviceaccount \
             --namespace $ns \

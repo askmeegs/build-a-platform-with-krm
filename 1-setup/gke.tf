@@ -34,7 +34,7 @@ resource "google_container_node_pool" "admin-nodes" {
   name       = "${google_container_cluster.admin.name}-node-pool"
   location   = "us-central1-f"
   cluster    = google_container_cluster.admin.name
-  node_count = 2
+  node_count = var.gke_num_nodes
 
   node_config {
     oauth_scopes = [

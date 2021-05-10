@@ -1,0 +1,23 @@
+apiVersion: templates.gatekeeper.sh/v1beta1
+kind: ConstraintTemplate
+metadata:
+  name: bigquerydatasetallowname
+spec:
+  crd:
+    spec:
+      names:
+        kind: BigQueryDatasetAllowName
+      validation:
+        openAPIV3Schema:
+          properties:
+            allowedName:
+              type: string
+  targets:
+    - target: admission.k8s.gatekeeper.sh
+      rego: |
+        package bigquerydatasetallowname
+        violation[{"msg": msg}] {
+          input.review.object.kind == "BigQueryDataset"
+          input.review.object.metadata.name != input.parameters.allowedName
+          msg := sprintf("The BigQuery dataset name %v is not allowed", [input.review.object.metadata.name])
+        }

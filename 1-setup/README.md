@@ -51,7 +51,8 @@ gcloud services enable \
   cloudbuild.googleapis.com \
   sqladmin.googleapis.com \
   secretmanager.googleapis.com \
-  cloudasset.googleapis.com 
+  cloudasset.googleapis.com \
+  storage.googleapis.com
 ```
 
 4. **Replace the values in `terraform.tfvars`** with the values corresponding to your project. 
