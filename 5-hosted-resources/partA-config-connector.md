@@ -20,7 +20,7 @@ Config Connector can be installed to GKE as a cluster add-on, on cluster creatio
 
 Let's start with a basic example of creating a GCP-hosted resource using Config Connector, declared with KRM. Let's say that one of the security admins in CymbalBank only has access to a Windows machine, and they want to start working with the platform team to study and create org-wide policies using the Policy Controller constraints we learned about in part 4. Because some of the tools we've learned don't support Windows yet, we can spin up a Linux host for them so they have access to a full development environment. 
 
-![screenshot](screenshots/secadmin-gce.png)
+![screenshot](screenshots/secadmin-gce.jpg)
 
 1. **Set variables.** 
 

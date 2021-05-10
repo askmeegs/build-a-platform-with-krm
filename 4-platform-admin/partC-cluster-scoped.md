@@ -1,7 +1,7 @@
 
 ## Part C - Creating Cluster-Scoped Resources 
 
-![screenshot](screenshots/resourcequotas.png)
+![screenshot](screenshots/resourcequotas.jpg)
 
 [Kubernetes Resource Quotas](https://kubernetes.io/docs/concepts/policy/resource-quotas/) help ensure that multiple tenants on one cluster - in our case, different Cymbal Bank services/app teams - don't clobber each other by eating up too many cluster resources, which can result in evicted pods and potential outages. For example purposes, we'll create this resource only in the `cymbal-prod` cluster, which we specify using the `cluster-name-selector` annotation below. This way, if our CD pipeline tries to deploy resources that violate the quota constraint, the prod cluster will not accept the resource, throwing a `403 - Forbidden` error.
 

@@ -1,7 +1,7 @@
 
 ## Part F - Continuous Deployment  
 
-![screenshot](screenshots/prod-cd.png)
+![screenshot](screenshots/prod-cd.jpg)
 
 Back in Part 2, you set up the Continuous Deployment pipeline for cymbal-bank. This pipeline was simple: it looks at new commits to the `main` branch of `cymbalbank-app-config`, and runs `kubectl apply -k` on the `prod` overlay, deploying those manifests to the `cymbal-prod` cluster. 
 

@@ -3,7 +3,7 @@
 
 ## Part A - Install Config Sync and Policy Controller 
 
-![screenshot](screenshots/sync-overview.png)
+![screenshot](screenshots/sync-overview.jpg)
 
 1. **Set variables.** 
 

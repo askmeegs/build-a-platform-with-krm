@@ -13,7 +13,7 @@ Policy Controller comes with a set of [default constraint templates](https://clo
 
 In this demo, we're going to create a policy for the `cymbal-dev` cluster that [blocks the creation of external services](https://cloud.google.com/anthos-config-management/docs/reference/constraint-template-library#k8snoexternalservices). This will help ensure that no sensitive code in development is exposed to the public.  
 
-![screenshot](screenshots/block-ext-services.png)
+![screenshot](screenshots/block-ext-services.jpg)
 
 1. **Switch to the `cymbal-dev` cluster, and verify that the Constraint Template library is installed.** 
   

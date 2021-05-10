@@ -3,7 +3,7 @@
 
 Now we're ready to put out a Pull Request in the cymbalbank-app-source repo with our new frontend banner feature. We'll add a new Cloud Build trigger for all new pull requests in the source repo, so that we can auto-deploy the code to our staging GKE cluster, allowing any tests or code reviewers to verify that the changes work as intended with no bugs.  
 
-![screenshot](screenshots/pull-request-ci.png)
+![screenshot](screenshots/pull-request-ci.jpg)
  
 
 #### 1. **View the Cloud Build pipeline for Pull Requests to the app source repo**. 
@@ -74,7 +74,7 @@ This will trigger the `cloudbuild-ci-pr.yaml` Cloud Build pipeline.
 
 #### 5. **Navigate back to Cloud Build and watch the Continuous Integration - Pull Request pipeline run.** 
 
-![ci-pr](screenshots/pull-request-ci.png)
+![ci-pr](screenshots/pull-request-ci.jpg)
 
 #### 6. **View the frontend banner in staging.**
 

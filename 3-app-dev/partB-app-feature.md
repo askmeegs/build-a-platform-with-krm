@@ -3,7 +3,7 @@
 
 In this section, we'll make an update to the CymbalBank frontend source code, test it using a local Kubernetes toolchain, then put out a Pull Request to trigger the a multi-part CI/CD workflow.  
 
-![partB](screenshots/dev-test.png)
+![partB](screenshots/dev-test.jpg)
 
 #### 1. **Update the frontend source code**. 
 

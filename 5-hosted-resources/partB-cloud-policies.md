@@ -9,7 +9,7 @@ Let's see this in action. Let's say that the data analytics team at Cymbal Bank 
 
 Let's see how. 
 
-![screenshot](screenshots/bigquery-workflow.png)
+![screenshot](screenshots/bigquery-workflow.jpg)
 
 
 1. View the mock transaction dataset. This is a 1000-line CSV file, whose fields mimic the data currently stored in the Cloud SQL `ledger_db` today. 

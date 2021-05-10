@@ -1,7 +1,7 @@
 
 ## Part D - Creating a Continuous Deployment Pipeline
 
-![demo arch](screenshots/basic-deploy.png)
+![demo arch](screenshots/basic-deploy.jpg)
 
 [**GitOps**](https://www.weave.works/technologies/gitops/) is an idea introduced by [WeaveWorks](https://www.weave.works/). It's an operating model for Kubernetes where you put your Kubernetes configuration in Git, then allow software - like CI/CD tools - to deploy. In this way, the only human interactions with the system are pull requests to the Github repo - these can be reviewed, approved, and audited - rather than imperative commands like `kubectl apply -f`, which are difficult to keep track of and may result in unwanted KRM landing in Kubernetes. The other benefit of GitOps is that there is one "source of truth" for what the desired Kubernetes state should be. 
 
@@ -56,7 +56,7 @@ This allows Cloud Build to watch the Github repositories in your account.
 
 You should now see the trigger appear in the Cloud Build menu. 
 
-![trigger](screenshots/trigger.png)
+![trigger](screenshots/trigger.jpg)
 
 
 #### 4. **Trigger the build by pushing the manifests to your config repo.** 
@@ -74,7 +74,7 @@ cd ..
 Watch the Cloud Build logs as the Continuous Deployment pipeline runs, using `kubectl apply -k` to apply the demo overlay and deploy to the `cymbal-prod` cluster: 
 
 
-![cd success](screenshots/cd-success.png)
+![cd success](screenshots/cd-success.jpg)
 
 
 #### 6. Return to a terminal and get the pods in the `cymbal-prod` cluster: 
@@ -120,7 +120,7 @@ userservice          userservice          ClusterIP      10.7.249.254   <none>  
 
 Notice how each service uses `ClusterIP` (enable in-cluster routing only) except for the `frontend`, which is of type `LoadBalancer`. This type means that GCP spawned an external load balancer to route from outside the cluster, into the frontend pod. Navigate to your frontend service `EXTERNAL_IP` in a browser - you should see the CymbalBank login screen. 
 
-![screenshot](screenshots/cymbal-login.png)
+![screenshot](screenshots/cymbal-login.jpg)
 
 ### Clean Up 
 

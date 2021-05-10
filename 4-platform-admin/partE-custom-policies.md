@@ -7,7 +7,7 @@ In this section, we'll write a custom Constraint Template that limits the total 
 
 But too many containers packed into one Pod can increase the risk of outages - when one container crashes, the whole pod crashes - and it allows for less horizontal scaling (if 1 container in a pod exceeds its resource requirements, the entire pod must be replicated, even if the other container doesn't need to be replicated). To guard against this, we'll create a Constraint Template to enforce the number of containers allowed per Pod, across all the Cymbal Bank GKE clusters. 
 
-![screenshot](screenshots/num-allowed-containers.png)
+![screenshot](screenshots/num-allowed-containers.jpg)
 
 
 **1. View the custom Constraint Template resource, which has been provided for you in the `constraint-limit-containers/` subdirectory.** 

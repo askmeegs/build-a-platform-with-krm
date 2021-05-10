@@ -4,7 +4,7 @@ This directory contains Terraform resources to set up a demo environment in a Go
 
 ## Architecture 
 
-![screenshot1](screenshots/architecture.png)
+![screenshot1](screenshots/architecture.jpg)
 
 The diagram above shows the baseline resources Terraform will create during setup: 
 

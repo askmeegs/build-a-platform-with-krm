@@ -7,7 +7,7 @@ For app developers or operators who need to create or edit application YAML file
 
 So as a platform admin, I want to empower all the developers in my org to know if and when their resources are non-compliant, and have a chance to make changes. And ideally I want multiple layers of enforcement against the same set of policies. Lucky for us, there's a way to integrate Policy Controller into our existing CI, on top of the "at deploy time" enforcement Policy Controller already does. Let's see how. 
 
-![screenshot](screenshots/app-config-ci.png)
+![screenshot](screenshots/app-config-ci.jpg)
 
 **1. Clone the `cymbalbank-app-config` repo in this directory.** 
 

@@ -5,7 +5,7 @@ Now that we've learned how Kubernetes clusters work, and how to use KRM to deplo
 
 The CymbalBank app ([open-sourced here](https://github.com/GoogleCloudPlatform/bank-of-anthos)) is a multi-service retail banking web app, written in Python and Java, that allows users to create accounts, send money to their contacts, and make deposits. The app uses two PostgreSQL databases, for accounts and transactions, both running in Google Cloud SQL. (Two dev databases were provisioned during bootstrapping, but don't have any data yet!)
 
-![cymbal arch](screenshots/cymbal-arch.png)
+![cymbal arch](screenshots/cymbal-arch.jpg)
 
 Each CymbalBank service represents one Kubernetes workload. Let's explore the pre-provided Kubernetes manifests for the app. 
 

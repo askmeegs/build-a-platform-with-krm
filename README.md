@@ -4,7 +4,7 @@ This repo contains demos for the "Build a Platform with the Kubernetes Resource 
 
 ## Demo Architecture
 
-![screenshot](screenshots/architecture.png)
+![screenshot](screenshots/architecture.jpg)
 
 ## Running the demos 
 

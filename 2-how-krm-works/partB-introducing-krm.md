@@ -97,7 +97,7 @@ nginx-deployment-6b474476c4-q77jr   1/1     Running   0          3m45s
 
 For starters, it's helpful to understand what's inside a Kubernetes cluster - in this case, [GKE](https://cloud.google.com/kubernetes-engine/docs/concepts/cluster-architecture). 
 
-![gke architecture](screenshots/gke-arch.png)
+![gke architecture](screenshots/gke-arch.jpg)
 
 All Kubernetes components, and all outside actors - including you, executing `kubectl` commands - interact with the **APIServer**. The API Server, with its storage backend, **etcd**, is the single source of truth for a cluster. This is where both the intended and actual state of each KRM resource lives. 
 

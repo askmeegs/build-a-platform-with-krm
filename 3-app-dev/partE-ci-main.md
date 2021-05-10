@@ -1,7 +1,7 @@
 
 ## Part E - Main CI 
 
-![screenshot](screenshots/main-ci.png)
+![screenshot](screenshots/main-ci.jpg)
 
 
 ####  1. **View the Cloud Build pipeline for commits to the `main` branch of the app source repo** 
