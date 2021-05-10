@@ -87,15 +87,15 @@ echo "🔑 Creating Anthos registration service account..."
 gcloud iam service-accounts create ${SERVICE_ACCOUNT_NAME} --project=${PROJECT_ID}
 
 gcloud projects add-iam-policy-binding ${PROJECT_ID} \
- --member="serviceAccount:${SERVICE_ACCOUNT_NAME}@${PROJECT_ID}.iam.gserviceaccount.com" \
- --role="roles/gkehub.connect"
+    --member="serviceAccount:${SERVICE_ACCOUNT_NAME}@${PROJECT_ID}.iam.gserviceaccount.com" \
+    --role="roles/gkehub.connect"
 
 echo "🔑 Downloading service account key..."
 gcloud iam service-accounts keys create register-key.json \
-  --iam-account=${SERVICE_ACCOUNT_NAME}@${PROJECT_ID}.iam.gserviceaccount.com \
-  --project=${PROJECT_ID}
+    --iam-account=${SERVICE_ACCOUNT_NAME}@${PROJECT_ID}.iam.gserviceaccount.com \
+    --project=${PROJECT_ID}
 
-Set up clusters for the CymbalBank app 
+# Set up clusters for the CymbalBank app 
 setup_cluster "cymbal-dev" "us-east1-c" 
 setup_cluster "cymbal-staging" "us-central1-a" 
 setup_cluster "cymbal-prod" "us-west1-a"

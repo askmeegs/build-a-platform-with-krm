@@ -8,7 +8,7 @@ This repo contains demos for the "Build a Platform with the Kubernetes Resource 
 
 ## Running the demos 
 
-This demo comes with an automated Terraform setup - all you need is a Google Cloud project. To get started, see the [Setup directory](/1-setup).
+This demo comes with an automated Terraform setup - all you need to get started is a Google Cloud project. To begin, see the [Setup demo](/1-setup).
 
 ## Products and Tools Used
 
