@@ -17,7 +17,7 @@ The diagram above shows the baseline resources Terraform will create during setu
 
 1. **A local development environment**, either Linux or MacOS, into which you can install command-line tools. 
 2. **[VSCode](https://code.visualstudio.com/)**
-3. An empty **Google Cloud project**, with billing enabled. Have the Project ID handy. 
+3. An empty **Google Cloud project**, with billing enabled. Have the Project ID handy. **A note to Googlers** - it's recommended that you use a project outside the `google.com` org.
 4. A **Github account**. 
 5. A [**Github Personal Access token**](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token) with repo creation permissions. 
 6. **The following tools installed in your local environment**. 

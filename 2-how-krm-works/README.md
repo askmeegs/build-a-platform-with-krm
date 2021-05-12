@@ -1,6 +1,6 @@
 # 2 - How KRM Works 
 
-Now that you have a Kubernetes environment to work with, let's deploy the CymbalBank application, formatted as KRM, to one of the clusters. 
+Now that you have a Kubernetes environment to work with, let's learn the basics of the Kubernetes Resource Model. This demo has 4 parts.
 
 ## What you'll learn  
 

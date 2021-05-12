@@ -1,15 +1,13 @@
 
-## Part D - Creating a Continuous Deployment Pipeline
+## Part D - Deploying Cymbal Bank with Cloud Build
 
 ![demo arch](screenshots/basic-deploy.jpg)
 
-[**GitOps**](https://www.weave.works/technologies/gitops/) is an idea introduced by [WeaveWorks](https://www.weave.works/). It's an operating model for Kubernetes where you put your Kubernetes configuration in Git, then allow software - like CI/CD tools - to deploy. In this way, the only human interactions with the system are pull requests to the Github repo - these can be reviewed, approved, and audited - rather than imperative commands like `kubectl apply -f`, which are difficult to keep track of and may result in unwanted KRM landing in Kubernetes. The other benefit of GitOps is that there is one "source of truth" for what the desired Kubernetes state should be. 
+[**GitOps**](https://www.weave.works/technologies/gitops/) is an idea introduced by [WeaveWorks](https://www.weave.works/), which represents an operating model for Kubernetes where you put your Kubernetes configuration in Git, then allow software - like CI/CD tools - to deploy it. In this way, the only human interactions with the system are pull requests to the Git repo. These pull requests can be reviewed, approved, and audited - rather than imperative commands like `kubectl apply -f`, which are difficult to keep track of and may result in unwanted KRM landing in a Kubernetes cluster. The key benefit of GitOps is that there is always one source of truth for what the desired Kubernetes state should be. 
 
-Let's implement a simple, GitOps-style continuous deployment pipeline for CymbalBank using Google Cloud Build. 
+Let's implement a GitOps-style continuous deployment pipeline for CymbalBank using [Google Cloud Build](https://cloud.google.com/build/docs/overview). Cloud Build is a tool that executes custom build steps on Google Cloud's infrastructure. 
 
-#### 1. **View the continuous deployment pipeline**. 
-  
-This YAML file defines a Google Cloud Build pipeline that runs the `kubectl apply -k` command described above, effectively deploying the demo overlay in the `cymbalbank-app-config` repo to the `cymbal-prod` cluster. 
+1. **View the continuous deployment pipeline**. This file has been provided for you, and defines a Cloud Build pipeline that runs the `kubectl apply -k` command described above, effectively deploying the demo overlay in the `cymbalbank-app-config` repo to the `cymbal-prod` cluster. 
 
 ```
 cat cymbalbank-app-config/cloudbuild-cd-prod.yaml 
@@ -30,9 +28,10 @@ steps:
   - 'CLOUDSDK_CONTAINER_CLUSTER=cymbal-prod'
 ```
 
-(Note that in a real production environment, you'd likely want to set up a progressive deployment into prod, using something like a [Rolling Update](https://kubernetes.io/docs/tutorials/kubernetes-basics/update/update-intro/) or a [Canary Deployment](https://www.istiobyexample.dev/canary), to safeguard against downtime or potential outages.)
+A quick note about the deployment pipeline used in this demo - it's provided just as a basic example of Continuous Deployment using files in a Github repo. In a real production environment, you'd likely want to set up a more progressive deployment pipeline, using something like a [Rolling Update](https://kubernetes.io/docs/tutorials/kubernetes-basics/update/update-intro/) or a [Canary Deployment](https://www.istiobyexample.dev/canary), to safeguard against downtime or potential outages. 
 
-#### 2. **Set up Cloud Build authentication to Github**. 
+
+2. **Set up Cloud Build authentication to Github**. 
 
 This allows Cloud Build to watch the Github repositories in your account.  
 
@@ -45,21 +44,24 @@ This allows Cloud Build to watch the Github repositories in your account.
 - Click **Connect.** 
 - Click **Done**. 
 
-#### 3. **Create a Cloud Build trigger for cymbalbank-app-config**. 
+![screenshot](screenshots/connect-repository.png)
+
+3. **Create a Cloud Build trigger for cymbalbank-app-config**. 
 
 - In the Triggers menu, click **Create Trigger.** 
 - Name it `continuous-deployment-prod`
 - Under **Event**, choose `Push to a branch`
-- Under **Source**, choose the `cymbalbank-app-config` repo. Enter `main` next to **Branch**. This means that the build will run with every push the `main` branch of this repo. 
+- Under **Source**, choose your `cymbalbank-app-config` repo. 
+- Enter `main` next to **Branch**. This means that the build will run with every push the `main` branch of this repo. 
 - Under **Configuration**, click `Cloud Build configuration file`, `Repository`, and enter `cloudbuild-cd-prod.yaml` next to file location. 
 - Click **Create.** 
 
-You should now see the trigger appear in the Cloud Build menu. 
+You should now see the trigger appear in the Cloud Build menu. **Note** - the repository should correspond to `your-github-username/cymbalbank-app-config`, not `askmeegs` as shown below. 
 
-![trigger](screenshots/trigger.jpg)
+![trigger](screenshots/trigger.png)
 
 
-#### 4. **Trigger the build by pushing the manifests to your config repo.** 
+4. **Trigger the build by pushing the manifests to your config repo.** 
 
 ```
 cd cymbalbank-app-config/
@@ -69,18 +71,29 @@ git push origin main
 cd .. 
 ```
 
-#### 5. **Navigate back to Cloud Build and in the left sidebar, click History.** 
+Expected output: 
+
+```
+Writing objects: 100% (37/37), 16.46 KiB | 3.29 MiB/s, done.
+Total 37 (delta 25), reused 0 (delta 0), pack-reused 0
+remote: Resolving deltas: 100% (25/25), done.
+To https://github.com/askmeegs/cymbalbank-app-config
+ * [new branch]      main -> main
+```
+
+5. **Navigate back to Cloud Build and in the left sidebar, click History.** 
 
 Watch the Cloud Build logs as the Continuous Deployment pipeline runs, using `kubectl apply -k` to apply the demo overlay and deploy to the `cymbal-prod` cluster: 
 
 
-![cd success](screenshots/cd-success.jpg)
+![cd success](screenshots/cd-success.png)
 
 
-#### 6. Return to a terminal and get the pods in the `cymbal-prod` cluster: 
+6. **Return to your terminal and get the pods in the `cymbal-prod` cluster**: 
 
 ```
-kubectx cymbal-prod; kubectl get pods --all-namespaces --selector=org=cymbal-bank
+kubectx cymbal-prod
+kubectl get pods --all-namespaces --selector=org=cymbal-bank
 ```
 
 Expected output: 
@@ -118,37 +131,21 @@ transactionhistory   transactionhistory   ClusterIP      10.7.249.66    <none>  
 userservice          userservice          ClusterIP      10.7.249.254   <none>        8080/TCP       3m43s
 ```
 
-Notice how each service uses `ClusterIP` (enable in-cluster routing only) except for the `frontend`, which is of type `LoadBalancer`. This type means that GCP spawned an external load balancer to route from outside the cluster, into the frontend pod. Navigate to your frontend service `EXTERNAL_IP` in a browser - you should see the CymbalBank login screen. 
+Notice how each service uses `ClusterIP` (enable in-cluster routing only) except for the `frontend`, which is of type `LoadBalancer`. This type means that GCP spawned an external load balancer to route from outside the cluster, into the frontend pod. Navigate to your frontend service `EXTERNAL_IP` in a browser - you should see the CymbalBank login screen, and you should be able to log in with the pre-populated `testuser` credentials and see the Cymbal Bank account home page. 
 
-![screenshot](screenshots/cymbal-login.jpg)
+![screenshot](screenshots/cymbal-home-page.png)
 
-### Clean Up 
+🥳 **Well done! You've completed Demo 2 - How KRM Works.** 
 
-1. To prepare for the next demo, update `cloudbuild-cd-prod` and replace `overlays/demo` in line 7 with: 
-
-```
-  - 'overlays/prod/'
-```
-
-This will prepare you to deploy images from source code, rather than pre-baked demo images.
-
-2. Push to the main branch. 
-
-```
-git add .
-git commit -m "CD pipeline - use prod overlay
-git push origin main 
-```
-
-Note that if you check back into your `cymbal-prod` cluster and get pods, you'll see `ImagePullBackOff` errors - this is expected and we'll resolve this in Part 3 when we build some new images! 
-
-🥳 **Well done! You just learned how KRM works, and how to deploy Kubernetes resources to a cluster using GitOps best practices.**
+The next demo will guide you through a Cymbal Bank app developer's journey, getting code into production in our Kubernetes environment. If you're ready, **[Continue to Part 3](/3-app-dev/)**.
 
 
 ## Learn More 
 
+- [Kubernetes doc - What is Kubernetes?](https://kubernetes.io/docs/concepts/overview/what-is-kubernetes/)
 - [Kubernetes docs - working with Kubernetes objects](https://kubernetes.io/docs/concepts/overview/working-with-objects/kubernetes-objects/)
 - [Github - Kubernetes - the Kubernetes Resource Model](https://github.com/kubernetes/community/blob/master/contributors/design-proposals/architecture/resource-management.md)
+- [Kubernetes docs - kubectl](https://kubernetes.io/docs/reference/kubectl/overview/)
 - [Github - jamiehannaford - what-happens-when-k8s](https://github.com/jamiehannaford/what-happens-when-k8s)
 - [Google Cloud - GKE Cluster Architecture](https://cloud.google.com/kubernetes-engine/docs/concepts/cluster-architecture#control_plane)
 - [Kubernetes Docs - Architecture - Controllers](https://kubernetes.io/docs/concepts/architecture/controller/)
