@@ -3,7 +3,7 @@
 
 In part 1, we set up four [Google Kubernetes Engine (GKE)]() clusters. [GKE](https://cloud.google.com/kubernetes-engine/docs/concepts/kubernetes-engine-overview) is a cloud-hosted distribution of [Kubernetes](https://kubernetes.io/docs/concepts/overview/what-is-kubernetes/), which is an open-source container orchestration engine. Kubernetes is powerful for two big reasons - one, it allows you to treat multiple host servers - or "Nodes" - as a single computer. This means that that Kubernetes will auto-schedule your containers to Nodes that have room for them. What this means is that clusters can have arbitrarily large numbers of nodes - [thousands of them](https://kubernetes.io/docs/setup/best-practices/cluster-large/) - supporting massive workloads [like machine learning](https://cloud.google.com/blog/products/containers-kubernetes/google-kubernetes-engine-clusters-can-have-up-to-15000-nodes).
 
-![screenshot](k8s-arch.png)
+![screenshot](screenshots/k8s-arch.png)
 
 The second reason Kubernetes is powerful is because of its **declarative API**. "Declarative" means that you "declare" your desired state in a file, apply it to a cluster, and Kubernetes takes care of the rest, deploying your resources and "making it so." Rather than running imperative, "verb" commands like "run this container," Kubernetes' declarative model has you write down your "nouns." *What* do you want deployed? How much? Any storage or networking resources to know about? And beyond just deploying those "nouns" one-and-done, Kubernetes is constantly **reconciling** your desired state with the live state of the cluster. This means that if a container crashes, Kubernetes knows, and will restart your workload for you. 
 
