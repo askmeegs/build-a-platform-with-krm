@@ -11,11 +11,11 @@ Also note that this CD pipeline is very simple, just one "kubectl apply" command
 
 Let's watch your frontend banner feature land in production using the CD pipeline. 
 
-####  1. Watch Cloud Build - CD - Prod. 
+ 1. Watch Cloud Build - CD - Prod. 
 
 Navigate back to Cloud Build and ensure that the build ran successfully. 
 
-####  2. View the new frontend banner running in production. 
+ 2. View the new frontend banner running in production. 
 
 ```
 kubectx cymbal-staging; kubectl get svc frontend -n frontend

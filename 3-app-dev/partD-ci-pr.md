@@ -6,7 +6,7 @@ Now we're ready to put out a Pull Request in the cymbalbank-app-source repo with
 ![screenshot](screenshots/pull-request-ci.jpg)
  
 
-#### 1. **View the Cloud Build pipeline for Pull Requests to the app source repo**. 
+1. **View the Cloud Build pipeline for Pull Requests to the app source repo**. 
 
 Run these commands from the cymbalbank-app-source root directory: 
 
@@ -47,7 +47,7 @@ availableSecrets:
 
 This Cloud Build pipeline will build the source code at the branch corresponding to that Pull Request. Then it deploys those images to the staging cluster, and makes sure the Pods come online. Note that this build uses the Secret Manager secret for `github-username`, deployed by Terraform during bootstrapping, in order to clone the app YAML inside the source directory like we did locally. 
 
-#### 2. **Create the Continuous Integration - PR trigger.** 
+2. **Create the Continuous Integration - PR trigger.** 
 
 Reopen Cloud Build in the Google Cloud Console. Click Triggers > **Create Trigger**. 
 
@@ -58,7 +58,7 @@ Reopen Cloud Build in the Google Cloud Console. Click Triggers > **Create Trigge
 - Configuration: Cloud Build configuration - `/cloudbuild-ci-pr.yaml` 
 - Click **Create**. 
 
-#### 3. **Return to the terminal and push your local frontend-banner branch to remote.**
+3. **Return to the terminal and push your local frontend-banner branch to remote.**
 
 ```
 git add .
@@ -66,17 +66,17 @@ git commit -m "Add frontend banner, PR CI pipeline"
 git push origin frontend-banner
 ```
 
-#### 4. **Navigate to Github > cymbalbank-app-source and open a pull request in your `frontend-banner` branch.** 
+4. **Navigate to Github > cymbalbank-app-source and open a pull request in your `frontend-banner` branch.** 
 
 This will trigger the `cloudbuild-ci-pr.yaml` Cloud Build pipeline.  
 
 ![github-pr](screenshots/github-open-pr.png)
 
-#### 5. **Navigate back to Cloud Build and watch the Continuous Integration - Pull Request pipeline run.** 
+5. **Navigate back to Cloud Build and watch the Continuous Integration - Pull Request pipeline run.** 
 
 ![ci-pr](screenshots/pull-request-ci.jpg)
 
-#### 6. **View the frontend banner in staging.**
+6. **View the frontend banner in staging.**
 
 ```
 kubectx cymbal-staging; kubectl get svc frontend -n frontend
