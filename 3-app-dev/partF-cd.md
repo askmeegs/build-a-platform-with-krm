@@ -1,5 +1,4 @@
-
-## Part F - Continuous Deployment  
+# Part F - Continuous Deployment  
 
 ![screenshot](screenshots/prod-cd.jpg)
 
@@ -18,10 +17,11 @@ Navigate back to Cloud Build and ensure that the build ran successfully.
  2. View the new frontend banner running in production. 
 
 ```
-kubectx cymbal-staging; kubectl get svc frontend -n frontend
+kubectx cymbal-prod
+kubectl get svc frontend -n frontend
 ```
 
-🎉 **Congrats**! You just developed a new CymbalBank feature, tested it in a live Kubernetes environment, and deployed it into production. All without editing a single YAML file. 
+🎉 **Congrats**! You just developed a new CymbalBank feature, tested it in a live Kubernetes environment, and deployed it into production. All without writing a single new YAML file. 
 
 ## Learn More 
 
@@ -31,3 +31,5 @@ kubectx cymbal-staging; kubectl get svc frontend -n frontend
 - [Kustomize Tutorial](https://kubectl.docs.kubernetes.io/guides/config_management/components/)
 - [Cloud Code Documentation](https://cloud.google.com/code/docs/vscode/setting-up-an-existing-app#setting_up_configuration_for_applications_that_already_have_skaffoldyaml)
 - [Google Cloud - GitOps-style continuous delivery with Cloud Build](https://cloud.google.com/kubernetes-engine/docs/tutorials/gitops-cloud-build)
+
+If you're ready, you can continue to **[Demo 4 - Platform Admin.](/4-platform-admin)**

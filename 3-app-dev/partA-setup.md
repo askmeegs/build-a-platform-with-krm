@@ -1,5 +1,5 @@
 
-## Part A - Setup  
+# Part A - Setup  
 
 1. **Open a Terminal and set variables.**
 

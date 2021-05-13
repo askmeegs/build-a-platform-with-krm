@@ -1,5 +1,5 @@
 
-## Part B - Add an Application Feature 
+# Part B - Add an Application Feature 
 
 Let's take on the persona of an app developer looking to make an update to the Cymbal Bank frontend source code. The feature you want to add is a banner on the homepage (login screen), advertising an improved interest rate on all new checking accounts.  
 

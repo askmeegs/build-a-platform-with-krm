@@ -1,7 +1,6 @@
+# Part D - Creating a Pull Request 
 
-## Part D - Continuous Integration (Pull Request)
-
-Now we're ready to put out a Pull Request in the cymbalbank-app-source repo with our new frontend banner feature. We'll add a new Cloud Build trigger for all new pull requests in the source repo, so that we can auto-deploy the code to our staging GKE cluster, allowing any tests or code reviewers to verify that the changes work as intended with no bugs.  
+Now that we've tested the new frontend feature locally using the dev cluster, we are ready to put out a Pull Request in the cymbalbank-app-source repository. We will also explore how to stage a pull request's code on the staging GKE cluster, using Cloud Build and the `skaffold.yaml` file we used in part C. 
 
 ![screenshot](screenshots/pull-request-ci.jpg)
  
@@ -18,22 +17,22 @@ cat cloudbuild-ci-pr.yaml
 Expected output: 
 
 ```
-steps: 
+steps:
 - name: 'gcr.io/google-samples/intro-to-krm/skaffold-mvn:latest'
-  id: Deploy to Staging Cluster 
+  id: Deploy to Staging Cluster
   entrypoint: /bin/sh
   args:
   - '-c'
   - |
     git clone "https://github.com/$$GITHUB_USERNAME/cymbalbank-app-config"
-    gcloud container clusters get-credentials ${_CLUSTER_NAME} --zone ${_CLUSTER_ZONE} --project ${PROJECT_ID} 
+    gcloud container clusters get-credentials ${_CLUSTER_NAME} --zone ${_CLUSTER_ZONE} --project ${PROJECT_ID}
     skaffold run --profile=staging --default-repo="gcr.io/${PROJECT_ID}/cymbal-bank/${BRANCH_NAME}" --tail=false
-    kubectl wait --for=condition=available --timeout=300s deployment/frontend -n frontend 
-    kubectl wait --for=condition=available --timeout=300s deployment/contacts -n contacts 
-    kubectl wait --for=condition=available --timeout=300s deployment/userservice -n userservice 
-    kubectl wait --for=condition=available --timeout=300s deployment/ledgerwriter -n ledgerwriter 
-    kubectl wait --for=condition=available --timeout=300s deployment/transactionhistory -n transactionhistory 
-    kubectl wait --for=condition=available --timeout=300s deployment/balancereader -n balancereader 
+    kubectl wait --for=condition=available --timeout=300s deployment/frontend -n frontend
+    kubectl wait --for=condition=available --timeout=300s deployment/contacts -n contacts
+    kubectl wait --for=condition=available --timeout=300s deployment/userservice -n userservice
+    kubectl wait --for=condition=available --timeout=300s deployment/ledgerwriter -n ledgerwriter
+    kubectl wait --for=condition=available --timeout=300s deployment/transactionhistory -n transactionhistory
+    kubectl wait --for=condition=available --timeout=300s deployment/balancereader -n balancereader
     kubectl wait --for=condition=available --timeout=300s deployment/loadgenerator -n loadgenerator
   secretEnv: ['GITHUB_USERNAME']
 substitutions:
@@ -41,24 +40,42 @@ substitutions:
   _CLUSTER_ZONE: 'us-central1-a'
 availableSecrets:
   secretManager:
-  - versionName: projects/${PROJECT_ID}/secrets/github-username/versions/1 
+  - versionName: projects/${PROJECT_ID}/secrets/github-username/versions/1
     env: 'GITHUB_USERNAME'
+timeout: '1200s' #timeout - 20 minutes
 ```
 
-This Cloud Build pipeline will build the source code at the branch corresponding to that Pull Request. Then it deploys those images to the staging cluster, and makes sure the Pods come online. Note that this build uses the Secret Manager secret for `github-username`, deployed by Terraform during bootstrapping, in order to clone the app YAML inside the source directory like we did locally. 
+This Cloud Build pipeline is designed to run on open Pull Requests in the `cymbalbank-app-source` repo. This means that when the build pipeline runs, it will run out of the `cymbalbank-app-source` directory, at the branch corresponding to the pull request - meaning, the build already will have your frontend banner code. 
 
-2. **Create the Continuous Integration - PR trigger.** 
+This build has one step, and runs from a custom `skaffold-mvn` container, which is just an environment with skaffold, Maven, and kustomize pre-installed. (Maven is needed to build the Java images.) This build does the following: 
 
-Reopen Cloud Build in the Google Cloud Console. Click Triggers > **Create Trigger**. 
+1. Clones the app config YAML repo into the source repo, like we did locally in Part C.
+2. Connects to the GKE staging cluster we created during setup. 
+3. Uses `skaffold run` to build and deploy the pull request code to the staging GKE cluster.
+4. Waits for the pods to be ready. 
+
+Also note how Cloud Build gets the name of the `cymbalbank-app-config` repo from the `GITHUB_USERNAME` secret that Terraform added to Secret Manager in Part 1. You can see the Secret Manager secrets for your project [in the Google Cloud Console](https://console.cloud.google.com/security/secret-manager).  
+
+![secret manager](screenshots/secret-manager.png)
+
+**Note** - this is a basic pull request pipeline. In a real use case, you'd likely run different tests, like linters, unit tests, and integration test, before staging the code. Also, in a real use case a repo will likely have multiple PRs open at once, and with this build as-is, different PRs would clobber each other because they're trying to deploy the same services to the same namespaces. The way to get around this would be adding a namespaces suffix like `frontend-pr1` -- or deploying all the services into the same namespace, eg. `pr1`.   
+
+2. **Connect the `cymbalbank-app-source` repo to Cloud Build.** 
+
+Navigate to Cloud Build in the console, click Triggers > Connect Repository. Select `your-github-username/cymbalbank-app-source`, then click **Connect.** Then, click **Create Trigger.** 
+
+3. **Create the Continuous Integration - PR trigger.** We want Cloud Build to run this build pipeline on every commit to open Github pull requests targeted at the `main` branch. 
+
+From the Create Trigger menu, set the fields as follows: 
 
 - Name: `continuous-integration-pr` 
 - Event: `Pull Request` 
 - Repository: `<github-username>/cymbalbank-app-source` 
-- Base branch: `.*` (any branch)
+- Base branch: `^main$`  
 - Configuration: Cloud Build configuration - `/cloudbuild-ci-pr.yaml` 
 - Click **Create**. 
 
-3. **Return to the terminal and push your local frontend-banner branch to remote.**
+4. **Return to your terminal, and push your local frontend-banner branch to remote.**
 
 ```
 git add .
@@ -66,20 +83,38 @@ git commit -m "Add frontend banner, PR CI pipeline"
 git push origin frontend-banner
 ```
 
-4. **Navigate to Github > cymbalbank-app-source and open a pull request in your `frontend-banner` branch.** 
+5. **Navigate to Github > cymbalbank-app-source and open a pull request in your `frontend-banner` branch.** 
 
 This will trigger the `cloudbuild-ci-pr.yaml` Cloud Build pipeline.  
 
 ![github-pr](screenshots/github-open-pr.png)
 
-5. **Navigate back to Cloud Build and watch the Continuous Integration - Pull Request pipeline run.** 
+6. **Navigate back to Cloud Build > History. Watch the Continuous Integration - Pull Request pipeline run.** Note - it may take 5-10 minutes for this pipeline to complete.
 
-![ci-pr](screenshots/pull-request-ci.jpg)
+![ci-pr](screenshots/ci-pr-success.png)
 
-6. **View the frontend banner in staging.**
+7. **View the frontend banner in staging.**
 
 ```
-kubectx cymbal-staging; kubectl get svc frontend -n frontend
+kubectx cymbal-staging
+kubectl get svc frontend -n frontend
 ```
 
 ![banner](screenshots/login-banner.png)
+
+Now let's pretend that your pull request was reviewed by a developer teammate, and you're ready to merge the pull request and get your code into production.
+
+**Continue to Part E - Merging Your Pull Request.** 
+
+## Troubleshooting 
+
+If the CI Pull Request build fails with the following error: 
+
+```
+ - balancereader: Error checking cache.
+failed to build: getting hash for artifact "balancereader": getting dependencies for "balancereader": could not fetch dependencies for workspace .: initial Jib dependency refresh failed: failed to get Jib dependencies: running [/workspace/mvnw jib:_skaffold-fail-if-jib-out-of-date -Djib.requiredVersion=1.4.0 --projects src/balancereader --also-make jib:_skaffold-files-v2 --quiet --batch-mode]
+ - stdout: ""
+ - stderr: "Exception in thread \"main\" java.lang.RuntimeException: Could not locate the Maven launcher JAR in Maven distribution...
+ ```
+
+This is caused by a possible Jib bug that occurs sporadically on `skaffold build`. Try running the build pipeline again by clicking `Retry` next to `Build Details`. 

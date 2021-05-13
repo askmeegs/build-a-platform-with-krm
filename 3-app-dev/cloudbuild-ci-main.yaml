@@ -7,7 +7,7 @@ steps:
   - |
     skaffold build --profile prod --default-repo="gcr.io/${PROJECT_ID}/cymbal-bank/release" --tag ${SHORT_SHA}
 - name: 'gcr.io/cloud-builders/gcloud'
-  id: Image tags -> cymbalbank-app-config manifests 
+  id: Image tags -> cymbalbank-app-config prod manifests 
   entrypoint: 'bash'
   args:
    - '-eEuo'
@@ -21,16 +21,17 @@ steps:
     git config user.name $$GITHUB_USERNAME 
     git remote set-url origin https://$$GITHUB_USERNAME:$$GITHUB_TOKEN@github.com/$$GITHUB_USERNAME/cymbalbank-app-config.git
 
-    for f in base/*; do 
-        if [[ "$f" == 'base/kustomization.yaml' ]]; then
+    for f in overlays/prod/*; do 
+        if [[ "$f" == 'overlays/prod/kustomization.yaml' ]]; then
           continue
         fi
         svc="`basename $f .yaml`"
         echo "🏦 Service name: $svc"
-        subst="image: gcr.io/${PROJECT_ID}/cymbal-bank/release/$svc:${SHORT_SHA}"
+        subst="\ \ \ \ \ \ \ \ image: gcr.io/${PROJECT_ID}/cymbal-bank/release/$svc:${SHORT_SHA}"
 
-        echo "🐳 Injecting image tag: $subst > $f"  
-        sed -i "s|image: $svc|$subst|g" $f 
+        echo "🐳 Injecting image tag: $subst"  
+        sed -i "/image:.*$svc.*/c$subst" $f
+
         
         echo "📝 Done injecting image tag - $f"
         cat $f | grep "image: "

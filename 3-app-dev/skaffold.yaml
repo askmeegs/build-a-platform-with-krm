@@ -43,7 +43,7 @@ profiles:
     deploy: 
       kustomize: 
         paths:
-          - "cymbalbank-app-config/overlays/prod"
+          - "cymbalbank-app-config/overlays/dev"
   - name: prod
     deploy: 
       kustomize: 

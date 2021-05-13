@@ -16,17 +16,20 @@ The diagram above shows the baseline resources Terraform will create during setu
 ## Prerequisites 
 
 1. **A local development environment**, either Linux or MacOS, into which you can install command-line tools. 
-2. **[VSCode](https://code.visualstudio.com/)**
-3. An empty **Google Cloud project**, with billing enabled. Have the Project ID handy. **A note to Googlers** - it's recommended that you use a project outside the `google.com` org.
-4. A **Github account**. 
-5. A [**Github Personal Access token**](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token) with repo creation permissions. 
-6. **The following tools installed in your local environment**. 
+2. An empty **Google Cloud project**, with billing enabled. Have the Project ID handy. **A note to Googlers** - it's recommended that you use a project outside the `google.com` org.
+3. A **Github account**. 
+4. A [**Github Personal Access token**](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token) with repo creation permissions. 
+5. **The following tools installed in your local environment**. 
 - git
 - [gcloud](https://cloud.google.com/sdk/docs/install)
 - [kubectl](https://cloud.google.com/sdk/gcloud/reference/components/install)
 - [kubectx](https://github.com/ahmetb/kubectx#installation)
 - [terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli) 
 - **tree** - `brew install tree` (MacOS)
+- [Docker desktop](https://www.docker.com/products/docker-desktop) (Mac) or [Docker Engine](https://docs.docker.com/engine/install/ubuntu/) (Linux)
+- [skaffold](https://skaffold.dev/docs/install/). 
+- [VSCode](https://code.visualstudio.com/Download)
+- [Cloud Code Extension for VSCode](https://cloud.google.com/code/docs/vscode/install) 
 
 ## Steps 
 
