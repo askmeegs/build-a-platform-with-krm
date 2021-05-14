@@ -1,15 +1,15 @@
 
-## Part F - Add Policy Checks to CI/CD
+# Part F - Integrate Policy Checks into Application CI/CD 
 
-Policy Controller provides a powerful, flexible way to automatically check incoming resources against org policies. But Policy Controller's setup - as a Kubernetes admission controller, at the gate of the API - means that it can only "catch" (and block) out-of-policy resources on the fly, as they are trying to be deployed through `kubectl`, CI/CD, or some other means. 
+Policy Controller provides a powerful, flexible way to automatically check incoming resources against org policies. But Policy Controller's setup - as a Kubernetes admission controller, at the gate of the Kubernetes API - means that it can only "catch" (and block) out-of-policy resources on the fly, as they are trying to be deployed through `kubectl` or through CI/CD. 
 
-For app developers or operators who need to create or edit application YAML files - including those in the cymbalbank-app-config repo, outside of the policy repo - this setup isn't ideal. Because it means that they only know their resources are out of policy at the very moment they get deployed. For policies that only apply to production, they may not know their resources are out of policy until they go through all the effort to write and test code, get PR reviews, run unit tests, etc., only to have to double back and create another PR or roll back the commit. 
+For app developers or operators who need to create or edit application YAML files, this setup isn't ideal because it means that those developers only know their resources are out of policy **at the moment they get deployed**. Meaning a developer may not know their Kubernetes Deployment is out of compliance until they go through code reviews and run all the tests, only to have to double back and either create another pull requests or roll back a commit to the `main` branch.  
 
-So as a platform admin, I want to empower all the developers in my org to know if and when their resources are non-compliant, and have a chance to make changes. And ideally I want multiple layers of enforcement against the same set of policies. Lucky for us, there's a way to integrate Policy Controller into our existing CI, on top of the "at deploy time" enforcement Policy Controller already does. Let's see how. 
+As a platform admin, I want to empower all Cymbal Bank developers to know whether their KRM resources are in complaince with our org-wide policies, so that they have the chance to make changes to those resources. And ideally, I want multiple layers of policy enforcement, not only at deploy-time, but as part of the test pipeline too. Luckily, you can integrate Policy Controller checks into CI/CD. Let's see how. 
 
 ![screenshot](screenshots/app-config-ci.jpg)
 
-**1. Clone the `cymbalbank-app-config` repo in this directory.** 
+**1. Clone the `cymbalbank-app-config` repo in the `4-platform-admin/` directory.** 
 
 ```
 git clone https://github.com/$GITHUB_USERNAME/cymbalbank-app-config
@@ -18,7 +18,7 @@ git clone https://github.com/$GITHUB_USERNAME/cymbalbank-app-config
 **2. View the `cloudbuild-ci-pr-policy.yaml` file in the `app-ci` directory.** 
 
 ```
-cat/app-ci/cloudbuild-ci-pr-policy.yaml
+cat app-ci/cloudbuild-ci-pr-policy.yaml
 ```
 
 Expected output: 
@@ -47,9 +47,10 @@ timeout: '1200s' #timeout - 20 minutes
 ```
 
 This pipeline has three steps: 
-1. **Render prod manifests** - Remember that the cymbalbank-app-config repo has a `base/` directory and two overlays, `dev/` and `prod/`. We'll generate
+
+1. **Render prod manifests** - Remember that the cymbalbank-app-config repo has a `base/` directory and two overlays, `dev/` and `prod/`. We'll generate the production manifests using kustomize, so that we have fully-hydrated KRM resources to check our policies against. 
 2. **Clone the cymbalbank-policy repo** - Also remember that this build is running in the cymbalbank-app-config repo, so in order to check those manifests against our policies, we have to clone them in from the policy repo. Also notice that there is a `kpt fn source` command. [**kpt**](https://googlecontainertools.github.io/kpt/) is a KRM package management tool that's still in early development at the time of writing this demo, so we aren't covering it much. All you need to know for the purpose of this build, is that `kpt fn source` means, "run a function called `[source](https://googlecontainertools.github.io/kpt/guides/consumer/function/catalog/sources/)`" to write the compiled policies in `cymbalbank-policy` to the `hydrated-manifests/` directory. 
-3. **Validate prod manifests against policies** - Up to now, we've seen Policy Controller work at the admission control level of our GKE clusters. Here, the Policy Controller logic is actually running in a container called `policy-controller-validate`. It can do the same thing that the Admission Controller does - take some incoming KRM (in this case, the contents of the cymbalbank-app-config pull request) and check them against the Constraints in our polciy repo. 
+3. **Validate theprod manifests against policies** - Up to now, we've seen Policy Controller work at the admission control level of our GKE clusters. Here, the Policy Controller logic is actually running in a container called `policy-controller-validate`, which is pre-built by the Policy Controller team and provided as part of the product. This container can do the same thing that the Admission Controller does - take some incoming KRM (in this case, the contents of the cymbalbank-app-config pull request) and check the resources against the Constraints in our policy repo. 
 
 **3. Copy the Cloud Build pipeline into the `cymbalbank-app-config` root and push to the `main branch`.** 
 
@@ -59,6 +60,18 @@ cd cymbalbank-app-config
 git add . 
 git commit -m "Add CI for pull requests - policy check"
 git push origin main
+```
+
+**4. Remove the `K8sNoExternalServices` constraint from the cymbalbank-policy repo.** This is a temporary workaround to an issue with the Policy Controller CI mechanism, where the default constraint template library isn't properly downloaded in, so that constraint isn't recognized as a valid resource. 
+
+```
+cd ..
+cd cymbalbank-policy
+rm clusters/cymbal-dev/constraint.yaml
+git add .
+git commit -m "Remove K8sNoExternalServices constraint"
+git push origin main
+cd ../cymbalbank-app-config
 ```
 
 **4. Create a new Cloud Build trigger corresponding to this new policy check pipeline, by navigating to the Console > Cloud Build > Triggers > Create.**
@@ -97,6 +110,16 @@ git commit -m "Add nginx Deployment"
 git push origin nginx
 ```
 
+Expected output: 
+
+```
+remote: Create a pull request for 'nginx' on GitHub by visiting:
+remote:      https://github.com/askmeegs/cymbalbank-app-config/pull/new/nginx
+remote:
+To https://github.com/askmeegs/cymbalbank-app-config
+ * [new branch]      nginx -> nginx
+```
+
 **8. In a browser, navigate to `github.com/your-github-username/cymbalbank-app-config`.**
 
 Put out a new Pull Request for the `nginx` branch, into the `main` branch. 
@@ -111,9 +134,10 @@ gcr.io/config-management-release/policy-controller-validate:latest
 Error: Found 1 violations:
 
 [1] Number of containers in template (4) exceeds the allowed limit (3)
-```
 
-**TODO** - how to make the policy controller validate image know about constraint template `K8sNoExternalServices` ? 
+name: "nginx"
+path: prod.yaml
+```
 
 **🎊 Nice work!** You just added a second layer of policy checks to your Kubernetes platform, helping app developers understand if their resources are in compliance, even before their PRs are reviewed. 
 
@@ -132,7 +156,7 @@ Error: Found 1 violations:
 - [Policy Controller - Overview](https://cloud.google.com/anthos-config-management/docs/concepts/policy-controller)
 - [Policy Controller - Creating Constraints using the default Constraint Template library](https://cloud.google.com/anthos-config-management/docs/how-to/creating-constraints)
 - [Policy Controller - Writing Constraint Templates with Rego](https://cloud.google.com/anthos-config-management/docs/how-to/write-a-constraint-template)
-- [OpenPolicyAgent - Kubernetes Primer](https://www.openpolicyagent.org/docs/latest/kubernetes-primer)
+- [OpenPolciyAgent - Gatekeeper - Docs](https://open-policy-agent.github.io/gatekeeper/website/docs/howto/)
 - [OpenPolicyAgent - Rego language](https://www.openpolicyagent.org/docs/latest/policy-language/)
 - [OpenPolicyAgent - The Rego Playground](https://play.openpolicyagent.org/)
 - [Policy Controller - Using Policy Controller in a CI Pipeline](https://cloud.google.com/anthos-config-management/docs/tutorials/policy-agent-ci-pipeline)

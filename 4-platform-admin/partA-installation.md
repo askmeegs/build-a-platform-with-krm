@@ -1,7 +1,7 @@
 
 
 
-## Part A - Installing Config Sync and Policy Controller 
+# Part A - Installing Config Sync and Policy Controller 
 
 ![screenshot](screenshots/sync-overview.jpg)
 

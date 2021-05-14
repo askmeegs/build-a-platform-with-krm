@@ -6,9 +6,13 @@ This repo contains demos for the "Build a Platform with the Kubernetes Resource 
 
 ![screenshot](screenshots/architecture.jpg)
 
-## Running the demos 
+## Contents 
 
-This demo comes with an automated Terraform setup - all you need to get started is a Google Cloud project. To begin, see the [Setup demo](/1-setup).
+1. [Setup](1/setup)
+2. [How KRM Works](2-how-krm-works) 
+3. [App Development with KRM](3-app-dev/)
+4. [Administering KRM with Config Sync and Policy Controller](4-platform-admin/)
+5. [Using KRM for Hosted Resources](5-hosted-resources/)
 
 ## Products and Tools Used
 
@@ -37,3 +41,32 @@ This demo comes with an automated Terraform setup - all you need to get started 
 - [Docker](https://www.docker.com/) 
 - [OpenPolicyAgent](https://www.openpolicyagent.org/)
 
+## Learn More
+
+- [Kubernetes doc - What is Kubernetes?](https://kubernetes.io/docs/concepts/overview/what-is-kubernetes/)
+- [Kubernetes docs - working with Kubernetes objects](https://kubernetes.io/docs/concepts/overview/working-with-objects/kubernetes-objects/)
+- [Github - Kubernetes - the Kubernetes Resource Model](https://github.com/kubernetes/community/blob/master/contributors/design-proposals/architecture/resource-management.md)
+- [Kubernetes docs - kubectl](https://kubernetes.io/docs/reference/kubectl/overview/)
+- [Github - jamiehannaford - what-happens-when-k8s](https://github.com/jamiehannaford/what-happens-when-k8s)
+- [Google Cloud - GKE Cluster Architecture](https://cloud.google.com/kubernetes-engine/docs/concepts/cluster-architecture#control_plane)
+- [Kubernetes Docs - Architecture - Controllers](https://kubernetes.io/docs/concepts/architecture/controller/)
+- [Kustomize docs - Introduction](https://kubectl.docs.kubernetes.io/guides/introduction/kustomize/)
+- [WeaveWorks Guide to GitOps](https://www.weave.works/technologies/gitops/)
+- [Google Cloud Build - Deploying to GKE](https://cloud.google.com/build/docs/deploying-builds/deploy-gke)
+- [Kustomize Documentation](https://kustomize.io/)
+- [Examples - Kustomize](https://github.com/kubernetes-sigs/kustomize/tree/master/examples)
+- [Kubernetes Docs - Mangaging Kubernetes Objects - Kustomize](https://kubernetes.io/docs/tasks/manage-kubernetes-objects/kustomization/)
+- [Kustomize Tutorial](https://kubectl.docs.kubernetes.io/guides/config_management/components/)
+- [Cloud Code Documentation](https://cloud.google.com/code/docs/vscode/setting-up-an-existing-app#setting_up_configuration_for_applications_that_already_have_skaffoldyaml)
+- [Google Cloud - GitOps-style continuous delivery with Cloud Build](https://cloud.google.com/kubernetes-engine/docs/tutorials/gitops-cloud-build)
+- [Config Sync - Overview](https://cloud.google.com/kubernetes-engine/docs/add-on/config-sync/config-sync-overview?hl=sv-SESee)
+- [Config Sync samples](https://github.com/GoogleCloudPlatform/anthos-config-management-samples)
+- [Config Sync - Configuring Only a Subset of Clusters](https://cloud.google.com/kubernetes-engine/docs/add-on/config-sync/how-to/clusterselectors)
+- [GKE Best practices - RBAC](https://cloud.google.com/kubernetes-engine/docs/how-to/hardening-your-cluster#use_namespaces_and_rbac_to_restrict_access_to_cluster_resources)
+- [Policy Controller - Overview](https://cloud.google.com/anthos-config-management/docs/concepts/policy-controller)
+- [Policy Controller - Creating Constraints using the default Constraint Template library](https://cloud.google.com/anthos-config-management/docs/how-to/creating-constraints)
+- [Policy Controller - Writing Constraint Templates with Rego](https://cloud.google.com/anthos-config-management/docs/how-to/write-a-constraint-template)
+- [OpenPolciyAgent - Gatekeeper - Docs](https://open-policy-agent.github.io/gatekeeper/website/docs/howto/)
+- [OpenPolicyAgent - Rego language](https://www.openpolicyagent.org/docs/latest/policy-language/)
+- [OpenPolicyAgent - The Rego Playground](https://play.openpolicyagent.org/)
+- [Policy Controller - Using Policy Controller in a CI Pipeline](https://cloud.google.com/anthos-config-management/docs/tutorials/policy-agent-ci-pipeline)

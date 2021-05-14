@@ -9,3 +9,6 @@ megan.tfvars
 *key.json
 config-sync-operator.yaml
 terraform-megan.tfvars
+*/cymbalbank-app-config/
+*/cymbalbank-app-source/
+*/cymbalbank-policy/

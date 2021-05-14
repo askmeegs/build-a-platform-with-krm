@@ -1,18 +1,20 @@
 
-## Part C - Creating Cluster-Scoped Resources 
+# Part C - Creating Cluster-Scoped Resources 
 
-![screenshot](screenshots/resourcequotas.jpg)
+![screenshot](screenshots/resource-quotas.jpg)
 
-[Kubernetes Resource Quotas](https://kubernetes.io/docs/concepts/policy/resource-quotas/) help ensure that multiple tenants on one cluster - in our case, different Cymbal Bank services/app teams - don't clobber each other by eating up too many cluster resources, which can result in evicted pods and potential outages. For example purposes, we'll create this resource only in the `cymbal-prod` cluster, which we specify using the `cluster-name-selector` annotation below. This way, if our CD pipeline tries to deploy resources that violate the quota constraint, the prod cluster will not accept the resource, throwing a `403 - Forbidden` error.
+[Kubernetes Resource Quotas](https://kubernetes.io/docs/concepts/policy/resource-quotas/) help ensure that multiple tenants on one cluster - in our case, different Cymbal Bank services/app teams - don't clobber each other by eating too many cluster resources. When one service uses too many resources, Kubernetes can evict pods in other namespaces, leading to potential outages. 
+
+Let's set up Resource Quotas for the `cymbal-prod` cluster only. We do this using a [Config Sync feature](https://cloud.google.com/kubernetes-engine/docs/add-on/config-sync/how-to/clusterselectors) called a `cluster-name-selector`. This is a piece of Kubernetes metadata we add to the KRM resource saying, "only deploy it to these clusters." Note that we're scoping the Resource Quotas to only one cluster here, but you can [scope resources to multiple clusters](https://cloud.google.com/kubernetes-engine/docs/add-on/config-sync/how-to/clusterselectors#selecting_a_list_of_clusters) at once, too.
 
 The `production-quotas/` directory contains resource quotas for all Cymbal Bank app namespaces. 
 
-1. **View the frontend Resource Quota YAML.** 
+1. **View the frontend Resource Quota YAML.** Run this command from the `4-platform-admin/` directory.
 
 Each Cymbal Bank namespace will get one of these.  
 
 ```
-cat production-quotas/frontend.yaml
+cat production-quotas/frontend/quota.yaml
 ```
 
 Expected output: 
@@ -24,15 +26,16 @@ metadata:
   name: production-quota
   namespace: frontend
   annotations:
-    configsync.gke.io/cluster-name-selector: cymbal-dev
+    configsync.gke.io/cluster-name-selector: cymbal-prod
 spec:
   hard:
-    cpu: "100"
-    memory: 10Gi
-    pods: "10"
+    cpu: 700m
+    memory: 512Mi
 ```
 
-2. **Copy all the Resource Quota resources into your cloned policy repo.**
+Here, we set resource quotas for CPU and Memory on the entire frontend namespace, meaning that in aggregate, all the Pods running in the frontend namespace must not use more than 700 CPU millicores, and 512 [mebibytes](https://medium.com/@betz.mark/understanding-resource-limits-in-kubernetes-memory-6b41e9a955f9) of memory.
+
+2. **Copy all the Resource Quota resources into your cymbalbank-policy repo.**
 
 ```
 cp production-quotas/balancereader/quota.yaml cymbalbank-policy/namespaces/balancereader/
@@ -63,7 +66,7 @@ To https://github.com/askmeegs/cymbalbank-policy
    e2bca67..cdfbaae  main -> main
 ```
 
-4. **View the Config Sync status again.**
+4. **View the Config Sync status again. You should see the clusters all move from `PENDING` to `SYNCED`, at a new git commit token.**
 
 ```
 gcloud alpha container hub config-management status --project=${PROJECT_ID}
@@ -72,15 +75,12 @@ gcloud alpha container hub config-management status --project=${PROJECT_ID}
 Expected output: 
 
 ```
-Name            Status         Last_Synced_Token  Sync_Branch  Last_Synced_Time      Policy_Controller
-cymbal-admin    NOT_INSTALLED  NA                 NA           NA                    NA
-cymbal-dev      SYNCED         cdfbaae            main         2021-05-05T20:01:47Z  INSTALLED
-cymbal-prod     SYNCED         cdfbaae            main         2021-05-05T20:01:39Z  INSTALLED
-cymbal-staging  SYNCED         cdfbaae            main         2021-05-05T20:01:44Z  INSTALLED
+Name            Status  Last_Synced_Token  Sync_Branch  Last_Synced_Time      Policy_Controller
+cymbal-admin    SYNCED  061f56a            main         2021-05-13T23:41:13Z  INSTALLED
+cymbal-dev      SYNCED  061f56a            main         2021-05-13T23:41:11Z  INSTALLED
+cymbal-prod     SYNCED  061f56a            main         2021-05-13T23:41:12Z  INSTALLED
+cymbal-staging  SYNCED  061f56a            main         2021-05-13T23:41:14Z  INSTALLED
 ```
-
-Here the `Last_Synced_Token` should correspond to the Git commit sha from your latest commit to the policy repo, which you can find using `git log` or by navigating to the repo on Github. 
-
 
 5. **Get the resource quotas on the prod cluster.** 
 
@@ -95,35 +95,30 @@ Expected output:
 NAMESPACE                      NAME                  AGE     REQUEST                                                                                                                               LIMIT
 balancereader                  gke-resource-quotas   26d     count/ingresses.extensions: 0/100, count/ingresses.networking.k8s.io: 0/100, count/jobs.batch: 0/5k, pods: 1/1500, services: 1/500
 balancereader                  production-quota      6m56s   cpu: 300m/700m, memory: 612Mi/512Mi
-config-management-monitoring   gke-resource-quotas   5d1h    count/ingresses.extensions: 0/100, count/ingresses.networking.k8s.io: 0/100, count/jobs.batch: 0/5k, pods: 1/1500, services: 1/500
-config-management-system       gke-resource-quotas   4h16m   count/ingresses.extensions: 0/100, count/ingresses.networking.k8s.io: 0/100, count/jobs.batch: 0/5k, pods: 4/1500, services: 1/500
-contacts                       gke-resource-quotas   26d     count/ingresses.extensions: 0/100, count/ingresses.networking.k8s.io: 0/100, count/jobs.batch: 1/5k, pods: 1/1500, services: 1/500
-contacts                       production-quota      6m56s   cpu: 300m/700m, memory: 164Mi/512Mi
 ...
 ```
 
-You can see that every namespace as the `production-quota` we just committed, along with a default [GKE resource quota](https://cloud.google.com/kubernetes-engine/quotas#resource_quotas) which limits, for example, the total number of pods that can be deployed to each namespace. 
+You can see that every namespace has the `production-quota` we just committed, along with a default [GKE resource quota](https://cloud.google.com/kubernetes-engine/quotas#resource_quotas) which limits, among other things, the total number of pods that can be deployed to each namespace. 
 
 6. **Get the resource quotas on the dev cluster.** 
   
-You should see only ResourceQuotas prefixed with `gke-`, and not the production-quotas. This is because we scoped the production quota resources to only be deployed to the `cymbal-prod` cluster. 
-
 ```
-kubectx cymbal-prod
+kubectx cymbal-dev
 kubectl get resourcequotas --all-namespaces
-```
-
-7. **Return to the prod context and attempt to delete one of the ResourceQuotas manually.**
-
-You should see an error, [which is ConfigSync saying, "only I can administer this resource"](https://cloud.google.com/anthos-config-management/docs/quickstart#attempt_to_manually_modify_a_managed_object). This enforcement helps you, the platform admin, avoid "configuration drift" (or "shadow ops") in your environment, where any Config Sync-managed resource cannot be deleted with kubectl, by you or anyone -- meaning that the live state of the resource should always reflect the committed resource in Git. 
-
-```
-kubectx cymbal-prod
-kubectl delete resourcequota production-quota -n frontend
 ```
 
 Expected output: 
 
 ```
-error: You must be logged in to the server (admission webhook "v1.admission-webhook.configsync.gke.io" denied the request: requester is not authorized to delete managed resources)
+Switched to context "cymbal-dev".
+NAMESPACE                      NAME                  AGE    REQUEST                                                                                                                               LIMIT
+balancereader                  gke-resource-quotas   3d     count/ingresses.extensions: 0/100, count/ingresses.networking.k8s.io: 0/100, count/jobs.batch: 0/5k, pods: 1/1500, services: 1/500
+config-management-monitoring   gke-resource-quotas   93m    count/ingresses.extensions: 0/100, count/ingresses.networking.k8s.io: 0/100, count/jobs.batch: 0/5k, pods: 1/1500, services: 1/500
+config-management-system       gke-resource-quotas   93m    count/ingresses.extensions: 0/100, count/ingresses.networking.k8s.io: 0/100, count/jobs.batch: 0/5k, pods: 4/1500, services: 1/500
 ```
+
+You should see only ResourceQuotas prefixed with `gke-`, and not the production-quotas. This is because we scoped the production quota resources to only be deployed to the `cymbal-prod` cluster. 
+
+Nice! You just learned how to set up fine-grained, cluster-specific resource syncing for your GKE environment. 
+
+Now let's explore the other KRM tool we just installed, Policy Controller. **[Continue to Part D.](partD-policy-controller.md)**
