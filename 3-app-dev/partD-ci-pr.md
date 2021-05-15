@@ -5,7 +5,7 @@ Now that we've tested the new frontend feature locally using the dev cluster, we
 ![screenshot](screenshots/pull-request-ci.jpg)
  
 
-1. **View the Cloud Build pipeline for Pull Requests to the app source repo**. 
+### 1. **View the Cloud Build pipeline for Pull Requests to the app source repo**. 
 
 Run these commands from the cymbalbank-app-source root directory: 
 
@@ -60,11 +60,13 @@ Also note how Cloud Build gets the name of the `cymbalbank-app-config` repo from
 
 **Note** - this is a basic pull request pipeline. In a real use case, you'd likely run different tests, like linters, unit tests, and integration test, before staging the code. Also, in a real use case a repo will likely have multiple PRs open at once, and with this build as-is, different PRs would clobber each other because they're trying to deploy the same services to the same namespaces. The way to get around this would be adding a namespaces suffix like `frontend-pr1` -- or deploying all the services into the same namespace, eg. `pr1`.   
 
-2. **Connect the `cymbalbank-app-source` repo to Cloud Build.** 
+### 2. **Connect the `cymbalbank-app-source` repo to Cloud Build.** 
 
 Navigate to Cloud Build in the console, click Triggers > Connect Repository. Select `your-github-username/cymbalbank-app-source`, then click **Connect.** Then, click **Create Trigger.** 
 
-3. **Create the Continuous Integration - PR trigger.** We want Cloud Build to run this build pipeline on every commit to open Github pull requests targeted at the `main` branch. 
+### 3. **Create the Continuous Integration - PR trigger.**
+
+We want Cloud Build to run this build pipeline on every commit to open Github pull requests targeted at the `main` branch. 
 
 From the Create Trigger menu, set the fields as follows: 
 
@@ -75,7 +77,7 @@ From the Create Trigger menu, set the fields as follows:
 - Configuration: Cloud Build configuration - `/cloudbuild-ci-pr.yaml` 
 - Click **Create**. 
 
-4. **Return to your terminal, and push your local frontend-banner branch to remote.**
+### 4. **Return to your terminal, and push your local frontend-banner branch to remote.**
 
 ```
 git add .
@@ -83,17 +85,19 @@ git commit -m "Add frontend banner, PR CI pipeline"
 git push origin frontend-banner
 ```
 
-5. **Navigate to Github > cymbalbank-app-source and open a pull request in your `frontend-banner` branch.** 
+### 5. **Navigate to Github > cymbalbank-app-source and open a pull request in your `frontend-banner` branch.** 
 
 This will trigger the `cloudbuild-ci-pr.yaml` Cloud Build pipeline.  
 
 ![github-pr](screenshots/github-open-pr.png)
 
-6. **Navigate back to Cloud Build > History. Watch the Continuous Integration - Pull Request pipeline run.** Note - it may take 5-10 minutes for this pipeline to complete.
+### 6. **Navigate back to Cloud Build > History. Watch the Continuous Integration - Pull Request pipeline run.** 
+
+Note - it may take 5-10 minutes for this pipeline to complete.
 
 ![ci-pr](screenshots/ci-pr-success.png)
 
-7. **View the frontend banner in staging.**
+### 7. **View the frontend banner in staging.**
 
 ```
 kubectx cymbal-staging

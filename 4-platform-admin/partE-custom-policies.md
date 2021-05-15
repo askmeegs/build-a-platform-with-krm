@@ -10,7 +10,7 @@ But too many containers packed into one Pod can increase the risk of outages - w
 ![screenshot](screenshots/num-allowed-containers.jpg)
 
 
-**1. View the custom Constraint Template resource, which has been provided for you in the `constraint-limit-containers/` subdirectory.** 
+### **1. View the custom Constraint Template resource, which has been provided for you in the `constraint-limit-containers/` subdirectory.** 
 
 ```
 cat constraint-limit-containers/constrainttemplate.yaml 
@@ -133,7 +133,7 @@ Note that if we have any other Constraints applied to the cluster, Policy Contro
 
 ## Applying the Custom Policy
 
-**2. View the Constraint, which implements the `K8sLimitContainersPerPod` Constraint Template.** 
+### **1. View the Constraint, which implements the `K8sLimitContainersPerPod` Constraint Template.** 
 
 ```
 cat constraint-limit-containers/constraint.yaml 
@@ -153,7 +153,7 @@ spec:
 
 Note that this constraint has no `cluster-selector` annotations, so Config Sync will apply it to all of the clusters. 
 
-**3. Commit both resources to the cymbalbank-policy repo.** 
+### **2. Commit both resources to the cymbalbank-policy repo.** 
 
 ```
 cp constraint-limit-containers/constrainttemplate.yaml cymbalbank-policy/clusters/
@@ -165,7 +165,9 @@ git push origin main
 cd ..
 ```
 
-**4. Return to the dev cluster. Verify that the second Constraint, `limit-three-containers`, has been created.** It may take a minute or two for the cluster to sync the policy from Config Sync.
+### **3. Return to the dev cluster. Verify that the second Constraint, `limit-three-containers`, has been created.** 
+
+It may take a minute or two for the cluster to sync the policy from Config Sync.
 
 ```
 kubectx cymbal-dev
@@ -182,7 +184,7 @@ NAME                                                                      AGE
 k8slimitcontainersperpod.constraints.gatekeeper.sh/limit-three-containers   3m42s
 ```
 
-**5. View the test workload.**
+### **4. View the test workload.**
 
 This is a Deployment where each Pod has 4 containers, each running `nginx`. 4 containers exceeds our limit of 3 containers per pod, so we would expect Policy Controller to reject this resource. 
 
@@ -226,7 +228,7 @@ spec:
         - containerPort: 8084
 ```
 
-**6. Attempt to apply the test workload to the dev cluster.**
+### **5. Attempt to apply the test workload to the dev cluster.**
 
 You should see an error message. 
 
@@ -244,4 +246,4 @@ Error from server ([limit-three-containers] Number of containers in template (4)
 
 We're almost done with the platform admin story for Cymbal Bank. But before we move on, let's tie together the CI/CD pipeline we built in Demo 3 with the policies we've already set up.  
 
-**[Continue to Part F.](partF-policy-check-ci.md)** 
+### **[Continue to Part F.](partF-policy-check-ci.md)** 

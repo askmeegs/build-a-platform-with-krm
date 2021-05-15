@@ -17,5 +17,5 @@ Now that you have a Kubernetes environment to work with, let's learn the basics 
 1. **Complete [part 1](/1-setup)** to bootstrap your environment. 
 
 
-**[Continue to Part A - Setup](partA-setup.md)**. 
+###  **[Continue to Part A - Setup](partA-setup.md)**. 
 

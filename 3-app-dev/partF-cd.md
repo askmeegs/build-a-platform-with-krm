@@ -10,7 +10,7 @@ Also note that this CD pipeline is very simple, just one "kubectl apply" command
 
 Let's watch your frontend banner feature land in production using the CD pipeline. 
 
-1. **View the Continuous Deployment build status in the Cloud Build dashboard.** 
+### 1. **View the Continuous Deployment build status in the Cloud Build dashboard.** 
 
 ![](screenshots/merged-pr-cd-prod.png)
 
@@ -18,14 +18,14 @@ The build should run successfully - note that it's expected that the only worklo
 
 Now, our frontend banner feature should have landed in production! Let's see this in action. 
 
-2. **Back in the terminal, get the frontend pod `EXTERNAL_IP` from the prod cluster.** 
+### 2. **Back in the terminal, get the frontend pod `EXTERNAL_IP` from the prod cluster.** 
 
 ```
 kubectx cymbal-prod
 kubectl get svc -n frontend frontend
 ```
 
-3. **Navigate to the `EXTERNAL_IP` in a browser; you should see the banner appear in the login screen:** 
+### 3. **Navigate to the `EXTERNAL_IP` in a browser; you should see the banner appear in the login screen:** 
 
 ![](screenshots/login-banner.png)
 

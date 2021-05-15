@@ -13,7 +13,7 @@ Further, Config Sync works really well for certain types of platform-level KRM r
 
 Let's explore how we can use Config Sync to keep the same resources constantly deployed across all the Cymbal Bank clusters.  
 
-1. **Get the `frontend` namespace in the `cymbal-dev` cluster.** 
+### 1. **Get the `frontend` namespace in the `cymbal-dev` cluster.** 
   
 We created this namespace manually during part 1, but now it's being managed by Config Sync.  
 
@@ -38,7 +38,7 @@ You can see that a set of new `configmanagement` annotations have been added to 
 
 Where did this resource come from? Let's explore the structure of the policy repo. 
 
-2. **Run the `tree` command on the newly-initialized `cymbalbank-policy` repo.** 
+### 2. **Run the `tree` command on the newly-initialized `cymbalbank-policy` repo.** 
 
 ```
 cd cymbalbank-policy/
@@ -72,7 +72,7 @@ This repo is what's called an **[unstructured](https://cloud.google.com/kubernet
 
 By default, resources committed to a policy repo will be synced to all clusters that use it as a sync source. So here, each of the Cymbal Bank namespaces we've committed will be synced to the dev, staging, prod, and admin clusters, because each of those clusters is set up to sync from this repo. 
 
-3. **Attempt to delete the frontend namespace from the dev cluster.** 
+### 3. **Attempt to delete the frontend namespace from the dev cluster.** 
 
 ```
 kubectl delete namespace frontend
@@ -90,4 +90,4 @@ You can see how we're starting to work towards that goal of **consistency** acro
 
 We can also scope KRM resources to only apply to specific clusters. Let's see how. 
 
-**[Continue to Part C - Cluster-Scoped Resources.](partC-cluster-scoped.md)** 
+### **[Continue to Part C - Cluster-Scoped Resources.](partC-cluster-scoped.md)** 

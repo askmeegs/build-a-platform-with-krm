@@ -9,13 +9,13 @@ As a platform admin, I want to empower all Cymbal Bank developers to know whethe
 
 ![screenshot](screenshots/app-config-ci.jpg)
 
-**1. Clone the `cymbalbank-app-config` repo in the `4-platform-admin/` directory.** 
+### **1. Clone the `cymbalbank-app-config` repo in the `4-platform-admin/` directory.** 
 
 ```
 git clone https://github.com/$GITHUB_USERNAME/cymbalbank-app-config
 ```
 
-**2. View the `cloudbuild-ci-pr-policy.yaml` file in the `app-ci` directory.** 
+### **2. View the `cloudbuild-ci-pr-policy.yaml` file in the `app-ci` directory.** 
 
 ```
 cat app-ci/cloudbuild-ci-pr-policy.yaml
@@ -52,7 +52,7 @@ This pipeline has three steps:
 2. **Clone the cymbalbank-policy repo** - Also remember that this build is running in the cymbalbank-app-config repo, so in order to check those manifests against our policies, we have to clone them in from the policy repo. Also notice that there is a `kpt fn source` command. [**kpt**](https://googlecontainertools.github.io/kpt/) is a KRM package management tool that's still in early development at the time of writing this demo, so we aren't covering it much. All you need to know for the purpose of this build, is that `kpt fn source` means, "run a function called `[source](https://googlecontainertools.github.io/kpt/guides/consumer/function/catalog/sources/)`" to write the compiled policies in `cymbalbank-policy` to the `hydrated-manifests/` directory. 
 3. **Validate theprod manifests against policies** - Up to now, we've seen Policy Controller work at the admission control level of our GKE clusters. Here, the Policy Controller logic is actually running in a container called `policy-controller-validate`, which is pre-built by the Policy Controller team and provided as part of the product. This container can do the same thing that the Admission Controller does - take some incoming KRM (in this case, the contents of the cymbalbank-app-config pull request) and check the resources against the Constraints in our policy repo. 
 
-**3. Copy the Cloud Build pipeline into the `cymbalbank-app-config` root and push to the `main branch`.** 
+### **3. Copy the Cloud Build pipeline into the `cymbalbank-app-config` root and push to the `main branch`.** 
 
 ```
 cp app-ci/cloudbuild-ci-pr-policy.yaml cymbalbank-app-config/
@@ -62,7 +62,7 @@ git commit -m "Add CI for pull requests - policy check"
 git push origin main
 ```
 
-**4. Remove the `K8sNoExternalServices` constraint from the cymbalbank-policy repo.** This is a temporary workaround to an issue with the Policy Controller CI mechanism, where the default constraint template library isn't properly downloaded in, so that constraint isn't recognized as a valid resource. 
+### **4. Remove the `K8sNoExternalServices` constraint from the cymbalbank-policy repo.** This is a temporary workaround to an issue with the Policy Controller CI mechanism, where the default constraint template library isn't properly downloaded in, so that constraint isn't recognized as a valid resource. 
 
 ```
 cd ..
@@ -74,7 +74,7 @@ git push origin main
 cd ../cymbalbank-app-config
 ```
 
-**4. Create a new Cloud Build trigger corresponding to this new policy check pipeline, by navigating to the Console > Cloud Build > Triggers > Create.**
+### **5. Create a new Cloud Build trigger corresponding to this new policy check pipeline, by navigating to the Console > Cloud Build > Triggers > Create.**
 
 We want to run this pipeline anytime someone puts out a pull request with updated application YAML. 
 
@@ -87,13 +87,13 @@ We want to run this pipeline anytime someone puts out a pull request with update
 
 Click **Create**. 
 
-**5. Return to the terminal, and still in the `cymbalbank-app-config` root dir, check out a new branch, `nginx`.**
+### **6. Return to the terminal, and still in the `cymbalbank-app-config` root dir, check out a new branch, `nginx`.**
 
 ```
 git checkout -b nginx
 ```
 
-**6. Copy the `test-workload.yaml` Service we used earlier in this demo into the `cymbalbank-app-config` repo, under the `base/` manifests.**
+### **7. Copy the `test-workload.yaml` Service we used earlier in this demo into the `cymbalbank-app-config` repo, under the `base/` manifests.**
 
 Given that we committed a policy to `cymbalbank-policy` stating that only up to 2 containers are allowed per Pod, we expect the pipeline to fail, with the same Policy Controller error we saw when trying to `kubectl apply -f` this same Deployment. Also update the base `kustomization.yaml` to bring the nginx Deployment into the baseline manifests it knows about. 
 
@@ -102,7 +102,7 @@ cp ../constraint-limit-containers/test-workload.yaml ./base/
 echo "\n- test-workload.yaml" >> ./base/kustomization.yaml
 ```
 
-**7. Commit the file to the `nginx` branch.**
+### **8. Commit the file to the `nginx` branch.**
 
 ```
 git add .
@@ -120,11 +120,11 @@ To https://github.com/askmeegs/cymbalbank-app-config
  * [new branch]      nginx -> nginx
 ```
 
-**8. In a browser, navigate to `github.com/your-github-username/cymbalbank-app-config`.**
+### **9. In a browser, navigate to `github.com/your-github-username/cymbalbank-app-config`.**
 
 Put out a new Pull Request for the `nginx` branch, into the `main` branch. 
 
-**9.  Navigate back to Cloud Build > History, and watch the build run.** 
+### **10.  Navigate back to Cloud Build > History, and watch the build run.** 
 
 You should see an error in the third step, matching the Policy Controller error you saw when trying to `kubectl apply -f` the nginx resource earlier. 
 

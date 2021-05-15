@@ -5,7 +5,7 @@ Up to now, we've used Config Connector to generate *new* hosted resources, in bo
 
 For this final demo of the series, let's learn how to bring those existing Google Cloud resources into the management of Config Connector, via gcloud and Config Sync. 
 
-1. [Install the Config Connector tool](https://cloud.google.com/config-connector/docs/how-to/import-export/overview#installing-config-connector) and ensure it's in your PATH: 
+### 1. [Install the Config Connector tool](https://cloud.google.com/config-connector/docs/how-to/import-export/overview#installing-config-connector) and ensure it's in your PATH: 
 
 ```
 config-connector version
@@ -17,7 +17,9 @@ Expected output:
 1.46.0
 ```
 
-2. **View the Cloud SQL KRM export script.** This script generates static KRM resource files (YAML) for the Cloud SQL development database. (Although these steps only show KRM for the development DB, we could do the same for the staging and production databases as well.)
+### 2. **View the Cloud SQL KRM export script.** 
+
+This script generates static KRM resource files (YAML) for the Cloud SQL development database. (Although these steps only show KRM for the development DB, we could do the same for the staging and production databases as well.)
 
 ```
 cat cloudsql/generate-cloudsql-krm.sh 
@@ -41,13 +43,13 @@ config-connector export \
      --output cloudsql/
 ```
 
-3. **Run the Cloud SQL KRM export script.** 
+### 3. **Run the Cloud SQL KRM export script.** 
 
 ```
 ./cloudsql/generate-cloudsql-krm.sh
 ```
 
-4. **View the generated KRM resources.** 
+### 4. **View the generated KRM resources.** 
 
 ```
 cat cloudsql/projects/$PROJECT_ID/SQLInstance/us-east1/cymbal-dev.yaml
@@ -118,7 +120,7 @@ spec:
 
 These KRM files represent the live state of your Cloud SQL resources, originally created using Terraform. (You will see your PROJECT_ID next to `cnrm.cloud.google.com/project-id`.)
 
-5. **Apply the Cloud SQL KRM resources to the cymbal-admin cluster.**
+### 5. **Apply the Cloud SQL KRM resources to the cymbal-admin cluster.**
 
 ```
 kubectl apply -f cloudsql/projects/$PROJECT_ID/SQLInstance/us-east1/cymbal-dev.yaml
@@ -138,7 +140,7 @@ Note that although the Kubernetes resources were just created, Config Connector 
 
 You can see these labels by navigating to the Cloud SQL console. 
 
-6. **First, get the Config Connector resource status on the cymbal-admin cluster**. 
+### 6. **First, get the Config Connector resource status on the cymbal-admin cluster**. 
 
 ```
 kubectl get gcp
@@ -155,7 +157,9 @@ NAME                                               AGE   READY   STATUS     STAT
 sqlinstance.sql.cnrm.cloud.google.com/cymbal-dev   42s   True    UpToDate   10s
 ```
 
-7. **Open the Cloud Console and navigate to Cloud SQL**. Notice how in the list, the `cymbal-dev` cluster now has a new label, `managed-by-cnrm: true`. This indicates that this SQL Instance is now under the management umbrella of Config Connector. 
+### 7. **Open the Cloud Console and navigate to Cloud SQL**. 
+
+Notice how in the list, the `cymbal-dev` cluster now has a new label, `managed-by-cnrm: true`. This indicates that this SQL Instance is now under the management umbrella of Config Connector. 
 
 ![](screenshots/cloudsql-labels.png)
 

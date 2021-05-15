@@ -7,13 +7,13 @@
 
 Each Cymbal Bank service represents one Kubernetes workload. Like the nginx Deployment we saw in Part A, each Cymbal Bank service has its own Deployment, which runs its respective application server as a cntainer. Let's explore the KRM resources for the app. 
 
-1. **Copy the Kubernetes manifests** for Cymbal Bank into the `cymbalbank-app-config/` repo, which you cloned during setup.
+### 1. **Copy the Kubernetes manifests** for Cymbal Bank into the `cymbalbank-app-config/` repo, which you cloned during setup.
 
 ```
 cp -r app-manifests/* cymbalbank-app-config/
 ```
 
-2. **Explore the cymbalbank-app-config repo.** 
+### 2. **Explore the cymbalbank-app-config repo.** 
 
 Unlike the nginx example where we used `kubectl` to directly apply a Deployment to a cluster, we'll instead use a tool called [kustomize](https://kubectl.docs.kubernetes.io/guides/introduction/kustomize/) to deploy the Cymbal Bank app. kustomize allows you to "customize" KRM to suit different environments, and makes it easier to interact with larger groups of KRM. Kustomize is now built directly into kubectl, meaning you can run kustomize commands with `kubectl apply -k`. 
 
@@ -64,7 +64,7 @@ cymbalbank-app-config/
 
 Here, we can see that there's a `base` directory, with YAML files for each Cymbal Bank service, plus two `overlay` directories, `dev` and `prod`, each with their own YAML file per Cymbal Bank service. What's going on here? 
 
-3. **Explore the Cymbal Bank kustomize overlays.** 
+### 3. **Explore the Cymbal Bank kustomize overlays.** 
 
 kustomize allows for pre-baked "flavors" of a set of Kubernetes manifests, called [overlays](https://kubectl.docs.kubernetes.io/guides/config_management/components/). Overlays help reduce manual editing of YAML files, while allowing multiple flavors to use the same source YAML. The README in the `cymbalbank-app-config` root directory details the differences between the demo, prod, and dev overlays. Notice that different fields get different values depending on the environment - for instance, we may want more frontend replicas in production to serve real production traffic. 
 
@@ -76,7 +76,7 @@ kustomize allows for pre-baked "flavors" of a set of Kubernetes manifests, calle
 
 
 
-4. **Both overlays rely on the same base manifests for each Cymbal Bank service. For instance, view the `userservice` base manifests:** 
+### 4. **Both overlays rely on the same base manifests for each Cymbal Bank service. For instance, view the `userservice` base manifests:** 
 
 ```
 cat cymbalbank-app-config/base/contacts.yaml
@@ -118,7 +118,7 @@ Notice that this file contains multiple Kubernetes resources, separated with the
 This baseline config for `contacts` is then extended in the overlays using "patches." Think of a patch as incomplete KRM - a YAML resource with only the fields specified that you want to override, over the base. 
 
 
-**5. View the contacts service patch for the dev overlay:** 
+### **5. View the contacts service patch for the dev overlay:** 
 
 ```
 cat cymbalbank-app-config/overlays/dev/contacts.yaml 
@@ -153,7 +153,7 @@ Notice that we don't specify the `image` field here - that's already covered by 
 
 When kustomize is invoked to apply the full set of resources to the cluster, kustomize will combine the base contacts Deployment with the overlay patch above, resulting in one fully-rendered Deployment that it will then apply to the cluster. 
 
-6. **Explore the kustomization.yaml for the dev overlay**. 
+### 6. **Explore the kustomization.yaml for the dev overlay**. 
 
 The last thing to know about kustomize, for now, is that each kustomize directory needs a [`kustomization.yaml` file](https://kubectl.docs.kubernetes.io/references/kustomize/glossary/#kustomization). This provides the config for kustomize itself, telling it where your config lives and how to merge together your base and overlays. Think of this file as a "captain's manifest" for what's inside that directory. 
 

@@ -7,7 +7,7 @@ In Part 2, we created a Continuous Deployment pipeline, triggered on commits to 
 
 In this section, we'll create a "bridge" CI/CD pipeline, so that when a Pull Request in the `cymbalbank-app-source` repo merges into `main`, that updated release source code is built and deployed to the production GKE cluster. In order for this to happen, we have to create unique image tags, corresponding to a `main` branch commit, and inject those image tags into the `cymbalbank-app-config` repo's `prod/` manifests. Let's see how to do that.  
 
- 1. **View the Cloud Build pipeline for commits to the `main` branch of the app source repo** 
+### 1. **View the Cloud Build pipeline for commits to the `main` branch of the app source repo** 
 
 ```
 cat ../cloudbuild-ci-main.yaml 
@@ -78,7 +78,7 @@ This pipeline will run when a pull request merges into the `main` branch. It doe
 3. Injects the new image tags (the ones we just built, with the Git commit SHA) into the deployment manifests in `cymbalbank-app-config`. 
 4. Pushes those YAML file changes to the `main` branch of `cymbalbank-app-config`, authenticated with your `GITHUB_TOKEN` stored in Secret Manager.  
 
-2. **Copy the main CI pipeline into cymbalbank-app-source.** 
+### 2. **Copy the main CI pipeline into cymbalbank-app-source.** 
 
 ```
 cp ../cloudbuild-ci-main.yaml .
@@ -87,7 +87,7 @@ git commit -m "Add cloudbuild CI main"
 git push origin frontend-banner
 ```
 
-3. **Create a CI main Cloud Build trigger**
+### 3. **Create a CI main Cloud Build trigger**
 
 Reopen Cloud Build in the Google Cloud Console. Click Triggers > **Create Trigger**. 
 
@@ -99,19 +99,19 @@ Reopen Cloud Build in the Google Cloud Console. Click Triggers > **Create Trigge
 - Click **Create**. 
 
 
-4. **Merge the frontend-banner pull request**.
+### 4. **Merge the frontend-banner pull request**.
 
 Do this by navigating back to Github and clicking "Squash and Merge." 
 
-5. **Watch the Continuous Integration - Main pipeline run in Cloud Build.** Wait for the build to complete. 
+### 5. **Watch the Continuous Integration - Main pipeline run in Cloud Build.** Wait for the build to complete. 
 
 ![ci-main-success](screenshots/ci-main-success.png)
 
-6. **When the build completes, navigate to [Google Container Registry]() in the Cloud Console.** You should be able to see the production images that Cloud Build just built and pushed. 
+### 6. **When the build completes, navigate to [Google Container Registry]() in the Cloud Console.** You should be able to see the production images that Cloud Build just built and pushed. 
 
 ![gcr](screenshots/gcr.png)
 
-7. **Navigate back to Github and open the cymbalbank-app-config repo.** 
+### 7. **Navigate back to Github and open the cymbalbank-app-config repo.** 
 
 In the `base/` directory, and in each Deployment, you should see a new `image` tag, indicating that the CI pipeline injected the tag of the images built from the latest commit to `main`, which since your PR merged, includes the frontend banner source code. 
 

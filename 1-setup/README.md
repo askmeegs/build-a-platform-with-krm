@@ -33,21 +33,21 @@ The diagram above shows the baseline resources Terraform will create during setu
 
 ## Steps 
 
-1. **Open a terminal, and clone this repo.**
+### 1. **Open a terminal, and clone this repo.**
 
 ```
 git clone https://github.com/askmeegs/intro-to-krm
 cd intro-to-krm/1-setup/ 
 ```
 
-2. **Set variables**. 
+###  2. **Set variables**. 
 
 ```
 export PROJECT_ID="<your-project-id>" 
 export GITHUB_USERNAME="<your-github-username>"
 ```
 
-3. **Enable Google Cloud APIs** in your project. This command takes a minute to run.
+###  3. **Enable Google Cloud APIs** in your project. This command takes a minute to run.
 
 ```
 gcloud config set project ${PROJECT_ID}
@@ -60,14 +60,14 @@ gcloud services enable \
   storage.googleapis.com
 ```
 
-4. **Get the project number corresponding to your project ID.** 
+### 4. **Get the project number corresponding to your project ID.** 
 
 ```
 PROJECT=$(gcloud config get-value project)
 gcloud projects list --filter="$PROJECT" --format="value(PROJECT_NUMBER)"
 ```
 
-5. **Replace the values in `terraform.tfvars`** with the values corresponding to your project. 
+### 5. **Replace the values in `terraform.tfvars`** with the values corresponding to your project. 
 
 ```
 project_id = ""
@@ -76,13 +76,13 @@ github_username = ""
 github_token = ""
 ```
 
-6. **Set up application default credentials** for your project - this allows Terraform to create GCP resources on your behalf. 
+### 6. **Set up application default credentials** for your project - this allows Terraform to create GCP resources on your behalf. 
 
 ```
 gcloud auth application-default login
 ```
 
-7. **Run `terraform init`.** This downloads the providers (Github, Google Cloud) needed for setup. On success, you should see: 
+### 7. **Run `terraform init`.** This downloads the providers (Github, Google Cloud) needed for setup. On success, you should see: 
 
 ```
 terraform init 
@@ -94,7 +94,7 @@ Expected output:
 Terraform has been successfully initialized!
 ```
 
-8. **Run `terraform plan`.** This looks at the `.tf` files in the directory and tells you what it will deploy to your Google Cloud project. 
+### 8. **Run `terraform plan`.** This looks at the `.tf` files in the directory and tells you what it will deploy to your Google Cloud project. 
 
 
 ```
@@ -114,7 +114,9 @@ Changes to Outputs:
 
 ```
 
-9.  **Run `terraform apply`** to create the resources. It will take a few minutes for Terraform to set up the cluster and the Cloud Build pipeline. When the command completes, you should see something similar to this: 
+### 9.  **Run `terraform apply`** to create the resources.
+
+It will take a few minutes for Terraform to set up the cluster and the Cloud Build pipeline. When the command completes, you should see something similar to this: 
 
 ```
 terraform apply -auto-approve
@@ -134,7 +136,9 @@ kubernetes_staging_cluster_name = "cymbal-staging"
 ```
 
 
-10. **Run the cluster setup script.** This registers the clusters to the Anthos dashboard, sets up Kubernetes contexts, and sets up the Kubernetes namespaces you'll deploy the application into, in the next demo.
+### 10. **Run the cluster setup script.** 
+
+This registers the clusters to the Anthos dashboard, sets up Kubernetes contexts, and sets up the Kubernetes namespaces you'll deploy the application into, in the next demo.
 
 ```
 ./cluster-setup.sh
@@ -146,7 +150,7 @@ Expected output:
 ✅ GKE Cluster Setup Complete.
 ```
 
-11. **Verify that you can now access your different clusters as follows:** 
+###  11.  **Verify that you can now access your different clusters as follows:** 
 
 ```
 kubectx cymbal-prod 
@@ -164,6 +168,6 @@ gke-cymbal-prod-cymbal-prod-node-pool-de8b1260-n9hw   Ready    <none>   15m   v1
 gke-cymbal-prod-cymbal-prod-node-pool-de8b1260-wv69   Ready    <none>   15m   v1.18.16-gke.302
 ```
 
-🎊 **Congrats**! You just set up the GKE environment you'll use for the rest of the demos.
+###  🎊 **Congrats**! You just set up the GKE environment you'll use for the rest of the demos.
 
-**[Continue to Part 2- How KRM Works.](/2-how-krm-works/)**
+###  **[Continue to Part 2- How KRM Works.](/2-how-krm-works/)**

@@ -20,4 +20,4 @@ In this final demo, we will learn how to lifecycle Google Cloud-hosted resources
 - How to export live-running GCP resources as KRM
 - How to manage existing cloud resources using Config Connector  
 
-**[Continue to Part A - Introducing Config Connector.](partA-config-connector.md)**
+### **[Continue to Part A - Introducing Config Connector.](partA-config-connector.md)**

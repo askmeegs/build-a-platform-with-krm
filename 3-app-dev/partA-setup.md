@@ -1,7 +1,7 @@
 
 # Part A - Setup  
 
-1. **Open a Terminal and set variables.**
+### 1. **Open a Terminal and set variables.**
 
 ```
 cd 3-app-dev/
@@ -9,7 +9,7 @@ export PROJECT_ID=<your-project-id>
 export GITHUB_USERNAME=<your-github-username>
 ```
 
-2. **Switch to the `cymbal-dev` kubecontext.**
+### 2. **Switch to the `cymbal-dev` kubecontext.**
 
 ```
 kubectx cymbal-dev
@@ -21,7 +21,7 @@ Expected output:
 Switched to context "cymbal-dev".
 ```
 
-3. **Clone and initialize the app source repo** in the `app-dev/` directory.
+### 3. **Clone and initialize the app source repo** in the `app-dev/` directory.
 
 ```
 git clone "https://github.com/${GITHUB_USERNAME}/cymbalbank-app-source"
@@ -34,7 +34,7 @@ git checkout -b frontend-banner
 cd .. 
 ```
 
-4. **Populate the `cymbalbank-app-source` repo with the upstream [Bank of Anthos](https://github.com/googlecloudplatform/bank-of-anthos) sample app code.**
+### 4. **Populate the `cymbalbank-app-source` repo with the upstream [Bank of Anthos](https://github.com/googlecloudplatform/bank-of-anthos) sample app code.**
 
 ```
 git clone "https://github.com/GoogleCloudPlatform/bank-of-anthos"
@@ -43,7 +43,7 @@ cp -r bank-of-anthos/ cymbalbank-app-source/
 rm -rf bank-of-anthos 
 ```
 
-5. **Clone the `cymbalbank-app-config` repo inside the `cymbalbank-app-source` repo.**
+### 5. **Clone the `cymbalbank-app-config` repo inside the `cymbalbank-app-source` repo.**
 
 ```
 cd cymbalbank-app-source; 

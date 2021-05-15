@@ -21,4 +21,4 @@ So if I'm a platform admin, I really care about two things with KRM: 1) **Consis
 
 - Complete parts 1-3. 
 
-**[Continue to Part A - Installing Config Sync and Policy Controller.](partA-installation.md)**
+### **[Continue to Part A - Installing Config Sync and Policy Controller.](partA-installation.md)**

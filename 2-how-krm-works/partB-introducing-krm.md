@@ -14,7 +14,7 @@ So what does that "desired" state look like? How do you get configuration into a
 KRM was created by the Kubernetes authors several years ago, and it was designed to work with that declarative reconciliation model. Each KRM resource is a noun that the Kubernetes control plane knows how to take action on. (If you're ever worked with a REST API with basic CRUD operations, this may sound familiar). Let's look at our first resource. 
 
 
-1. **View the nginx deployment.** 
+### 1. **View the nginx deployment.** 
 
 `nginx-deployment.yaml` contains a Deployment manifest ([source](https://kubernetes.io/docs/tasks/run-application/run-stateless-application-deployment/)). A [Deployment](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/) is a core Kubernetes resource, and a common way to run containers in a cluster. 
 
@@ -54,7 +54,7 @@ Here, we see the structured KRM format at work. All [Kubernetes objects](https:/
 - `metadata` - information *about* the object - like labels, [annotations](https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/), name. When you create this resource in a cluster, Kubernetes will add its own metadata, including a unique ID, `UID`, for that specific object. 
 - `spec` - the core set of fields that you, the user, populate about that resource. In a Deployment spec, for instance, you have to define the container `image` you want to use. Also notice how we'll deploy 3 `replicas` of the same container - this allows for basic scaling. A resource's `spec` is specific to that resource - the Deployment spec, for instance, is different from the [StatefulSet](https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#components) spec, even though both deploy containers.   
 
-2. **Change your local Kubernetes context** to the `cymbal-dev` cluster and verify you can get its Nodes. Note - we'll use the `kubectx` command throughout these demos to easily switch our local terminal to "point to" the different GKE clusters.
+### 2. **Change your local Kubernetes context** to the `cymbal-dev` cluster and verify you can get its Nodes. Note - we'll use the `kubectx` command throughout these demos to easily switch our local terminal to "point to" the different GKE clusters.
 
 ```
 kubectx cymbal-dev
@@ -72,7 +72,7 @@ gke-cymbal-dev-cymbal-dev-node-pool-4839a130-b8fs   Ready    <none>   25h   v1.1
 gke-cymbal-dev-cymbal-dev-node-pool-4839a130-nbfv   Ready    <none>   25h   v1.18.17-gke.100
 ```
 
-3. **Apply `nginx-deployment.yaml` to the cluster using kubectl**. 
+### 3. **Apply `nginx-deployment.yaml` to the cluster using kubectl**. 
 
 `[kubectl](https://kubernetes.io/docs/reference/kubectl/overview/)` is a command-line interface between a user and a running Kubernetes API server. (All 4 of your GKE clusters have their own API servers.)  You'll see in the Kubernetes architecture diagram above that `kubectl` is only one way to interact with the Kubernetes API but's the method you'll see most often in demos. Here, the `kubectl apply` command is like a a REST `put` command - it will create the resource if it doesn't exist, or update it, if the resource already exists. 
 
@@ -86,7 +86,7 @@ Expected output:
 deployment.apps/nginx-deployment created
 ```
 
-4. **View the running Pods** in the cymbal-dev cluster. 
+### 4. **View the running Pods** in the cymbal-dev cluster. 
 
 [Pods](https://kubernetes.io/docs/concepts/workloads/pods/) are the smallest deployable unit in Kubernetes. Each Pod contains one or more running containers - in this case, each of the 3 nginx pods contain 1 nginx container. 
 
@@ -103,7 +103,7 @@ nginx-deployment-6b474476c4-4txp6   1/1     Running   0          2m30s
 nginx-deployment-6b474476c4-gqsql   1/1     Running   0          2m30s
 ```
 
-5. **Delete one of the pods in your nginx Deployment.**, by copying the `NAME` field in your output of the command above.  
+### 5. **Delete one of the pods in your nginx Deployment.**, by copying the `NAME` field in your output of the command above.  
 
 ```
 kubectl delete pod nginx-deployment-6b474476c4-2fbfc
@@ -115,7 +115,9 @@ Expected output:
 pod "nginx-deployment-6b474476c4-2fbfc" deleted
 ```
 
-**6. Run `kubectl get pods` again.** You should see that Kubernetes noticed that the actual state diverged from your desired state in `nginx-deployment.yaml`, and brought a new nginx Pod back online. Notice that it's a new Pod name, not the name of the Pod you deleted - this is because Kubernetes Deployment Pods are stateless and ephemeral (including their IP addresses). 
+### **6. Run `kubectl get pods` again.** 
+
+You should see that Kubernetes noticed that the actual state diverged from your desired state in `nginx-deployment.yaml`, and brought a new nginx Pod back online. Notice that it's a new Pod name, not the name of the Pod you deleted - this is because Kubernetes Deployment Pods are stateless and ephemeral (including their IP addresses). 
 
 ```
 kubectl get pods 
@@ -166,7 +168,7 @@ Here we can see that the Kubernetes scheduler spread out the 3 nginx pods across
 
 The key thing to take away from this section is that the Kubernetes APIServer, with its etcd backing store, is the single source of truth for all "nouns" - KRM objects - in the cluster. What this means is that the `nginx-deployment.yaml` file you applied to the cluster actually gets added to by the Kubernetes control plane, with info about its live state. 
 
-7. **Get your deployment out of the APIServer using `kubectl`**. 
+### 7. **Get your deployment out of the APIServer using `kubectl`**. 
 
 ```
 kubectl get deployment nginx-deployment -o yaml 
@@ -202,7 +204,7 @@ You'll notice that this YAML file is much longer than the one you defined in `ng
 
 In this way, a KRM file is a complete record of not only your desired state, but the live state of the resource, along with a log (`conditions`) of what happened to the resource in the past. 
 
-8. Clean up by deleting the nginx-deployment from the cluster. 
+###  8. Clean up by deleting the nginx-deployment from the cluster. 
 
 ```
 kubectl delete -f nginx-deployment.yaml 
@@ -210,4 +212,4 @@ kubectl delete -f nginx-deployment.yaml
 
 Now that we've learned the basics of KRM and how to interact with a Kubernetes cluster, let's explore a larger sample application. 
 
-**[Continue to Part C - Introducing the Cymbal Bank app](partC-cymbal-bank.md)**. 
+### **[Continue to Part C - Introducing the Cymbal Bank app](partC-cymbal-bank.md)**. 

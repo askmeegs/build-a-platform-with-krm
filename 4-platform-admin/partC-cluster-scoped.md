@@ -9,7 +9,7 @@ Let's set up Resource Quotas for the `cymbal-prod` cluster only. We do this usin
 
 The `production-quotas/` directory contains resource quotas for all Cymbal Bank app namespaces. 
 
-1. **View the frontend Resource Quota YAML.** Run this command from the `4-platform-admin/` directory.
+### 1. **View the frontend Resource Quota YAML.** Run this command from the `4-platform-admin/` directory.
 
 Each Cymbal Bank namespace will get one of these.  
 
@@ -35,7 +35,7 @@ spec:
 
 Here, we set resource quotas for CPU and Memory on the entire frontend namespace, meaning that in aggregate, all the Pods running in the frontend namespace must not use more than 700 CPU millicores, and 512 [mebibytes](https://medium.com/@betz.mark/understanding-resource-limits-in-kubernetes-memory-6b41e9a955f9) of memory.
 
-2. **Copy all the Resource Quota resources into your cymbalbank-policy repo.**
+### 2. **Copy all the Resource Quota resources into your cymbalbank-policy repo.**
 
 ```
 cp production-quotas/balancereader/quota.yaml cymbalbank-policy/namespaces/balancereader/
@@ -47,7 +47,7 @@ cp production-quotas/transactionhistory/quota.yaml cymbalbank-policy/namespaces/
 cp production-quotas/userservice/quota.yaml cymbalbank-policy/namespaces/userservice/
 ```
 
-3. **Commit the ResourceQuotas to the `main` branch of the cymbalbank-policy repo.**
+### 3. **Commit the ResourceQuotas to the `main` branch of the cymbalbank-policy repo.**
 
 ```
 cd cymbalbank-policy/
@@ -66,7 +66,7 @@ To https://github.com/askmeegs/cymbalbank-policy
    e2bca67..cdfbaae  main -> main
 ```
 
-4. **View the Config Sync status again. You should see the clusters all move from `PENDING` to `SYNCED`, at a new git commit token.**
+### 4. **View the Config Sync status again. You should see the clusters all move from `PENDING` to `SYNCED`, at a new git commit token.**
 
 ```
 gcloud alpha container hub config-management status --project=${PROJECT_ID}
@@ -82,7 +82,7 @@ cymbal-prod     SYNCED  061f56a            main         2021-05-13T23:41:12Z  IN
 cymbal-staging  SYNCED  061f56a            main         2021-05-13T23:41:14Z  INSTALLED
 ```
 
-5. **Get the resource quotas on the prod cluster.** 
+### 5. **Get the resource quotas on the prod cluster.** 
 
 ```
 kubectx cymbal-prod
@@ -100,7 +100,7 @@ balancereader                  production-quota      6m56s   cpu: 300m/700m, mem
 
 You can see that every namespace has the `production-quota` we just committed, along with a default [GKE resource quota](https://cloud.google.com/kubernetes-engine/quotas#resource_quotas) which limits, among other things, the total number of pods that can be deployed to each namespace. 
 
-6. **Get the resource quotas on the dev cluster.** 
+### 6. **Get the resource quotas on the dev cluster.** 
   
 ```
 kubectx cymbal-dev
@@ -121,4 +121,6 @@ You should see only ResourceQuotas prefixed with `gke-`, and not the production-
 
 Nice! You just learned how to set up fine-grained, cluster-specific resource syncing for your GKE environment. 
 
-Now let's explore the other KRM tool we just installed, Policy Controller. **[Continue to Part D.](partD-policy-controller.md)**
+Now let's explore the other KRM tool we just installed, Policy Controller. 
+
+### **[Continue to Part D.](partD-policy-controller.md)**

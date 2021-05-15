@@ -11,7 +11,7 @@ To deploy the app to the dev cluster, we will use [Google Cloud Code](https://cl
 
 [skaffold](https://skaffold.dev/docs/quickstart/) is a command-line tool that can auto-build and auto-deploy source code into GKE, using container builders like Docker. 
 
-1. **View the `skaffold.yaml` file in the `app-dev/` directory**. 
+### 1. **View the `skaffold.yaml` file in the `app-dev/` directory**. 
 
 ```
 cat ../skaffold.yaml 
@@ -76,7 +76,9 @@ profiles:
 A [skaffold.yaml](https://skaffold.dev/docs/references/yaml/) file is the configuration for skaffold. It tells skaffold where the source code lives for the various Cymbal Bank services, and where the YAML files live for Kubernetes. We configure the Java services (eg. balancereader) to use the [Jib](https://github.com/GoogleContainerTools/jib/) container builder, which is a Java-specific tool that allows us to build directly using Maven without writing Dockerfiles. For the Python services (eg. contacts) we use the default Docker builder. We're also configuring skaffold to use the kustomize overlays we explored in Part 2, mapping the skaffold `dev` **[profile](https://skaffold.dev/docs/environment/profiles/)** to the kustomize dev overlay. We also define skaffold profiles for staging and prod.
 
 
-2. **From the `cymbalbank-app-source/` directory, copy `skaffold.yaml`**. Note - this will overwrite the upstream `skaffold.yaml` with our changes, this is ok.
+###  2. **From the `cymbalbank-app-source/` directory, copy `skaffold.yaml`**. 
+
+Note - this will overwrite the upstream `skaffold.yaml` with our changes, this is ok.
 
 ```
 cp ../skaffold.yaml .
@@ -84,22 +86,23 @@ cp ../skaffold.yaml .
 
 Now we're ready to use Cloud Code, configured with this `skaffold.yaml` file, to build our local code and deploy to the dev GKE cluster. First, we need to point Cloud Code at the right cluster. 
 
-3. **Reopen VSCode, and open `skaffold.yaml` in the `cymbalbank-app-source` directory.** 
+### 3. **Reopen VSCode, and open `skaffold.yaml` in the `cymbalbank-app-source` directory.** 
 
-4. **Press `shift-command-p`**, and in the command palette that appears, type `Cloud Code: Debug`. A terminal window should pop up at the bottom of the screen. 
+### 4. **Press `shift-command-p`**, and in the command palette that appears, type `Cloud Code: Debug`. 
 
-5. **A skaffold.yaml prompt should appear. Choose `cymbalbank-app-source/skaffold.yaml` from the drop-down.** 
+A terminal window should pop up at the bottom of the screen. 
 
-6. **A profiles prompt will appear. Choose `dev`.** 
+### 5. **A skaffold.yaml prompt should appear. Choose `cymbalbank-app-source/skaffold.yaml` from the drop-down.** 
+
+### 6. **A profiles prompt will appear. Choose `dev`.** 
 
 ![screenshots](screenshots/cloud-code-profiles.png)
 
-7. **A kubecontext prompt will appear. Choose `cymbal-dev`**. 
+### 7. **A kubecontext prompt will appear. Choose `cymbal-dev`**. 
 
-8. **An image registry prompt will appear. Set it to `gcr.io/PROJECT_ID/cymbal-bank`, replacing `PROJECT_ID` with your project ID value.** 
+### 8. **An image registry prompt will appear. Set it to `gcr.io/PROJECT_ID/cymbal-bank`, replacing `PROJECT_ID` with your project ID value.** 
 
 ![screenshot](screenshots/cc-gcr.png)
-
 
 A terminal should open up within VSCode that shows the skaffold logs, as it builds images and deploys to the dev cluster. This will take 3-5 minutes. 
 
@@ -114,7 +117,7 @@ Update succeeded
 ***********************************
 ```
 
-9. **Open a new terminal window and view your newly-built pods**. 
+### 9. **Open a new terminal window and view your newly-built pods**. 
 
 ```
 kubectl get pods --all-namespaces --selector=org=cymbal-bank
@@ -133,7 +136,7 @@ transactionhistory   transactionhistory-68c4b9ccd6-nwh24   2/2     Running   0  
 userservice          userservice-558fcc7fc4-fndgm          2/2     Running   0          111s
 ```
 
-10.  View the new frontend banner running on the dev cluster.
+### 10.  View the new frontend banner running on the dev cluster.
 
 Copy the `EXTERNAL_IP` of your frontend service, paste  it on a browser, and navigate to the frontend's login screen. 
 
@@ -147,11 +150,11 @@ You should see your new banner at the top of the login screen:
 
 Note that `Cloud Code: Run on Kubernetes` uses `skaffold dev` as the underlying command, which constantly watches your local source code for changes, and keeps building the updated services as you write more code. Optionally, make some changes to the login banner or add some text to the `login.html` file - you should see the `Output` in your IDE log the updated build, and if you re-navigate to the fronten external IP, you should see your changes reflected. 
 
-11. Remove your test deployment from the dev cluster by 
+### 11. Remove your test deployment from the dev cluster by 
 
 **💫 Nice work! You just used skaffold, Cloud Code, and kustomize to test code changes in GKE.** 
 
-**[Continue to Part D: Creating a Pull Request](partD-ci-pr.md)**
+### **[Continue to Part D: Creating a Pull Request](partD-ci-pr.md)**
 
 
 ## Troubleshooting 

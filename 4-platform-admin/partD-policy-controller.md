@@ -38,7 +38,7 @@ In this demo, we're going to create a policy Constraint for the `cymbal-dev` clu
 
 ![screenshot](screenshots/block-ext-services.jpg)
 
-1. **Switch to the `cymbal-dev` cluster, and verify that the Constraint Template library is installed.** 
+### 1. **Switch to the `cymbal-dev` cluster, and verify that the Constraint Template library is installed.** 
   
 This is a set of a few dozen Custom Resources (CRDs), each defining a ConstraintTemplate.   
 
@@ -61,7 +61,7 @@ k8sallowedrepos                           2d9h
 ...
 ```
 
-2. **View the `K8sNoExternalServices` Constrant resource, provided for you in the `constraint-ext-services` directory.** 
+### 2. **View the `K8sNoExternalServices` Constrant resource, provided for you in the `constraint-ext-services` directory.** 
 
 This Constraint implements the `[K8sNoExternalServices](https://cloud.google.com/anthos-config-management/docs/reference/constraint-template-library#k8snoexternalservices)` Constraint Template with concrete information about our environment. 
 
@@ -85,7 +85,7 @@ spec:
 
 Here, the `kind: K8sNoExternalServices` refers to the `k8snoexternalservices` constraint template already installed on the cluster. And notice how we're using Config Sync's `cluster-name-selector` annotation to scope this resource to the `cymbal-dev` cluster only. 
 
-**3. Create a new subdirectory in the `policy-repo`, `clusters/cymbal-dev`.**
+### **3. Create a new subdirectory in the `policy-repo`, `clusters/cymbal-dev`.**
 
 This is where we'll keep cluster-wide policies, separate from namespace-specific directories. 
 
@@ -93,13 +93,13 @@ This is where we'll keep cluster-wide policies, separate from namespace-specific
 mkdir -p cymbalbank-policy/clusters/cymbal-dev
 ```
 
-**4. Copy `constraint.yaml` into the new directory.**
+### **4. Copy `constraint.yaml` into the new directory.**
 
 ```
 cp constraint-ext-services/constraint.yaml cymbalbank-policy/clusters/cymbal-dev/
 ```
 
-5. **Run the `tree` command again on the policy repo.**
+### 5. **Run the `tree` command again on the policy repo.**
 
 ```
 tree cymbalbank-policy/
@@ -140,7 +140,7 @@ cymbalbank-policy/
 
 Although we can structure our policy repo however we want, we're imposing some organization, for readability. Notice how although our `quota.yaml` resources are scoped to the production cluster only, we've put them in their corresponding `namespaces/` directories. Config Sync will correctly scope the resources to the clusters, no matter where we put them in the repo. 
 
-**5. Commit the Constraint to the main branch of the policy repo.**
+### **6. Commit the Constraint to the main branch of the policy repo.**
 
 ```
 cd cymbalbank-policy 
@@ -150,7 +150,7 @@ git push origin main
 cd .. 
 ```
 
-**6. Verify that the policy has been synced to the `cymbal-dev` cluster.**
+### **7. Verify that the policy has been synced to the `cymbal-dev` cluster.**
 
 ```
 gcloud alpha container hub config-management status --project=${PROJECT_ID}
@@ -166,7 +166,7 @@ cymbal-prod     SYNCED  ed2e4e0            main         2021-05-13T23:59:42Z  IN
 cymbal-staging  SYNCED  ed2e4e0            main         2021-05-13T23:59:29Z  INSTALLED
 ```
 
-**7. Verify that the constraint is deployed to the cymbal-dev cluster.** 
+### **8. Verify that the constraint is deployed to the cymbal-dev cluster.** 
 
 ```
 kubectx cymbal-dev
@@ -180,7 +180,7 @@ Expected output:
 k8snoexternalservices.constraints.gatekeeper.sh/dev-no-ext-services   47s
 ```
 
-**8. Attempt to manually create a service type LoadBalancer in the `cymbal-dev` cluster, corresponding to the `contacts` service Deployment.**
+### **9. Attempt to manually create a service type LoadBalancer in the `cymbal-dev` cluster, corresponding to the `contacts` service Deployment.**
   
 You should get an error stating that the Policy Controller admission webhook is blocking the incoming resource. 
 

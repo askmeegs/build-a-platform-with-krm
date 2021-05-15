@@ -12,7 +12,7 @@ Let's see how.
 ![screenshot](screenshots/bigquery-workflow.jpg)
 
 
-1. **View the mock transaction dataset.** This is a 1000-line CSV file, whose fields mimic the data currently stored in the Cloud SQL `ledger_db` today. 
+### 1. **View the mock transaction dataset.** This is a 1000-line CSV file, whose fields mimic the data currently stored in the Cloud SQL `ledger_db` today. 
 
 ```
 head bigquery/cymbal-mock-transactions.csv 
@@ -33,7 +33,7 @@ transaction_id,from_account,to_account,amount,timestamp,user_agent
 9,145870222,311667375,$39.17,4/15/2021,Chrome/51.0.2704.103
 ```
 
-2. **Verify that you have the gsutil tool installed** - this comes bundled with the gcloud command. [Install the tool](https://cloud.google.com/storage/docs/gsutil_install) if it's not in your PATH. 
+### 2. **Verify that you have the gsutil tool installed** - this comes bundled with the gcloud command. [Install the tool](https://cloud.google.com/storage/docs/gsutil_install) if it's not in your PATH. 
 
 ```
 gsutil version 
@@ -45,7 +45,7 @@ Expected output:
 gsutil version: 4.61
 ```
 
-3. **Create a Cloud Storage bucket in your project, called `datasets`. **
+### 3. **Create a Cloud Storage bucket in your project, called `datasets`. **
 
 ```
 gsutil mb -c standard gs://$PROJECT_ID-datasets
@@ -57,7 +57,7 @@ Expected output:
 Creating gs://krm-test-5-datasets/...
 ```
 
-4. **Upload the mock transaction data to Cloud Storage.**
+### 4. **Upload the mock transaction data to Cloud Storage.**
 
 ```
 gsutil cp bigquery/cymbal-mock-transactions.csv  gs://${PROJECT_ID}-datasets/cymbal-mock-transactions.csv
@@ -71,7 +71,7 @@ Copying file://bigquery/cymbal-mock-transactions.csv [Content-Type=text/csv]...
 Operation completed over 1 objects/56.6 KiB.
 ```
 
-5. **View the BigQuery Job, Table, and Dataset resources provided for you in the `bigquery` directory.** 
+### 5. **View the BigQuery Job, Table, and Dataset resources provided for you in the `bigquery` directory.** 
 
 ```
 cat bigquery/mock-dataset.yaml 
@@ -133,13 +133,13 @@ spec:
 
 Here, we define a BigQuery Table, `cymbal-mock-table`, referencing a new Dataset, `cymbal-mock-dataset`, whose data is loaded in from a BigQuery job, `cymbal-mock-load-job`, referencing the CSV file you just uploaded to Cloud Storage. 
 
-6. **Replace the `PROJECT_ID` in the `gs://` URL in `mock-dataset.yaml` (line 12) with your `PROJECT_ID.`**
+### 6. **Replace the `PROJECT_ID` in the `gs://` URL in `mock-dataset.yaml` (line 12) with your `PROJECT_ID.`**
 
 ```
 sed -i "s/PROJECT_ID/$PROJECT_ID/g" bigquery/mock-dataset.yaml 
 ```
 
-7. **Apply the BigQuery resources to the admin cluster.** 
+### 7. **Apply the BigQuery resources to the admin cluster.** 
 
 ```
 kubectx cymbal-admin
@@ -154,7 +154,7 @@ bigquerydataset.bigquery.cnrm.cloud.google.com/cymbalmockdataset created
 bigquerytable.bigquery.cnrm.cloud.google.com/cymbalmocktable created
 ```
 
-8. **Get the GCP resource status, and wait for all the BigQuery resources to be `READY=True`** 
+### 8. **Get the GCP resource status, and wait for all the BigQuery resources to be `READY=True`** 
 
 ```
 kubectl get gcp
@@ -173,13 +173,13 @@ NAME                                                              AGE    READY  
 bigqueryjob.bigquery.cnrm.cloud.google.com/cymbal-mock-load-job   109s   True    UpToDate   56s...
 ```
 
-9. **Navigate to the Google Cloud Console > BigQuery.** In the left sidebar, click the drop-down next to your project. You should see a dataset called `cymbalmockdataset`, and beneath that, a table called `cymbalmocktable`. You should be able to click **Preview** and see the mock dataset table. 
+### 9. **Navigate to the Google Cloud Console > BigQuery.** In the left sidebar, click the drop-down next to your project. You should see a dataset called `cymbalmockdataset`, and beneath that, a table called `cymbalmocktable`. You should be able to click **Preview** and see the mock dataset table. 
 
 ![screenshot](screenshots/bigquery-console.png)
 
 Now let's come back to the restrictions we outlined at the beginning of this section- for now, the only allowed BigQuery dataset allowed in this (beyond the public datasets) is the one we just created. Let's create a resource name restriction policy to lock down any other BigQuery resources from being commited to the policy repo. Also note that in a real use case, we would lock down BigQuery Table and Dataset creation permissions to the Config Connector Google Service Account only, using Google Cloud IAM to restrict Cymbal Bank analytics team permissions to the `BigQuery Viewer` role only. This would block users from creating BigQuery resources from the console, as well. 
 
-10. View the Policy Controller resources in the `bigquery/` directory. This file defines a constraint template for `BigQueryDatasetAllowName`, and a constraint of type `BigQueryDatasetAllowName`, which together allow only one BigQuery dataset in the policy repo - the one we already created, `cymbalmockdataset`. 
+### 10. View the Policy Controller resources in the `bigquery/` directory. This file defines a constraint template for `BigQueryDatasetAllowName`, and a constraint of type `BigQueryDatasetAllowName`, which together allow only one BigQuery dataset in the policy repo - the one we already created, `cymbalmockdataset`. 
 
 ```
 cat bigquery/constraint-template.yaml
@@ -220,7 +220,7 @@ spec:
     allowedName: cymbalmockdataset
 ```
 
-11. **Apply the Constraint and Constraint Template** (again, in a real use case we'd push these policies to the policy repo, and have Config Sync apply them to the cluster.)
+### 11. **Apply the Constraint and Constraint Template** (again, in a real use case we'd push these policies to the policy repo, and have Config Sync apply them to the cluster.)
 
 ```
 kubectx cymbal-admin
@@ -235,7 +235,7 @@ constrainttemplate.templates.gatekeeper.sh/bigquerydatasetallowname created
 bigquerydatasetallowname.constraints.gatekeeper.sh/bigquery-allow-mock-only created
 ```
 
-12. **Attempt to manually create a new dataset, called `helloworld-dataset`.** This should fail because it violates the policy of only allowing the mock dataset. 
+### 12. **Attempt to manually create a new dataset, called `helloworld-dataset`.** This should fail because it violates the policy of only allowing the mock dataset. 
 
 ```
 kubectl apply -f bigquery/helloworld-dataset.yaml 
@@ -249,4 +249,4 @@ Error from server ([denied by bigquery-allow-mock-only] The BigQuery dataset nam
 
 **🏆 Great job!** You just enabled the Analytics team to try out BigQuery, while enforcing a policy on new dataset creation. 
 
-**[Continue to part C.](partC-existing-resources.md)**
+### **[Continue to part C.](partC-existing-resources.md)**

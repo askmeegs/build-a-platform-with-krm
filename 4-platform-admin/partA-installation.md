@@ -2,14 +2,14 @@
 
 ![screenshot](screenshots/sync-overview.jpg)
 
-1. **Set variables.** 
+### 1. **Set variables.** 
 
 ```
 export PROJECT_ID=[your-project-id]
 export GITHUB_USERNAME=[your-github-username]
 ```
 
-2. **Initialize the cymbalbank-policy repo**.
+### 2. **Initialize the cymbalbank-policy repo**.
 
 You created this Github repo in your account during setup. This repo is located at `github.com/YOUR-USERNAME/cymbalbank-policy` and it's currently empty. 
 
@@ -31,21 +31,19 @@ To https://github.com/askmeegs/cymbalbank-policy
  * [new branch]      main -> main
 ```
 
-3. **Navigate to the [Anthos dashboard](https://console.cloud.google.com/anthos) in the Google Cloud Console.** 
+### 3. **Navigate to the [Anthos dashboard](https://console.cloud.google.com/anthos) in the Google Cloud Console.** 
 
-4. **In the right sidebar, click Clusters.** You should see your four clusters in the list. 
+### 4. **In the right sidebar, click Clusters.** You should see your four clusters in the list. 
 
 ![](screenshots/anthos-clusters.png)
 
-![](screenshots/anthos)
-
-5. **In the right sidebar, click Config Management.** You should see a window like the one below. **Click "Setup.", then "Enable Config Management."** 
+### 5. **In the right sidebar, click Config Management.** You should see a window like the one below. **Click "Setup.", then "Enable Config Management."** 
 
 ![](screenshots/setup-acm.png)
 
-6. **In the Anthos Config Management cluster list, click the open circle next to the `cymbal-admin` cluster. Then at the top of the screen, click "Configure."** 
+### 6. **In the Anthos Config Management cluster list, click the open circle next to the `cymbal-admin` cluster. Then at the top of the screen, click "Configure."** 
 
-7. **In the setup menu that appears, populate with the following fields**: 
+### 7. **In the setup menu that appears, populate with the following fields**: 
 
 - **Git repository authentication for ACM:** `None`, then click **Continue.** 
 - **ACM Settings for your Clusters:** `Version 1.7.1` or the default-populated version. 
@@ -68,9 +66,13 @@ Click **Continue**, then **Done.** You should then see that the Config Sync stat
 
 ![](screenshots/install-progress.png)
 
-8. **Repeat step 7 for the other three clusters: cymbal-dev, cymbal-staging, and cymbal-prod.** (Note - it's also possible to do this setup over the command line, but currently there is a bug when you try to install both Config Sync and Policy Controller at the same time using that method, so to play it safe we're installing in the UI for now.)
+### 8. **Repeat step 7 for the other three clusters: cymbal-dev, cymbal-staging, and cymbal-prod.** 
 
-9. **Wait for all clusters to show as `Synced` and `Installed` for Config Sync and Policy Controller, respectively**. You may see multiple errors in the UI as these tools are installed on your GKE clusters - this is expected. The total installation time may take 3-5 minutes. 
+(Note - it's also possible to do this setup over the command line, but currently there is a bug when you try to install both Config Sync and Policy Controller at the same time using that method, so to play it safe we're installing in the UI for now.)
+
+###  9. **Wait for all clusters to show as `Synced` and `Installed` for Config Sync and Policy Controller, respectively**. 
+
+You may see multiple errors in the UI as these tools are installed on your GKE clusters - this is expected. The total installation time may take 3-5 minutes. 
 
 ![](screenshots/install-errors.png)
 
@@ -78,7 +80,7 @@ Eventually, you should see this:
 
 ![](screenshots/install-success.png)
 
-10. **Return to your terminal. Get the Config Sync install status for all clusters in your project.**
+### 10. **Return to your terminal. Get the Config Sync install status for all clusters in your project.**
 
 ```
 gcloud alpha container hub config-management status --project=${PROJECT_ID}
@@ -112,7 +114,7 @@ Date:   Thu May 13 17:58:10 2021 -0400
 
 So when you installed Config Sync and Policy Controller, what actually got deployed? 
 
-11. **Switch to the dev cluster, and get the Pods in the `config-management-system` and `gatekeeper-system` namespaces.**
+### 11. **Switch to the dev cluster, and get the Pods in the `config-management-system` and `gatekeeper-system` namespaces.**
 
 ```
 kubectx cymbal-dev
@@ -133,7 +135,6 @@ NAME                                             READY   STATUS    RESTARTS   AG
 gatekeeper-audit-76d8d7fb-dbnd7                  1/1     Running   0          15m
 gatekeeper-controller-manager-6bf5fdb68f-bftcz   1/1     Running   0          15m
 ```
-
 
 The first set of workloads, in the `config-management-system` namespace, run Config Sync. These workloads periodically check your github policy repo for any updates to the KRM source of truth stored there, and deploys those updated resources to the cluster. (Note that every cluster runs their own Config Sync, but all the clusters are synced to the same repo.)
 

@@ -25,4 +25,4 @@ In this demo, we'll explore how an app developer can get a new Cymbal Bank featu
 
 1. Complete demo [parts 1](/1-setup) and [2](/2-how-krm-works). 
 
-**Continue to part A - setup**. 
+### **Continue to part A - setup**. 
