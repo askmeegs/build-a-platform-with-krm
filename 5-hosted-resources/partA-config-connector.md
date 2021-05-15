@@ -30,7 +30,7 @@ In any case, let's learn how Config Connector works with GCP-hosted resources.
 
 ## Installation 
 
-Let's install Config Connector onto our GKE environment. Even though we'll lifecycle hosted resources from the `cymbal-admin` cluster, we still need to install the GCP Custom Resources onto all the cluster to avoid Config Sync errors. 
+Let's install Config Connector onto our GKE environment. We'll lifecycle cloud-hosted resources from the `cymbal-admin` cluster, so we'll install Config Connector there. 
 
 1. **Set variables.** 
 
@@ -80,19 +80,7 @@ Let's start with a basic example of creating a GCP-hosted resource using Config 
 ![screenshot](screenshots/secadmin-gce.jpg)
 
 
-1. **Clone the `cymbalbank-policy` repo into this directory.** 
-
-```
-git clone https://github.com/$GITHUB_USERNAME/cymbalbank-policy 
-```
-
-2. **Create a `clusters/cymbal-admin` directory in the `cymbalbank-policy` repo.** 
-
-```
-mkdir -p cymbalbank-policy/clusters/cymbal-admin 
-```
-
-3. **View the GCE KRM resources.** 
+1. **View the GCE KRM resources.** 
 
 ```
 cat compute-engine/instance.yaml 
@@ -125,31 +113,16 @@ spec:
 
 This KRM resource defines one Compute Engine instance, along with a Compute Disk and some networking resources. Notice how the KRM looks a lot like a Deployment YAML - it has a name, metadata with some labels, and a spec, with info specifically about a GCE instance. Config Connector knows how to read this `ComputeEngine` resource type, and take action on it - in this case, create a Compute Engine instance in our GCP project. 
 
-4. **Copy the GCE resources into the `cymbal-admin` directory.** 
-
-```
-cp compute-engine/instance.yaml cymbalbank-policy/clusters/cymbal-admin 
-```
-
-6. **Commit the resources to the cymbalbank-policy repo.** 
-
-```
-cd cymbalbank-policy
-git add .
-git commit -m "Add GCE instance - Config Connector" 
-git push origin main 
-```
-
-7. **Wait for the cymbal-admin cluster to sync.** 
-
-```
-gcloud alpha container hub config-management status --project=${PROJECT_ID}
-```
-
-8. **Get the status of the deployed resources on the cymbal-admin cluster** 
+2. Apply the Compute Engine resources to the admin cluster. **⚠️ Note** - this demo shows applying the cloud-hosted KRM resources manually with kubectl, due to an ongoing bug between Config Sync and Config Connector. But in an ideal scenario, we use Config Sync to sync the Config Connector KRM just like we did policies. 
 
 ```
 kubectx cymbal-admin
+kubectl apply -f compute-engine/instance.yaml
+```
+
+3. **Get the status of the deployed resources on the cymbal-admin cluster** 
+
+```
 kubectl get gcp 
 ```
 
@@ -173,12 +146,12 @@ NAME                                                                AGE     READ
 iamserviceaccount.iam.cnrm.cloud.google.com/inst-dep-cloudmachine   5m58s   True    UpToDate   5m57s
 ```
 
-Note - it may take a few minutes for the resources to be created - in the mean time you may see `UpdateFailed` or `DependencyNotReady`. This is expected. 
+Note - it may take a few minutes for the resources to be created. In the meantime, you may see `UpdateFailed` or `DependencyNotReady`. This is expected. 
 
-9. **Open the Cloud Console and navigate to Compute Engine > VM Instances. Filter on `name:secadmin`. You should see the new GCE instance in the list.** 
+4. **Open the Cloud Console and navigate to Compute Engine > VM Instances. Filter on `name:secadmin`. You should see the new GCE instance in the list.** 
 
 ![screenshots](screenshots/secadmin-gce-console.png)
 
 **🌈 Nice job!** You just deployed your first cloud-hosted resource with KRM! 
 
-You'll notice that we (the platform admin) had to manually write the GCE resource as KRM, and push to the config repo. In a real-life scenario, the platform team might even set up a self-service system with a basic web UI, so that Cymbal Bank employees can request a GCE instance. This web app would take in parameters (like choose an operating system from a drop-down menu, disk size, etc.), and generate a JSON or YAML file with the GCE KRM, then commit it to the repo automatically. This would provide a hands-off way of allowing users to set up their own resources, while maintaining a centralized, auditable source of truth in Git. 
+You'll notice that we (the platform admin) had to manually write the GCE resource as KRM, and deploy it to the admin cluster. In a real-life scenario, the platform team might even set up a self-service system with a basic web UI, so that Cymbal Bank employees can request a GCE instance. This web app would take in parameters (like choose an operating system from a drop-down menu, disk size, etc.), and generate a JSON or YAML file with the GCE KRM, then commit it to the policy repo, then have Config Sync apply the resource automatically. This would provide a hands-off way of allowing users to set up their own resources, while maintaining a centralized, auditable source of truth in Git. 

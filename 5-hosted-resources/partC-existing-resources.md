@@ -3,12 +3,12 @@
 
 Up to now, we've used Config Connector to generate *new* hosted resources, in both Compute Engine and BigQuery. But if you remember way back in part 1, we used Terraform to initially bootstrap the demo environment. This included creating multiple GKE clusters, a set of Secret Manager secrets, some IAM resources, and multiple Cloud SQL instances for dev, staging, and prod. 
 
-For this final demo of the series, let's learn how to bring existing Google Cloud resources into the management of Config Connector, via gcloud and Config Sync. 
+For this final demo of the series, let's learn how to bring those existing Google Cloud resources into the management of Config Connector, via gcloud and Config Sync. 
 
 1. [Install the Config Connector tool](https://cloud.google.com/config-connector/docs/how-to/import-export/overview#installing-config-connector) and ensure it's in your PATH: 
 
 ```
-config connector version
+config-connector version
 ```
 
 Expected output: 
@@ -17,13 +17,128 @@ Expected output:
 1.46.0
 ```
 
-1. Run the Cloud SQL KRM export script. (Note - gcloud bulk export command is an alternative)
+2. **View the Cloud SQL KRM export script.** This script generates static KRM resource files (YAML) for the Cloud SQL development database. (Although these steps only show KRM for the development DB, we could do the same for the staging and production databases as well.)
 
-1. Commit to the policy repo. 
+```
+cat cloudsql/generate-cloudsql-krm.sh 
+```
 
-1. Wait for the resources to sync. 
+Expected output: 
 
-1. Get the Config Connector resource status on the cymbal-admin cluster. 
+```bash
+#!/bin/bash
+
+# Dev Instance
+config-connector export "//sqladmin.googleapis.com/sql/v1beta4/projects/$PROJECT_ID/instances/cymbal-dev" \
+    --output cloudsql/
+
+config-connector export \
+    "//sqladmin.googleapis.com/sql/v1beta4/projects/$PROJECT_ID/instances/cymbal-dev/databases/accounts-db" \
+    --output cloudsql/
+
+config-connector export \
+    "//sqladmin.googleapis.com/sql/v1beta4/projects/$PROJECT_ID/instances/cymbal-dev/databases/ledger-db" \
+     --output cloudsql/
+```
+
+3. **Run the Cloud SQL KRM export script.** 
+
+```
+./cloudsql/generate-cloudsql-krm.sh
+```
+
+4. **View the generated KRM resources.** 
+
+```
+cat cloudsql/projects/$PROJECT_ID/SQLInstance/us-east1/cymbal-dev.yaml
+cat cloudsql/projects/$PROJECT_ID/SQLInstance/cymbal-dev/SQLDatabase/accounts-db.yaml
+cat cloudsql/projects/$PROJECT_ID/SQLInstance/cymbal-dev/SQLDatabase/ledger-db.yaml
+```
+
+Expected otuput: 
+
+```
+---
+apiVersion: sql.cnrm.cloud.google.com/v1beta1
+kind: SQLInstance
+metadata:
+  annotations:
+    cnrm.cloud.google.com/project-id: krm-test-6
+  name: cymbal-dev
+spec:
+  databaseVersion: POSTGRES_12
+  region: us-east1
+  resourceID: cymbal-dev
+  settings:
+    activationPolicy: ALWAYS
+    availabilityType: ZONAL
+    backupConfiguration:
+      backupRetentionSettings:
+        retainedBackups: 7
+        retentionUnit: COUNT
+      startTime: "20:00"
+      transactionLogRetentionDays: 7
+    diskAutoresize: true
+    diskSize: 10
+    diskType: PD_SSD
+    ipConfiguration:
+      ipv4Enabled: true
+    locationPreference:
+      zone: us-east1-b
+    pricingPlan: PER_USE
+    replicationType: SYNCHRONOUS
+    tier: db-custom-1-3840
+---
+apiVersion: sql.cnrm.cloud.google.com/v1beta1
+kind: SQLDatabase
+metadata:
+  annotations:
+    cnrm.cloud.google.com/project-id: krm-test-6
+  name: accounts-db
+spec:
+  charset: UTF8
+  collation: en_US.UTF8
+  instanceRef:
+    external: cymbal-dev
+  resourceID: accounts-db
+---
+apiVersion: sql.cnrm.cloud.google.com/v1beta1
+kind: SQLDatabase
+metadata:
+  annotations:
+    cnrm.cloud.google.com/project-id: krm-test-6
+  name: ledger-db
+spec:
+  charset: UTF8
+  collation: en_US.UTF8
+  instanceRef:
+    external: cymbal-dev
+  resourceID: ledger-db
+```
+
+These KRM files represent the live state of your Cloud SQL resources, originally created using Terraform. (You will see your PROJECT_ID next to `cnrm.cloud.google.com/project-id`.)
+
+5. **Apply the Cloud SQL KRM resources to the cymbal-admin cluster.**
+
+```
+kubectl apply -f cloudsql/projects/$PROJECT_ID/SQLInstance/us-east1/cymbal-dev.yaml
+kubectl apply -f cloudsql/projects/$PROJECT_ID/SQLInstance/cymbal-dev/SQLDatabase/accounts-db.yaml
+kubectl apply -f cloudsql/projects/$PROJECT_ID/SQLInstance/cymbal-dev/SQLDatabase/ledger-db.yaml
+```
+
+Expected output: 
+
+```
+sqlinstance.sql.cnrm.cloud.google.com/cymbal-dev created
+sqldatabase.sql.cnrm.cloud.google.com/accounts-db created
+sqldatabase.sql.cnrm.cloud.google.com/ledger-db created
+```
+
+Note that although the Kubernetes resources were just created, Config Connector will see that these SQL resources are already running in your project, and the resources won't be updated (since the KRM matches the live state, right now) except for a set of labels that indicate. 
+
+You can see these labels by navigating to the Cloud SQL console. 
+
+6. **First, get the Config Connector resource status on the cymbal-admin cluster**. 
 
 ```
 kubectl get gcp
@@ -40,16 +155,11 @@ NAME                                               AGE   READY   STATUS     STAT
 sqlinstance.sql.cnrm.cloud.google.com/cymbal-dev   42s   True    UpToDate   10s
 ```
 
-1. Open the Cloud Console and navigate to Cloud SQL. Notice how in the list, the `cymbal-dev` cluster now has a new label, `managed-by-cnrm: true`. This indicates that this SQL Instance is now under the management umbrella of Config Connector. 
+7. **Open the Cloud Console and navigate to Cloud SQL**. Notice how in the list, the `cymbal-dev` cluster now has a new label, `managed-by-cnrm: true`. This indicates that this SQL Instance is now under the management umbrella of Config Connector. 
 
+![](screenshots/cloudsql-labels.png)
 
-1. Click Edit and add a label, `hello:world`, then click save. 
-
-1. Watch the status of the KRM resource for the cymbal-dev SQL instance, and wait for an attempted reconcile - this may take a few minutes. 
-
-1. Should see the hello world label go away, indicating that any manual updates will always be reverted by the source of truth for that sql instance - synced via Config Sync and actuated via Config Connector. 
-
-Nice job! You just learned how to export existing, live cloud-hosted resources as declarative KRM. 
+**🚀 Nice job!** You just learned how to export existing, live cloud-hosted resources as declarative KRM, and get Config Connector to manage them. 
 
 ## Learn More 
 
@@ -68,20 +178,21 @@ If you made it this far, great work - you just completed several challenging dem
 
 Let's summarize the key takeaways from all 5 demos: 
 
-- Building a platform is hard, especially in the cloud, especially when you have multiple Kubernetes clusters in play on top of hosted resources.  
-- KRM is one way to manage your Cloud and Kubernetes config in one place, but it's not the only way - Demo 1 showed us how to do it with Terraform. 
-- KRM is a great way to manage resources because Kubernetes is constantly running a control loop to make sure your desired state matches the actual cluster state. We saw this in action both for core Kubernetes API resources (Demo 2 / for instance, Deployments that keep Pods alive) and hosted Cloud resources (Demo 5 / via Config Connector)
-- KRM promotes a "GitOps" model where you keep all your configuration in Git. This allowed us to set up CI/CD both for the app itself (Demo 3 / deploying pods to staging), and for the policy configuration (Demo 4)
-- Policy Controller, together with Config Sync, allow you to impose custom policies on your KRM resources, both at deploy-time and during CI/CD (Demo 4)
+- **Building a platform is hard**, especially in the cloud, especially when you have multiple Kubernetes clusters in play, on top of hosted resources.  
+- **KRM is one way to manage your Cloud and Kubernetes config**, but it's not the only way - Demo 1 showed us how to do it with Terraform. 
+- KRM is a great way to manage resources because Kubernetes is constantly running a **control loop** to make sure your **desired** state matches the **actual** cluster state. We saw this in action both for core Kubernetes API resources (Demo 2 / for instance, Deployments that keep Pods alive) and hosted Cloud resources (Demo 5 / via Config Connector)
+- **KRM promotes a "GitOps" model** where you keep all your configuration in Git, and sync it down to multiple clusters at once.  
+- Policy Controller, together with Config Sync, allow you to impose custom policies on your KRM resources, both at deploy-time and during CI/CD (Demo 4). These **policies allow you to set fine-grained controls** on different resource types, to ensure compliance within your org. 
+- **KRM / the Kubernets API can lifecycle resources that run outside a Kubernetes cluster.** We saw how Config Connector, running inside the admin cluster, created and updated resources in Google Cloud. 
 
-Hopefully you learned a thing or two from these demos- really, we've only just scratched the surface of what KRM can do. Here's a bunch of stuff these demos didn't cover, 
+Hopefully you learned a thing or two from these demos- really, we've only just scratched the surface of what KRM can do. All the "learn more" links across Parts 1-5 are available in the [README of this repo](/README.md).
 
-- Debugging Config Sync https://cloud.google.com/anthos-config-management/docs/how-to/monitoring#example_debugging_procedures 
-- [Best practices for policy management with Anthos Config Management and GitLab](https://cloud.google.com/solutions/best-practices-for-policy-management-with-anthos-config-management)
-- Hierarchy Controller 
-- Policy Controller audits 
-- [Reporting Policy Controller audit violations in Security Command Center](https://cloud.google.com/architecture/reporting-policy-controller-audit-violations-security-command-center)
-- Pod security policies https://cloud.google.com/anthos-config-management/docs/how-to/using-constraints-to-enforce-pod-security 
-- [kpt](https://cloud.google.com/architecture/managing-cloud-infrastructure-using-kpt) 
+And another set of resources to learn more about KRM, its design principles, and other helpful tools, see: **https://github.com/askmeegs/learn-krm**.
 
-And for a set of resources to learn more about KRM, its design principles, and other helpful tools, see: https://github.com/askmeegs/learn-krm 
+## Cleaning up
+
+If you want to keep your project but delete all the resources deployed by this demo, run the following script from the root of the `intro-to-krm/` repo: 
+
+```
+./cleanup.sh
+```

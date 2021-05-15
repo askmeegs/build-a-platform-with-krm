@@ -1,32 +1,32 @@
-  apiVersion: bigquery.cnrm.cloud.google.com/v1beta1
-  kind: BigQueryJob
-  metadata:
-    name: cymbal-mock-load-job
-    annotations:
-      configsync.gke.io/cluster-name-selector: cymbal-admin
-  spec:
-    location: "US"
-    jobTimeoutMs: "600000"
-    load:
-      sourceUris:
-        - "gs://krm-test-5-datasets/cymbal-mock-transactions.csv"
-      destinationTable:
-        tableRef:
-          name: cymbalmocktable
-      sourceFormat: "CSV"
-      encoding: "UTF-8"
-      fieldDelimiter: ","
-      quote: '"'
-      allowQuotedNewlines: false
-      maxBadRecords: 0
-      allowJaggedRows: false
-      ignoreUnknownValues: false
-      skipLeadingRows: 1
-      autodetect: true
-      writeDisposition: "WRITE_APPEND"
-      schemaUpdateOptions:
-        - "ALLOW_FIELD_ADDITION"
-        - "ALLOW_FIELD_RELAXATION"
+apiVersion: bigquery.cnrm.cloud.google.com/v1beta1
+kind: BigQueryJob
+metadata:
+  name: cymbal-mock-load-job
+  annotations:
+    configsync.gke.io/cluster-name-selector: cymbal-admin
+spec:
+  location: "US"
+  jobTimeoutMs: "600000"
+  load:
+    sourceUris:
+      - "gs://krm-test-6-datasets/cymbal-mock-transactions.csv"
+    destinationTable:
+      tableRef:
+        name: cymbalmocktable
+    sourceFormat: "CSV"
+    encoding: "UTF-8"
+    fieldDelimiter: ","
+    quote: '"'
+    allowQuotedNewlines: false
+    maxBadRecords: 0
+    allowJaggedRows: false
+    ignoreUnknownValues: false
+    skipLeadingRows: 1
+    autodetect: true
+    writeDisposition: "WRITE_APPEND"
+    schemaUpdateOptions:
+      - "ALLOW_FIELD_ADDITION"
+      - "ALLOW_FIELD_RELAXATION"
 ---
 apiVersion: bigquery.cnrm.cloud.google.com/v1beta1
 kind: BigQueryDataset

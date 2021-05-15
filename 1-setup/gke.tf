@@ -76,11 +76,6 @@ resource "google_container_cluster" "dev" {
     identity_namespace = "${var.project_id}.svc.id.goog"
   }
 
-  addons_config {
-    config_connector_config {
-      enabled = true
-    }
-  }
 }
 
 # Separately Managed Node Pool
@@ -131,11 +126,6 @@ resource "google_container_cluster" "staging" {
     identity_namespace = "${var.project_id}.svc.id.goog"
   }
 
-  addons_config {
-    config_connector_config {
-      enabled = true
-    }
-  }
 }
 
 # Separately Managed Node Pool
@@ -186,11 +176,6 @@ resource "google_container_cluster" "prod" {
     identity_namespace = "${var.project_id}.svc.id.goog"
   }
 
-  addons_config {
-    config_connector_config {
-      enabled = true
-    }
-  }
 }
 
 # Separately Managed Node Pool

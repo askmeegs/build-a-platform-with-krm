@@ -41,9 +41,12 @@ install_kcc () {
     kubectl annotate namespace default cnrm.cloud.google.com/project-id=$PROJECT_ID 
 }
 
-install_kcc "cymbal-dev" "us-east1-c" 
-install_kcc "cymbal-staging" "us-central1-a" 
-install_kcc "cymbal-prod" "us-west1-a"
+# Note - due to an ongoing bug, Config Sync and Config Connector can't be installed 
+# on GKE at the same time. So dev/staging/prod have Config Sync, and admin has config connector. 
+
+# install_kcc "cymbal-dev" "us-east1-c" 
+# install_kcc "cymbal-staging" "us-central1-a" 
+# install_kcc "cymbal-prod" "us-west1-a"
 install_kcc "cymbal-admin" "us-central1-f"
 
-echo "✅ Finished installing Config Connector on all clusters."
+echo "✅ Finished installing Config Connector on the admin cluster."
