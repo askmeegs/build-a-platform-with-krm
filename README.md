@@ -10,11 +10,11 @@ These demos can be completed standalone - all you need is a Google Cloud project
 
 ## Contents 
 
-1. [Setup](1/setup)
-2. [How KRM Works](2-how-krm-works) 
-3. [App Development with KRM](3-app-dev/)
-4. [Administering KRM with Config Sync and Policy Controller](4-platform-admin/)
-5. [Using KRM for Hosted Resources](5-hosted-resources/)
+1. [Setup](/1-setup)
+2. [How KRM Works](/2-how-krm-works) 
+3. [App Development with KRM](/3-app-dev/)
+4. [Administering KRM with Config Sync and Policy Controller](/4-platform-admin/)
+5. [Using KRM for Hosted Resources](/5-hosted-resources/)
 
 ## Products and Tools Used
 
