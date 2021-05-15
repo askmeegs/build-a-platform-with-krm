@@ -5,4 +5,4 @@ metadata:
   name: configconnector.core.cnrm.cloud.google.com
 spec:
   mode: cluster
-  googleServiceAccount: "cymbal-admin-kcc@PROJECT_ID.iam.gserviceaccount.com"
+  googleServiceAccount: "cymbal-admin-kcc@krm-test-6.iam.gserviceaccount.com"

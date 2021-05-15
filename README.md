@@ -16,7 +16,7 @@ This repo contains demos for the "Build a Platform with the Kubernetes Resource 
 
 ## Products and Tools Used
 
-### Google Cloud Products 
+### Google Cloud 
 
 - [Kubernetes Engine (GKE)](https://cloud.google.com/kubernetes-engine)
 - [Cloud Code](https://cloud.google.com/code)
@@ -30,7 +30,7 @@ This repo contains demos for the "Build a Platform with the Kubernetes Resource 
 - [Compute Engine](https://cloud.google.com/compute/docs/quickstart-linux)
 - [BigQuery](https://cloud.google.com/bigquery/docs/introduction)
 
-### Open-Source Tools 
+### Open-Source 
 
 - [Terraform](https://www.terraform.io/)
 - [Github](https://github.com) 
@@ -70,3 +70,11 @@ This repo contains demos for the "Build a Platform with the Kubernetes Resource 
 - [OpenPolicyAgent - Rego language](https://www.openpolicyagent.org/docs/latest/policy-language/)
 - [OpenPolicyAgent - The Rego Playground](https://play.openpolicyagent.org/)
 - [Policy Controller - Using Policy Controller in a CI Pipeline](https://cloud.google.com/anthos-config-management/docs/tutorials/policy-agent-ci-pipeline)
+- [Config Connector overview](https://cloud.google.com/config-connector/docs/overview)
+- [List of Google Cloud resources supported by Config Connector](https://cloud.google.com/config-connector/docs/reference/overview)
+- [Github - Config Connector samples](https://github.com/GoogleCloudPlatform/k8s-config-connector/tree/master/samples/resources)
+- [`gcloud resource-config bulk-export](https://cloud.google.com/sdk/gcloud/reference/alpha/resource-config/bulk-export)
+- [Google Cloud Blog - "Sign here! Creating a policy contract with Configuration as Data" - Kelsey Hightower and Mark Balch](https://cloud.google.com/blog/products/containers-kubernetes/how-configuration-as-data-impacts-policy)
+- [Github - Config Connector + Policy Controller demo - Kelsey Hightower](https://github.com/kelseyhightower/config-connector-policy-demo) 
+- [Google Cloud Architecture Center - Creating Policy-Compliant Cloud Resources](https://cloud.google.com/architecture/policy-compliant-resources)
+- [Config Connector docs - Importing and exporting existing Google Cloud resources](https://cloud.google.com/config-connector/docs/how-to/import-export/export)

@@ -2,5 +2,7 @@ apiVersion: bigquery.cnrm.cloud.google.com/v1beta1
 kind: BigQueryDataset
 metadata:
   name: helloworld
+  annotations:
+    configsync.gke.io/cluster-name-selector: cymbal-admin
 spec:
   friendlyName: hello-world

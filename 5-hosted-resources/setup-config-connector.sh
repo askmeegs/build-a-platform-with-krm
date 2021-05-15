@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 # https://cloud.google.com/config-connector/docs/how-to/install-upgrade-uninstall 
 
 if [[ -z "$PROJECT_ID" ]]; then
@@ -6,14 +6,15 @@ if [[ -z "$PROJECT_ID" ]]; then
     exit 1
 fi
 
-kubectx cymbal-admin 
+gcloud config set project $PROJECT_ID
+export SERVICE_ACCOUNT_NAME="cymbal-admin-kcc"
 
 echo "☁️ Creating a Google Service Account (GSA) for Config Connector..."
-gcloud iam service-accounts create cymbal-admin-kcc
+gcloud iam service-accounts create $SERVICE_ACCOUNT_NAME
 
 echo "☁️ Granting the GSA cloud resource management permissions..." 
 gcloud projects add-iam-policy-binding ${PROJECT_ID} \
-    --member="serviceAccount:cymbal-admin-kcc@$PROJECT_ID.iam.gserviceaccount.com" \
+    --member="serviceAccount:${SERVICE_ACCOUNT_NAME}@${PROJECT_ID}.iam.gserviceaccount.com" \
     --role="roles/owner"
 
 echo "☁️ Connecting your Google Service Account to the Kubernetes Service Account (KSA) that Config Connector uses..."
@@ -24,15 +25,25 @@ cymbal-admin-kcc@$PROJECT_ID.iam.gserviceaccount.com \
 
 # Populate configconnector.yaml
 echo "☁️ Populating and deploying configconnector.yaml with your GSA info..."
-sed -i "s/PROJECT_ID/$PROJECT_ID/g" configconnector.yaml 
+sed -i "s/PROJECT_ID/$PROJECT_ID/g" configconnector.yaml
 
-# Apply configconnector.yaml 
-kubectl apply -f configconnector.yaml
 
-echo "☁️ Creating config-connector Kubernetes namespace for GCP KRM resources..."
-kubectl create namespace config-connector
+install_kcc () {
+    CLUSTER_NAME=$1 
+    CLUSTER_ZONE=$2 
+    echo "☸️ Installing Config Connector: $CLUSTER_NAME, zone: $CLUSTER_ZONE" \
 
-echo "☁️ Telling Config Connector which project to deploy resources into..."
-kubectl annotate namespace config-connector cnrm.cloud.google.com/project-id=$PROJECT_ID 
+    kubectx $CLUSTER_NAME
 
-echo "✅ Finished setting up Config Connector on cymbal-admin."
+    # Apply configconnector.yaml 
+    echo "☁️ Installing the Config Connector controller..." 
+    kubectl apply -f configconnector.yaml
+    kubectl annotate namespace default cnrm.cloud.google.com/project-id=$PROJECT_ID 
+}
+
+install_kcc "cymbal-dev" "us-east1-c" 
+install_kcc "cymbal-staging" "us-central1-a" 
+install_kcc "cymbal-prod" "us-west1-a"
+install_kcc "cymbal-admin" "us-central1-f"
+
+echo "✅ Finished installing Config Connector on all clusters."
