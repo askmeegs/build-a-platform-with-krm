@@ -1,5 +1,5 @@
 
-## Part C - Introducing the Cymbal Bank App 
+# Part C - Introducing the Cymbal Bank App 
 
 [Cymbal Bank](https://github.com/GoogleCloudPlatform/bank-of-anthos) is a sample application, written in Python and Java, that simulates a retail bank's website. The app allows users to create accounts, send money to their contacts, and make deposits. The application backends store data in two PostgreSQL databases, both running in Google Cloud SQL.  
 

@@ -1,5 +1,5 @@
 
-## Part B - Enforcing Policies on Cloud-Hosted Resources 
+# Part B - Enforcing Policies on Cloud-Hosted Resources 
 
 Let's come back to why using KRM for cloud resources is useful. First, when Config Sync works with Config Connector resources, the desired state in your Git policy repo - for instance, the size of a GCE compute disk - will constantly be reconciled by the admin cluster. This means that if the security admin who requested the GCE instance tries to manually change the resource, Config Sync will return the state back to the intent in the KRM file, by updating the live-running resource. 
 

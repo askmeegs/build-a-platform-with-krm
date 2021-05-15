@@ -59,4 +59,6 @@ Resolving deltas: 100% (25/25), done.
 
 Let's walk through why we're doing this: the `cymbalbank-app-source` directory contains no Kubernetes YAML on its own, just the Python and Java source code of the app itself. The Kubernetes manifests for the app - or, the kustomize `base/` and `overlays/` we saw in part 2 - live in a separate repo, allowing for a decoupling between source code and YAML. It's not a hard requirement to separate these, but it will allow us to do more fine-grained CI/CD later in this demo.
 
-So the reason we clone `cymbalbank-app-config` inside `cymbalbank-app-source` is so that we have YAML files available to us - including the `dev/` overlay - to test new application features in a developmpent cluster. 
+So the reason we clone `cymbalbank-app-config` inside `cymbalbank-app-source` is so that we have YAML files available to us - including the `dev/` overlay - to test new application features in a development cluster. 
+
+Now we're ready to write some code! **[Continue to part B](partB-app-feature.md)**

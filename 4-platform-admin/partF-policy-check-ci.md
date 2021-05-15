@@ -141,6 +141,8 @@ path: prod.yaml
 
 **🎊 Nice work!** You just added a second layer of policy checks to your Kubernetes platform, helping app developers understand if their resources are in compliance, even before their PRs are reviewed. 
 
+If you're ready, **[Continue to Demo 5](/5-hosted-resources/README.md).**
+
 ## Learn More 
 
 ### Config Sync 

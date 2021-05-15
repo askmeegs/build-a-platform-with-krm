@@ -1,4 +1,4 @@
-## Part A - Setup  
+# Part A - Setup  
 
 1. **`cd` into this directory.**
 

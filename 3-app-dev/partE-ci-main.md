@@ -117,25 +117,4 @@ In the `base/` directory, and in each Deployment, you should see a new `image` t
 
 ![](screenshots/injected-tag.png)
 
-When this CI pipeline finished, injecting the new image tags in the manifests and committing to the `main` branch, we actually triggered the Continuous Deployment pipeline to run.
-
-8. **View the Continuous Deployment build status in the Cloud Build dashboard.** 
-
-![](screenshots/merged-pr-cd-prod.png)
-
-The build should run successfully - note that it's expected that the only workloads that will be updated (`configured`) on the prod cluster are the `deployments`, since these were the only resources we changed with the updated image tags. The other resource (eg. Services) will be `unchanged`. 
-
-Now, our frontend banner feature should have landed in production! Let's see this in action. 
-
-9. **Get the frontend pod `EXTERNAL_IP` from the prod cluster.** 
-
-```
-kubectx cymbal-prod
-kubectl get svc -n frontend frontend
-```
-
-10. **Navigate to the `EXTERNAL_IP` in a browser; you should see the banner appear in the login screen:** 
-
-![](screenshots/login-banner.png)
-
-**🌈 Great job! You just wrote, tested, staged, and deployed a new Cymbal Bank application feature.** 
+When this CI pipeline finished, injecting the new image tags in the manifests and committing to the `main` branch, we actually triggered the Continuous Deployment pipeline to run.  Let's see that in action - **[Continue to Part F](partF-cd.md)** to finish up this demo.

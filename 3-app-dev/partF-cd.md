@@ -10,16 +10,25 @@ Also note that this CD pipeline is very simple, just one "kubectl apply" command
 
 Let's watch your frontend banner feature land in production using the CD pipeline. 
 
- 1. Watch Cloud Build - CD - Prod. 
+1. **View the Continuous Deployment build status in the Cloud Build dashboard.** 
 
-Navigate back to Cloud Build and ensure that the build ran successfully. 
+![](screenshots/merged-pr-cd-prod.png)
 
- 2. View the new frontend banner running in production. 
+The build should run successfully - note that it's expected that the only workloads that will be updated (`configured`) on the prod cluster are the `deployments`, since these were the only resources we changed with the updated image tags. The other resource (eg. Services) will be `unchanged`. 
+
+Now, our frontend banner feature should have landed in production! Let's see this in action. 
+
+2. **Back in the terminal, get the frontend pod `EXTERNAL_IP` from the prod cluster.** 
 
 ```
 kubectx cymbal-prod
-kubectl get svc frontend -n frontend
+kubectl get svc -n frontend frontend
 ```
+
+3. **Navigate to the `EXTERNAL_IP` in a browser; you should see the banner appear in the login screen:** 
+
+![](screenshots/login-banner.png)
+
 
 🎉 **Congrats**! You just developed a new CymbalBank feature, tested it in a live Kubernetes environment, and deployed it into production. All without writing a single new YAML file. 
 

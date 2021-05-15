@@ -1,5 +1,5 @@
 
-## Part C - Managing Existing Cloud Resources with Config Connector 
+# Part C - Managing Existing Cloud Resources with Config Connector 
 
 Up to now, we've used Config Connector to generate *new* hosted resources, in both Compute Engine and BigQuery. But if you remember way back in part 1, we used Terraform to initially bootstrap the demo environment. This included creating multiple GKE clusters, a set of Secret Manager secrets, some IAM resources, and multiple Cloud SQL instances for dev, staging, and prod. 
 

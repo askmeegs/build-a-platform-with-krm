@@ -1,5 +1,5 @@
 
-## Part D - Deploying Cymbal Bank with Cloud Build
+# Part D - Deploying Cymbal Bank with Cloud Build
 
 ![demo arch](screenshots/basic-deploy.jpg)
 

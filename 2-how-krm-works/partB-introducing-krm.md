@@ -1,5 +1,5 @@
 
-## Part B - Introducing KRM 
+# Part B - Introducing KRM 
 
 In part 1, we set up four [Google Kubernetes Engine (GKE)]() clusters. [GKE](https://cloud.google.com/kubernetes-engine/docs/concepts/kubernetes-engine-overview) is a cloud-hosted distribution of [Kubernetes](https://kubernetes.io/docs/concepts/overview/what-is-kubernetes/), which is an open-source container orchestration engine. Kubernetes is powerful for two big reasons. This first is that Kubernetes allows you to treat multiple host servers - or "Nodes" - as a single computer. This means that that Kubernetes will auto-schedule your containers to Nodes that have room for them. What this means is that clusters can have arbitrarily large numbers of nodes - [thousands of them](https://kubernetes.io/docs/setup/best-practices/cluster-large/) - supporting massive workloads [like machine learning](https://cloud.google.com/blog/products/containers-kubernetes/google-kubernetes-engine-clusters-can-have-up-to-15000-nodes).
 

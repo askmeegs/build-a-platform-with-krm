@@ -104,7 +104,7 @@ kubectl get svc frontend -n frontend
 
 Now let's pretend that your pull request was reviewed by a developer teammate, and you're ready to merge the pull request and get your code into production.
 
-**Continue to Part E - Merging Your Pull Request.** 
+**[Continue to Part E - Merging Your Pull Request.](partE-ci-main.md)** 
 
 ## Troubleshooting 
 

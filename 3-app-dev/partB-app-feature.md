@@ -13,7 +13,7 @@ Let's take on the persona of an app developer looking to make an update to the C
 
 ![screenshot](screenshots/vscode-login-before.png)
 
-1. **Under line 71, paste in the following code.** This code adds an HTML `card` for that login banner. 
+5. **Under line 71, paste in the following code.** This code adds an HTML `card` for that login banner. 
 
 ```
           <div class="col-lg-6 offset-lg-3">
@@ -28,3 +28,5 @@ Let's take on the persona of an app developer looking to make an update to the C
 Your `login.html` file should now look like this: 
 
 ![screenshot](screenshots/vscode-login-after.png)
+
+Let's test our code. **[Continue to part C](partC-test.md)**.

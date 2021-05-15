@@ -155,3 +155,5 @@ Note - it may take a few minutes for the resources to be created. In the meantim
 **🌈 Nice job!** You just deployed your first cloud-hosted resource with KRM! 
 
 You'll notice that we (the platform admin) had to manually write the GCE resource as KRM, and deploy it to the admin cluster. In a real-life scenario, the platform team might even set up a self-service system with a basic web UI, so that Cymbal Bank employees can request a GCE instance. This web app would take in parameters (like choose an operating system from a drop-down menu, disk size, etc.), and generate a JSON or YAML file with the GCE KRM, then commit it to the policy repo, then have Config Sync apply the resource automatically. This would provide a hands-off way of allowing users to set up their own resources, while maintaining a centralized, auditable source of truth in Git. 
+
+**[Continue to Part B.](partB-cloud-policies.md)**
