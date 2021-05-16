@@ -74,7 +74,7 @@ gke-cymbal-dev-cymbal-dev-node-pool-4839a130-nbfv   Ready    <none>   25h   v1.1
 
 ### 3. **Apply `nginx-deployment.yaml` to the cluster using kubectl**. 
 
-`[kubectl](https://kubernetes.io/docs/reference/kubectl/overview/)` is a command-line interface between a user and a running Kubernetes API server. (All 4 of your GKE clusters have their own API servers.)  You'll see in the Kubernetes architecture diagram above that `kubectl` is only one way to interact with the Kubernetes API but's the method you'll see most often in demos. Here, the `kubectl apply` command is like a a REST `put` command - it will create the resource if it doesn't exist, or update it, if the resource already exists. 
+[kubectl](https://kubernetes.io/docs/reference/kubectl/overview/) is a command-line interface between a user and a running Kubernetes API server. (All 4 of your GKE clusters have their own API servers.)  You'll see in the Kubernetes architecture diagram above that `kubectl` is only one way to interact with the Kubernetes API but's the method you'll see most often in demos. Here, the `kubectl apply` command is like a a REST `put` command - it will create the resource if it doesn't exist, or update it, if the resource already exists. 
 
 ```
 kubectl apply -f nginx-deployment.yaml
