@@ -44,8 +44,6 @@ This allows Cloud Build to watch the Github repositories in your account.
 - Click **Connect.** 
 - Click **Done**. 
 
-![screenshot](screenshots/connect-repository.png)
-
 ### 3. **Create a Cloud Build trigger for cymbalbank-app-config**. 
 
 - In the Triggers menu, click **Create Trigger.** 
