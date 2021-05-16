@@ -2,7 +2,9 @@
 
 This repository contains the demos for the "Build a Platform with KRM" blog post + video series. 
 
-These demos can be completed standalone - all you need is a Google Cloud project and a GitHub account. **[Get started here!](/1-setup)**
+These demos can be completed standalone - all you need is a Google Cloud project and a GitHub account. 
+
+**[Get started here!](/1-setup)**
 
 ## What you'll build
 
