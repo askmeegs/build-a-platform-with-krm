@@ -16,11 +16,16 @@ The diagram above shows the baseline resources Terraform will create during setu
 ## Prerequisites 
 
 1. **A local development environment**, either Linux or MacOS, into which you can install command-line tools. 
-2. An empty **Google Cloud project**, with billing enabled. Have the Project ID handy. **A note to Googlers** - it's recommended that you use a project outside the `google.com` org.
+2. An **Google Cloud project**, with billing enabled. Have the Project ID handy. *A note to Googlers* - it's recommended that you use a project in an external organization. 
 3. A **Github account**. 
 4. A [**Github Personal Access token**](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token) with repo creation permissions. 
-5. **The following tools installed in your local environment**. 
-- git
+
+## Steps 
+
+### 1. Install the following tools. 
+
+(You might have some of these installed already.) You'll use these tools throughout the demos. 
+
 - [gcloud](https://cloud.google.com/sdk/docs/install)
 - [kubectl](https://cloud.google.com/sdk/gcloud/reference/components/install)
 - [kubectx](https://github.com/ahmetb/kubectx#installation)
@@ -31,23 +36,22 @@ The diagram above shows the baseline resources Terraform will create during setu
 - [VSCode](https://code.visualstudio.com/Download)
 - [Cloud Code Extension for VSCode](https://cloud.google.com/code/docs/vscode/install) 
 
-## Steps 
 
-### 1. **Open a terminal, and clone this repo.**
+### 2. **Open a terminal, and clone this repo.**
 
 ```
 git clone https://github.com/askmeegs/intro-to-krm
 cd intro-to-krm/1-setup/ 
 ```
 
-###  2. **Set variables**. 
+###  3. **Set variables**. 
 
 ```
 export PROJECT_ID="<your-project-id>" 
 export GITHUB_USERNAME="<your-github-username>"
 ```
 
-###  3. **Enable Google Cloud APIs** in your project. This command takes a minute to run.
+###  4. **Enable Google Cloud APIs** in your project. This command takes a minute to run.
 
 ```
 gcloud config set project ${PROJECT_ID}
@@ -60,14 +64,14 @@ gcloud services enable \
   storage.googleapis.com
 ```
 
-### 4. **Get the project number corresponding to your project ID.** 
+### 5. **Get the project number corresponding to your project ID.** 
 
 ```
 PROJECT=$(gcloud config get-value project)
 gcloud projects list --filter="$PROJECT" --format="value(PROJECT_NUMBER)"
 ```
 
-### 5. **Replace the values in `terraform.tfvars`** with the values corresponding to your project. 
+### 6. **Replace the values in `terraform.tfvars`** with the values corresponding to your project. 
 
 ```
 project_id = ""
@@ -76,13 +80,13 @@ github_username = ""
 github_token = ""
 ```
 
-### 6. **Set up application default credentials** for your project - this allows Terraform to create GCP resources on your behalf. 
+### 7. **Set up application default credentials** for your project - this allows Terraform to create GCP resources on your behalf. 
 
 ```
 gcloud auth application-default login
 ```
 
-### 7. **Run `terraform init`.** This downloads the providers (Github, Google Cloud) needed for setup. On success, you should see: 
+### 8. **Run `terraform init`.** This downloads the providers (Github, Google Cloud) needed for setup. On success, you should see: 
 
 ```
 terraform init 
@@ -94,7 +98,7 @@ Expected output:
 Terraform has been successfully initialized!
 ```
 
-### 8. **Run `terraform plan`.** This looks at the `.tf` files in the directory and tells you what it will deploy to your Google Cloud project. 
+### 9. **Run `terraform plan`.** This looks at the `.tf` files in the directory and tells you what it will deploy to your Google Cloud project. 
 
 
 ```
@@ -114,7 +118,7 @@ Changes to Outputs:
 
 ```
 
-### 9.  **Run `terraform apply`** to create the resources.
+### 10.  **Run `terraform apply`** to create the resources.
 
 It will take a few minutes for Terraform to set up the cluster and the Cloud Build pipeline. When the command completes, you should see something similar to this: 
 
@@ -136,7 +140,7 @@ kubernetes_staging_cluster_name = "cymbal-staging"
 ```
 
 
-### 10. **Run the cluster setup script.** 
+### 11. **Run the cluster setup script.** 
 
 This registers the clusters to the Anthos dashboard, sets up Kubernetes contexts, and sets up the Kubernetes namespaces you'll deploy the application into, in the next demo.
 
@@ -150,7 +154,7 @@ Expected output:
 ✅ GKE Cluster Setup Complete.
 ```
 
-###  11.  **Verify that you can now access your different clusters as follows:** 
+###  12.  **Verify that you can now access your different clusters as follows:** 
 
 ```
 kubectx cymbal-prod 
