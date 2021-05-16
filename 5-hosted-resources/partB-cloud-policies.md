@@ -45,7 +45,7 @@ Expected output:
 gsutil version: 4.61
 ```
 
-### 3. **Create a Cloud Storage bucket in your project, called `datasets`. **
+### 3. **Create a Cloud Storage bucket in your project, called `datasets`.**
 
 ```
 gsutil mb -c standard gs://$PROJECT_ID-datasets
