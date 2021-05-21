@@ -33,6 +33,8 @@ The diagram above shows the baseline resources Terraform will create during setu
 - **tree** - `brew install tree` (MacOS)
 - [Docker desktop](https://www.docker.com/products/docker-desktop) (Mac) or [Docker Engine](https://docs.docker.com/engine/install/ubuntu/) (Linux)
 - [skaffold](https://skaffold.dev/docs/install/). 
+- [Java - JDK 14](https://www.oracle.com/java/technologies/javase-downloads.html)
+- [Maven (Java)](https://maven.apache.org/install.html)
 - [VSCode](https://code.visualstudio.com/Download)
 - [Cloud Code Extension for VSCode](https://cloud.google.com/code/docs/vscode/install) 
 
