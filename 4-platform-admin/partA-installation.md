@@ -48,7 +48,7 @@ To https://github.com/askmeegs/cymbalbank-policy
 - **Git repository authentication for ACM:** `None`, then click **Continue.** 
 - **ACM Settings for your Clusters:** `Version 1.7.1` or the default-populated version. 
 - **Config sync:** check "Enable." A menu will pop up. 
-- **URL:** `https:/github.com/your-github-username/cymbalbank-policy`. **Replace `your-github-username` with your username.**
+- **URL:** `https://github.com/your-github-username/cymbalbank-policy`. **Replace `your-github-username` with your username.**
 - **Policy controller:** check "Enable." 
 - **Branch**: `main`
 - **Tag/commit**: leave blank
