@@ -5,7 +5,7 @@
 
 ![cymbal arch](screenshots/cymbal-arch.jpg)
 
-Each Cymbal Bank service represents one Kubernetes workload. Like the nginx Deployment we saw in Part A, each Cymbal Bank service has its own Deployment, which runs its respective application server as a cntainer. Let's explore the KRM resources for the app. 
+Each Cymbal Bank service represents one Kubernetes workload. Like the nginx Deployment we saw in Part A, each Cymbal Bank service has its own Deployment, which runs its respective application server as a container. Let's explore the KRM resources for the app. 
 
 ### 1. **Copy the Kubernetes manifests** for Cymbal Bank into the `cymbalbank-app-config/` repo, which you cloned during setup.
 
