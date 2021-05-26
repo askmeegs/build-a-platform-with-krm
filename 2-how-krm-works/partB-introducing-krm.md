@@ -168,7 +168,7 @@ Here we can see that the Kubernetes scheduler spread out the 3 nginx pods across
 
 The key thing to take away from this section is that the Kubernetes APIServer, with its etcd backing store, is the single source of truth for all "nouns" - KRM objects - in the cluster. What this means is that the `nginx-deployment.yaml` file you applied to the cluster actually gets added to by the Kubernetes control plane, with info about its live state. 
 
-### 7. **Get your deployment out of the APIServer using `kubectl`**. 
+### 7. **Get your deployment from the APIServer using `kubectl`**. 
 
 ```
 kubectl get deployment nginx-deployment -o yaml 
