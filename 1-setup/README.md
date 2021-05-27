@@ -122,13 +122,13 @@ Changes to Outputs:
 
 ### 10.  **Run `terraform apply`** to create the resources.
 
-It will take a few minutes for Terraform to set up the cluster and the Cloud Build pipeline. When the command completes, you should see something similar to this: 
+It will take a few minutes for Terraform to set up the cluster and the Cloud Build pipeline.  
 
 ```
 terraform apply -auto-approve
 ```
 
-Expected output: 
+When the command completes, you should see something similar to this:  
 
 ```
 Apply complete! Resources: 35 added, 0 changed, 0 destroyed.
