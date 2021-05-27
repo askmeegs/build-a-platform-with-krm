@@ -88,7 +88,7 @@ github_token = ""
 gcloud auth application-default login
 ```
 
-### 8. **Run `terraform init`.** This downloads the providers (Github, Google Cloud) needed for setup. On success, you should see: 
+### 8. **Run `terraform init`.** This downloads the providers (Github, Google Cloud) needed for setup. 
 
 ```
 terraform init 
