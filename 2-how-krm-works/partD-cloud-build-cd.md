@@ -50,7 +50,7 @@ This allows Cloud Build to watch the Github repositories in your account.
 - Name it `continuous-deployment-prod`
 - Under **Event**, choose `Push to a branch`
 - Under **Source**, choose your `cymbalbank-app-config` repo. 
-- Enter `main` next to **Branch**. This means that the build will run with every push the `main` branch of this repo. 
+- Enter `main` next to **Branch**. This means that the build will run with every push to the `main` branch of this repo. 
 - Under **Configuration**, click `Cloud Build configuration file`, `Repository`, and enter `cloudbuild-cd-prod.yaml` next to file location. 
 - Click **Create.** 
 
