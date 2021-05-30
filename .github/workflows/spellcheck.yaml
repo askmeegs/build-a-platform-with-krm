@@ -14,6 +14,7 @@ matrix:
     - code
     - pre
     - 'div.snippet-clipboard-content'
+    - 'div.highlight-source-shell'
   sources:
   - '**/*.md'
   default_encoding: utf-8
