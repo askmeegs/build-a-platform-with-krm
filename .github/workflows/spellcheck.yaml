@@ -13,8 +13,11 @@ matrix:
     ignores:
     - code
     - pre
-    - 'div.snippet-clipboard-content'
-    - 'div.highlight-source-shell'
+    - div.snippet-clipboard-content
+    - div.highlight-source-shell
+    - span.pl-ent
+    - span.pl-s
+    - span.pl-pds
   sources:
   - '**/*.md'
   default_encoding: utf-8
