@@ -12,13 +12,13 @@ But too many containers packed into one Pod can increase the risk of outages - w
 
 ### **1. View the custom Constraint Template resource, which has been provided for you in the `constraint-limit-containers/` subdirectory.** 
 
-```
+```bash
 cat constraint-limit-containers/constrainttemplate.yaml 
 ```
 
 Expected output: 
 
-```
+```YAML
 apiVersion: templates.gatekeeper.sh/v1beta1
 kind: ConstraintTemplate
 metadata:
@@ -75,26 +75,26 @@ Said another way, custom Constraint Templates with Rego feed Policy Controller i
 
 Rego code is evaluted from top-to-bottom, with the conclusion (allow or deny?) made at the end. The Constraint Template above, `K8sLimitContainersPerPod`, checks if the incoming resource has too many containers per Pod. Line by line, this is what the Rego code does, given some `input.review.object` KRM file (like a Deployment): 
 
-```
+```bash
 numTemplateContainers := count(input.review.object.spec.template.spec.containers)
 ```
 
 Set a variable, `numTemplateContainers`, to the number of desired Pod containers in the input spec. Note that some Kubernetes resources (StatefulSets, Jobs, Deployments) spawn Pods, but others don't, so in some cases this count will be zero. 
 
-```
+```bash
 numRunningContainers := count(input.review.object.spec.containers)
 ```
 
 Also get the number of actively running containers for this resource - this is a secondary check because some third-party Kubernetes plugins (like [Prow](https://github.com/kubernetes/test-infra/tree/master/prow)) actually generate Pods directly.
 
 
-```
+```bash
 containerLimit := input.parameters.allowedNumContainers
 ```
 
 Get the concrete number of allowed containers per pod, defined in the `Constraint` that uses this `ConstraintTemplate`. A Constraint's information is stored in `input.parameters`. 
 
-```
+```bash
 template_containers_over_limit = true {
   numTemplateContainers > containerLimit
 }
@@ -102,7 +102,7 @@ template_containers_over_limit = true {
 
 This is a [Rego if-statement](https://www.openpolicyagent.org/docs/latest/policy-reference/#conditionals-boolean) that sets the condition `template_containers_over_limit` to `true` **if** the number of desired containers is over the limit. 
 
-```
+```bash
 running_containers_over_limit = true {
   numRunningContainers > containerLimit
 }
@@ -110,7 +110,7 @@ running_containers_over_limit = true {
 
 Another if statement - set `running_containers_over_limit` to `true` **if** the number of running containers is over the limit. 
 
-```
+```bash
 violation[{"msg": msg}] {
   template_containers_over_limit
   msg := sprintf("Number of containers in template (%v) exceeds the allowed limit (%v)", [numTemplateContainers, containerLimit])
@@ -119,7 +119,7 @@ violation[{"msg": msg}] {
 
 Throw a policy violation if `template_containers_over_limit` is true. 
 
-```
+```bash
 violation[{"msg": msg}] {
   running_containers_over_limit
   msg := sprintf("Number of running containers (%v) exceeds the allowed limit (%v)", [numRunningContainers, containerLimit])
@@ -135,13 +135,13 @@ Note that if we have any other Constraints applied to the cluster, Policy Contro
 
 ### **1. View the Constraint, which implements the `K8sLimitContainersPerPod` Constraint Template.** 
 
-```
+```bash
 cat constraint-limit-containers/constraint.yaml 
 ```
 
 Expected output: 
 
-```
+```YAML
 apiVersion: constraints.gatekeeper.sh/v1beta1
 kind: K8sLimitContainersPerPod
 metadata:
@@ -155,7 +155,7 @@ Note that this constraint has no `cluster-selector` annotations, so Config Sync 
 
 ### **2. Commit both resources to the cymbalbank-policy repo.** 
 
-```
+```bash
 cp constraint-limit-containers/constrainttemplate.yaml cymbalbank-policy/clusters/
 cp constraint-limit-containers/constraint.yaml cymbalbank-policy/clusters/
 cd cymbalbank-policy/
@@ -169,14 +169,14 @@ cd ..
 
 It may take a minute or two for the cluster to sync the policy from Config Sync.
 
-```
+```bash
 kubectx cymbal-dev
 kubectl get constraint
 ```
 
 Expected output: 
 
-```
+```bash
 NAME                                                                  AGE
 k8snoexternalservices.constraints.gatekeeper.sh/dev-no-ext-services   8h
 
@@ -188,7 +188,7 @@ k8slimitcontainersperpod.constraints.gatekeeper.sh/limit-three-containers   3m42
 
 This is a Deployment where each Pod has 4 containers, each running `nginx`. 4 containers exceeds our limit of 3 containers per pod, so we would expect Policy Controller to reject this resource. 
 
-```
+```bash
 cat constraint-limit-containers/test-workload.yaml
 ```
 
@@ -232,13 +232,13 @@ spec:
 
 You should see an error message. 
 
-```
+```bash
 kubectl apply -f constraint-limit-containers/test-workload.yaml
 ```
 
 Expected output: 
 
-```
+```bash
 Error from server ([limit-three-containers] Number of containers in template (4) exceeds the allowed limit (3)): error when creating "constraint-limit-containers/test-workload.yaml": admission webhook "validation.gatekeeper.sh" denied the request: [limit-three-containers] Number of containers in template (4) exceeds the allowed limit (3)
 ```
 

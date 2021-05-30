@@ -11,19 +11,19 @@ As a platform admin, I want to empower all Cymbal Bank developers to know whethe
 
 ### **1. Clone the `cymbalbank-app-config` repo in the `4-platform-admin/` directory.** 
 
-```
+```bash
 git clone https://github.com/$GITHUB_USERNAME/cymbalbank-app-config
 ```
 
 ### **2. View the `cloudbuild-ci-pr-policy.yaml` file in the `app-ci` directory.** 
 
-```
+```bash
 cat app-ci/cloudbuild-ci-pr-policy.yaml
 ```
 
 Expected output: 
 
-```
+```YAML
 # Source: github.com/GoogleCloudPlatform/anthos-config-management-samples/tree/main/ci-app/app-repo/cloudbuild.yaml
 steps:
 - id: 'Render prod manifests'
@@ -54,7 +54,7 @@ This pipeline has three steps:
 
 ### **3. Copy the Cloud Build pipeline into the `cymbalbank-app-config` root and push to the `main branch`.** 
 
-```
+```bash
 cp app-ci/cloudbuild-ci-pr-policy.yaml cymbalbank-app-config/
 cd cymbalbank-app-config
 git add . 
@@ -64,7 +64,7 @@ git push origin main
 
 ### **4. Remove the `K8sNoExternalServices` constraint from the cymbalbank-policy repo.** This is a temporary workaround to an issue with the Policy Controller CI mechanism, where the default constraint template library isn't properly downloaded in, so that constraint isn't recognized as a valid resource. 
 
-```
+```bash
 cd ..
 cd cymbalbank-policy
 rm clusters/cymbal-dev/constraint.yaml
@@ -89,7 +89,7 @@ Click **Create**.
 
 ### **6. Return to the terminal, and still in the `cymbalbank-app-config` root dir, check out a new branch, `nginx`.**
 
-```
+```bash
 git checkout -b nginx
 ```
 
@@ -97,14 +97,14 @@ git checkout -b nginx
 
 Given that we committed a policy to `cymbalbank-policy` stating that only up to 2 containers are allowed per Pod, we expect the pipeline to fail, with the same Policy Controller error we saw when trying to `kubectl apply -f` this same Deployment. Also update the base `kustomization.yaml` to bring the nginx Deployment into the baseline manifests it knows about. 
 
-```
+```bash
 cp ../constraint-limit-containers/test-workload.yaml ./base/
 echo "\n- test-workload.yaml" >> ./base/kustomization.yaml
 ```
 
 ### **8. Commit the file to the `nginx` branch.**
 
-```
+```bash
 git add .
 git commit -m "Add nginx Deployment"
 git push origin nginx
@@ -112,7 +112,7 @@ git push origin nginx
 
 Expected output: 
 
-```
+```bash
 remote: Create a pull request for 'nginx' on GitHub by visiting:
 remote:      https://github.com/askmeegs/cymbalbank-app-config/pull/new/nginx
 remote:
@@ -128,7 +128,7 @@ Put out a new Pull Request for the `nginx` branch, into the `main` branch.
 
 You should see an error in the third step, matching the Policy Controller error you saw when trying to `kubectl apply -f` the nginx resource earlier. 
 
-```
+```bash
 Status: Downloaded newer image for gcr.io/config-management-release/policy-controller-validate:latest
 gcr.io/config-management-release/policy-controller-validate:latest
 Error: Found 1 violations:

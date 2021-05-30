@@ -7,13 +7,13 @@ For this final demo of the series, let's learn how to bring those existing Googl
 
 ### 1. [Install the Config Connector tool](https://cloud.google.com/config-connector/docs/how-to/import-export/overview#installing-config-connector) and ensure it's in your PATH: 
 
-```
+```bash
 config-connector version
 ```
 
 Expected output: 
 
-```
+```bash
 1.46.0
 ```
 
@@ -21,7 +21,7 @@ Expected output:
 
 This script generates static KRM resource files (YAML) for the Cloud SQL development database. (Although these steps only show KRM for the development DB, we could do the same for the staging and production databases as well.)
 
-```
+```bash
 cat cloudsql/generate-cloudsql-krm.sh 
 ```
 
@@ -45,13 +45,13 @@ config-connector export \
 
 ### 3. **Run the Cloud SQL KRM export script.** 
 
-```
+```bash
 ./cloudsql/generate-cloudsql-krm.sh
 ```
 
 ### 4. **View the generated KRM resources.** 
 
-```
+```bash
 cat cloudsql/projects/$PROJECT_ID/SQLInstance/us-east1/cymbal-dev.yaml
 cat cloudsql/projects/$PROJECT_ID/SQLInstance/cymbal-dev/SQLDatabase/accounts-db.yaml
 cat cloudsql/projects/$PROJECT_ID/SQLInstance/cymbal-dev/SQLDatabase/ledger-db.yaml
@@ -59,7 +59,7 @@ cat cloudsql/projects/$PROJECT_ID/SQLInstance/cymbal-dev/SQLDatabase/ledger-db.y
 
 Expected otuput: 
 
-```
+```YAML
 ---
 apiVersion: sql.cnrm.cloud.google.com/v1beta1
 kind: SQLInstance
@@ -122,7 +122,7 @@ These KRM files represent the live state of your Cloud SQL resources, originally
 
 ### 5. **Apply the Cloud SQL KRM resources to the cymbal-admin cluster.**
 
-```
+```bash
 kubectl apply -f cloudsql/projects/$PROJECT_ID/SQLInstance/us-east1/cymbal-dev.yaml
 kubectl apply -f cloudsql/projects/$PROJECT_ID/SQLInstance/cymbal-dev/SQLDatabase/accounts-db.yaml
 kubectl apply -f cloudsql/projects/$PROJECT_ID/SQLInstance/cymbal-dev/SQLDatabase/ledger-db.yaml
@@ -130,7 +130,7 @@ kubectl apply -f cloudsql/projects/$PROJECT_ID/SQLInstance/cymbal-dev/SQLDatabas
 
 Expected output: 
 
-```
+```bash
 sqlinstance.sql.cnrm.cloud.google.com/cymbal-dev created
 sqldatabase.sql.cnrm.cloud.google.com/accounts-db created
 sqldatabase.sql.cnrm.cloud.google.com/ledger-db created
@@ -148,7 +148,7 @@ kubectl get gcp
 
 Expected output: 
 
-```
+```bash
 NAME                                                AGE   READY   STATUS     STATUS AGE
 sqldatabase.sql.cnrm.cloud.google.com/accounts-db   27s   True    UpToDate   24s
 sqldatabase.sql.cnrm.cloud.google.com/ledger-db     27s   True    UpToDate   24s

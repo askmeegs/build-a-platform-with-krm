@@ -42,7 +42,7 @@ In this demo, we're going to create a policy Constraint for the `cymbal-dev` clu
   
 This is a set of a few dozen Custom Resources (CRDs), each defining a ConstraintTemplate.   
 
-```
+```bash
 kubectx cymbal-dev
 
 kubectl get constrainttemplates \
@@ -51,7 +51,7 @@ kubectl get constrainttemplates \
 
 Expected output: 
 
-```
+```bash
 NAME                                      AGE
 allowedserviceportname                    2d9h
 destinationruletlsenabled                 2d9h
@@ -65,7 +65,7 @@ k8sallowedrepos                           2d9h
 
 This Constraint implements the `[K8sNoExternalServices](https://cloud.google.com/anthos-config-management/docs/reference/constraint-template-library#k8snoexternalservices)` Constraint Template with concrete information about our environment. 
 
-```
+```bash
 cat constraint-ext-services/constraint.yaml
 ```
 
@@ -101,13 +101,13 @@ cp constraint-ext-services/constraint.yaml cymbalbank-policy/clusters/cymbal-dev
 
 ### 5. **Run the `tree` command again on the policy repo.**
 
-```
+```bash
 tree cymbalbank-policy/
 ```
 
 Expected output: 
 
-```
+```bash
 cymbalbank-policy/
 ├── clusters
 │   └── cymbal-dev
@@ -142,7 +142,7 @@ Although we can structure our policy repo however we want, we're imposing some o
 
 ### **6. Commit the Constraint to the main branch of the policy repo.**
 
-```
+```bash
 cd cymbalbank-policy 
 git add .
 git commit -m "Policy Controller - Add K8sNoExternalIP Constraint"
@@ -152,13 +152,13 @@ cd ..
 
 ### **7. Verify that the policy has been synced to the `cymbal-dev` cluster.**
 
-```
+```bash
 gcloud alpha container hub config-management status --project=${PROJECT_ID}
 ```
 
 Expected output: 
 
-```
+```bash
 Name            Status  Last_Synced_Token  Sync_Branch  Last_Synced_Time      Policy_Controller
 cymbal-admin    SYNCED  ed2e4e0            main         2021-05-13T23:59:33Z  INSTALLED
 cymbal-dev      SYNCED  ed2e4e0            main         2021-05-13T23:59:42Z  INSTALLED
@@ -168,14 +168,14 @@ cymbal-staging  SYNCED  ed2e4e0            main         2021-05-13T23:59:29Z  IN
 
 ### **8. Verify that the constraint is deployed to the cymbal-dev cluster.** 
 
-```
+```bash
 kubectx cymbal-dev
 kubectl get constraint 
 ```
 
 Expected output: 
 
-```
+```bash
  NAME                                                                  AGE
 k8snoexternalservices.constraints.gatekeeper.sh/dev-no-ext-services   47s
 ```
@@ -184,13 +184,13 @@ k8snoexternalservices.constraints.gatekeeper.sh/dev-no-ext-services   47s
   
 You should get an error stating that the Policy Controller admission webhook is blocking the incoming resource. 
 
-```
+```bash
 kubectl apply -f constraint-ext-services/contacts-svc-lb.yaml
 ```
 
 Expected output: 
 
-```
+```bash
 Resource: "/v1, Resource=services", GroupVersionKind: "/v1, Kind=Service"
 Name: "contacts", Namespace: "contacts"
 for: "constraint-ext-services/contacts-svc-lb.yaml": admission webhook "validation.gatekeeper.sh" denied the request: [denied by dev-no-ext-services] Creating services of type `LoadBalancer` without Internal annotation is not allowed

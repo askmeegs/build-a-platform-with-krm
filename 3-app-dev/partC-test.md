@@ -13,7 +13,7 @@ To deploy the app to the dev cluster, we will use [Google Cloud Code](https://cl
 
 ### 1. **View the `skaffold.yaml` file in the `app-dev/` directory**. 
 
-```
+```bash
 cat ../skaffold.yaml 
 ```
 
@@ -80,7 +80,7 @@ A [skaffold.yaml](https://skaffold.dev/docs/references/yaml/) file is the config
 
 Note - this will overwrite the upstream `skaffold.yaml` with our changes, this is ok.
 
-```
+```bash
 cp ../skaffold.yaml .
 ```
 
@@ -108,7 +108,7 @@ A terminal should open up within VSCode that shows the skaffold logs, as it buil
 
 Expected Cloud Code output: 
 
-```
+```bash
 **************URLs*****************
 Debuggable container started pod/balancereader-7d87ddb588-mx25g:balancereader (balancereader)
 Debuggable container started pod/ledgerwriter-5f45c577-ndl55:ledgerwriter (ledgerwriter)
@@ -119,13 +119,13 @@ Update succeeded
 
 ### 9. **Open a new terminal window and view your newly-built pods**. 
 
-```
+```bash
 kubectl get pods --all-namespaces --selector=org=cymbal-bank
 ```
 
 Expected output: 
 
-```
+```bash
 NAMESPACE            NAME                                  READY   STATUS    RESTARTS   AGE
 balancereader        balancereader-55dc9b5878-jjbfp        2/2     Running   0          112s
 contacts             contacts-66b888c46c-ntkms             2/2     Running   0          112s
@@ -140,7 +140,7 @@ userservice          userservice-558fcc7fc4-fndgm          2/2     Running   0  
 
 Copy the `EXTERNAL_IP` of your frontend service, paste  it on a browser, and navigate to the frontend's login screen. 
 
-```
+```bash
 kubectl get svc -n frontend frontend 
 ```
 

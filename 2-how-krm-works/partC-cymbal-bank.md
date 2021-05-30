@@ -9,7 +9,7 @@ Each Cymbal Bank service represents one Kubernetes workload. Like the nginx Depl
 
 ### 1. **Copy the Kubernetes manifests** for Cymbal Bank into the `cymbalbank-app-config/` repo, which you cloned during setup.
 
-```
+```bash
 cp -r app-manifests/* cymbalbank-app-config/
 ```
 
@@ -19,13 +19,13 @@ Unlike the nginx example where we used `kubectl` to directly apply a Deployment 
 
 View the structure of the config repo using `tree`: 
 
-```
+```bash
 tree cymbalbank-app-config/
 ```
 
 Expected output: 
 
-```
+```bash
 cymbalbank-app-config/
 ├── README.md
 ├── base
@@ -78,13 +78,13 @@ kustomize allows for pre-baked "flavors" of a set of Kubernetes manifests, calle
 
 ### 4. **Both overlays rely on the same base manifests for each Cymbal Bank service. For instance, view the `userservice` base manifests:** 
 
-```
+```bash
 cat cymbalbank-app-config/base/contacts.yaml
 ```
 
 Expected output: 
 
-```
+```YAML
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -120,13 +120,13 @@ This baseline config for `contacts` is then extended in the overlays using "patc
 
 ### **5. View the contacts service patch for the dev overlay:** 
 
-```
+```bash
 cat cymbalbank-app-config/overlays/dev/contacts.yaml 
 ```
 
 Expected output: 
 
-```
+```YAML
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -159,13 +159,13 @@ The last thing to know about kustomize, for now, is that each kustomize director
 
 View the kustomization.yaml file for the dev overlay: 
 
-```
+```bash
 cat cymbalbank-app-config/overlays/dev/kustomization.yaml 
 ```
 
 Expected output: 
 
-```
+```bash
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 bases:

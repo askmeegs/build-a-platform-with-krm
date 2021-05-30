@@ -20,7 +20,7 @@ Now, our frontend banner feature should have landed in production! Let's see thi
 
 ### 2. **Back in the terminal, get the frontend pod `EXTERNAL_IP` from the prod cluster.** 
 
-```
+```bash
 kubectx cymbal-prod
 kubectl get svc -n frontend frontend
 ```

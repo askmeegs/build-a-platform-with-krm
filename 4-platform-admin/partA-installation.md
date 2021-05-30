@@ -17,13 +17,13 @@ This script populates your policy repo with namespaces corresponding to each of 
 
 Run the policy repo setup script from the `4-platform-admin/` directory: 
 
-```
+```bash
 ./policy-repo-setup.sh
 ```
 
 Expected output: 
 
-```
+```bash
 Compressing objects: 100% (9/9), done.
 Writing objects: 100% (17/17), 1.29 KiB | 662.00 KiB/s, done.
 Total 17 (delta 0), reused 0 (delta 0), pack-reused 0
@@ -88,7 +88,7 @@ gcloud alpha container hub config-management status --project=${PROJECT_ID}
 
 Expected output: 
 
-```
+```bash
 Name            Status  Last_Synced_Token  Sync_Branch  Last_Synced_Time      Policy_Controller
 cymbal-admin    SYNCED  5e068d0            main         2021-05-13T22:10:25Z  INSTALLED
 cymbal-dev      SYNCED  5e068d0            main         2021-05-13T22:11:21Z  INSTALLED
@@ -98,13 +98,13 @@ cymbal-staging  SYNCED  5e068d0            main         2021-05-13T22:19:12Z  IN
 
 Here, `Last_Synced_Token` is the git commit SHROT_SHA of your latest commit to the `main` branch of your `cymbalbank-policy` repo - you can verify this by `cd`-ing into your policy repo and running: 
 
-```
+```bash
 git log 
 ```
 
 Expected output: 
 
-```
+```bash
 commit 5e068d0ff2128026368479342ff7f892dc964f8d (HEAD -> main, origin/main)
 Author: askmeegs <megan037@gmail.com>
 Date:   Thu May 13 17:58:10 2021 -0400
@@ -116,7 +116,7 @@ So when you installed Config Sync and Policy Controller, what actually got deplo
 
 ### 11. **Switch to the dev cluster, and get the Pods in the `config-management-system` and `gatekeeper-system` namespaces.**
 
-```
+```bash
 kubectx cymbal-dev
 kubectl get pods -n config-management-system
 kubectl get pods -n gatekeeper-system
@@ -124,7 +124,7 @@ kubectl get pods -n gatekeeper-system
 
 Expected output: 
 
-```
+```bash
 NAME                                  READY   STATUS    RESTARTS   AGE
 admission-webhook-6899f7fbd9-2zlvw    1/1     Running   0          14m
 admission-webhook-6899f7fbd9-nskpn    1/1     Running   1          14m

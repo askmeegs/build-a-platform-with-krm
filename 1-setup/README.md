@@ -48,14 +48,14 @@ cd intro-to-krm/1-setup/
 
 ###  3. **Set variables**. 
 
-```
+```bash
 export PROJECT_ID="<your-project-id>" 
 export GITHUB_USERNAME="<your-github-username>"
 ```
 
 ###  4. **Enable Google Cloud APIs** in your project. This command takes a minute to run.
 
-```
+```bash
 gcloud config set project ${PROJECT_ID}
 gcloud services enable \
   container.googleapis.com \
@@ -68,14 +68,14 @@ gcloud services enable \
 
 ### 5. **Get the project number corresponding to your project ID.** 
 
-```
+```bash
 PROJECT=$(gcloud config get-value project)
 gcloud projects list --filter="$PROJECT" --format="value(PROJECT_NUMBER)"
 ```
 
 ### 6. **Replace the values in `terraform.tfvars`** with the values corresponding to your project. 
 
-```
+```bash
 project_id = ""
 project_number = ""
 github_username = ""
@@ -84,32 +84,32 @@ github_token = ""
 
 ### 7. **Set up application default credentials** for your project - this allows Terraform to create GCP resources on your behalf. 
 
-```
+```bash
 gcloud auth application-default login
 ```
 
 ### 8. **Run `terraform init`.** This downloads the providers (Github, Google Cloud) needed for setup. On success, you should see: 
 
-```
+```bash
 terraform init 
 ```
 
 Expected output: 
 
-```
+```bash
 Terraform has been successfully initialized!
 ```
 
 ### 9. **Run `terraform plan`.** This looks at the `.tf` files in the directory and tells you what it will deploy to your Google Cloud project. 
 
 
-```
+```bash
 terraform plan
 ```
 
 Expected output: 
 
-```
+```bash
 Plan: 35 to add, 0 to change, 0 to destroy.
 
 Changes to Outputs:
@@ -124,13 +124,13 @@ Changes to Outputs:
 
 It will take a few minutes for Terraform to set up the cluster and the Cloud Build pipeline. When the command completes, you should see something similar to this: 
 
-```
+```bash
 terraform apply -auto-approve
 ```
 
 Expected output: 
 
-```
+```bash
 Apply complete! Resources: 35 added, 0 changed, 0 destroyed.
 
 Outputs:
@@ -146,26 +146,26 @@ kubernetes_staging_cluster_name = "cymbal-staging"
 
 This registers the clusters to the Anthos dashboard, sets up Kubernetes contexts, and sets up the Kubernetes namespaces you'll deploy the application into, in the next demo.
 
-```
+```bash
 ./cluster-setup.sh
 ```
 
 Expected output: 
 
-```
+```bash
 ✅ GKE Cluster Setup Complete.
 ```
 
 ###  12.  **Verify that you can now access your different clusters as follows:** 
 
-```
+```bash
 kubectx cymbal-prod 
 kubectl get nodes
 ```
 
 Expected output: 
 
-```
+```bash
 Switched to context "cymbal-prod".
 NAME                                                  STATUS   ROLES    AGE   VERSION
 gke-cymbal-prod-cymbal-prod-node-pool-de8b1260-7np8   Ready    <none>   15m   v1.18.16-gke.302

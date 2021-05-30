@@ -19,7 +19,7 @@ This is an HTML template for the Cymbal Bank login page.
 
 This code adds an HTML `card` for that login banner. 
 
-```
+```HTML
           <div class="col-lg-6 offset-lg-3">
             <div class="card">
               <div class="card-body">

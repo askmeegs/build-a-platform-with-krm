@@ -20,7 +20,7 @@ KRM was created by the Kubernetes authors several years ago, and it was designed
 
 View the file: 
 
-```
+```bash
 cat nginx-deployment.yaml 
 ```
 
@@ -56,14 +56,14 @@ Here, we see the structured KRM format at work. All [Kubernetes objects](https:/
 
 ### 2. **Change your local Kubernetes context** to the `cymbal-dev` cluster and verify you can get its Nodes. Note - we'll use the `kubectx` command throughout these demos to easily switch our local terminal to "point to" the different GKE clusters.
 
-```
+```bash
 kubectx cymbal-dev
 kubectl get nodes 
 ```
 
 Expected output: 
 
-```
+```bash
 Switched to context "cymbal-dev".
 NAME                                                STATUS   ROLES    AGE   VERSION
 gke-cymbal-dev-cymbal-dev-node-pool-4839a130-5hj2   Ready    <none>   25h   v1.18.17-gke.100
@@ -76,13 +76,13 @@ gke-cymbal-dev-cymbal-dev-node-pool-4839a130-nbfv   Ready    <none>   25h   v1.1
 
 [kubectl](https://kubernetes.io/docs/reference/kubectl/overview/) is a command-line interface between a user and a running Kubernetes API server. (All 4 of your GKE clusters have their own API servers.)  You'll see in the Kubernetes architecture diagram above that `kubectl` is only one way to interact with the Kubernetes API but's the method you'll see most often in demos. Here, the `kubectl apply` command is like a a REST `put` command - it will create the resource if it doesn't exist, or update it, if the resource already exists. 
 
-```
+```bash
 kubectl apply -f nginx-deployment.yaml
 ```
 
 Expected output: 
 
-```
+```bash
 deployment.apps/nginx-deployment created
 ```
 
@@ -90,13 +90,13 @@ deployment.apps/nginx-deployment created
 
 [Pods](https://kubernetes.io/docs/concepts/workloads/pods/) are the smallest deployable unit in Kubernetes. Each Pod contains one or more running containers - in this case, each of the 3 nginx pods contain 1 nginx container. 
 
-```
+```bash
 kubectl get pods 
 ```
 
 Expected output: 
 
-```
+```bash
 NAME                                READY   STATUS    RESTARTS   AGE
 nginx-deployment-6b474476c4-2fbfc   1/1     Running   0          2m30s
 nginx-deployment-6b474476c4-4txp6   1/1     Running   0          2m30s
@@ -105,13 +105,13 @@ nginx-deployment-6b474476c4-gqsql   1/1     Running   0          2m30s
 
 ### 5. **Delete one of the pods in your nginx Deployment.**, by copying the `NAME` field in your output of the command above.  
 
-```
+```bash
 kubectl delete pod nginx-deployment-6b474476c4-2fbfc
 ```
 
 Expected output: 
 
-```
+```bash
 pod "nginx-deployment-6b474476c4-2fbfc" deleted
 ```
 
@@ -119,13 +119,13 @@ pod "nginx-deployment-6b474476c4-2fbfc" deleted
 
 You should see that Kubernetes noticed that the actual state diverged from your desired state in `nginx-deployment.yaml`, and brought a new nginx Pod back online. Notice that it's a new Pod name, not the name of the Pod you deleted - this is because Kubernetes Deployment Pods are stateless and ephemeral (including their IP addresses). 
 
-```
+```bash
 kubectl get pods 
 ```
 
 Expected output: 
 
-```
+```bash
 NAME                                READY   STATUS    RESTARTS   AGE
 nginx-deployment-6b474476c4-44dq4   1/1     Running   0          2s
 nginx-deployment-6b474476c4-knmkr   1/1     Running   0          3m45s
@@ -151,13 +151,13 @@ So when you ran `kubectl apply -f`, a series of events happened ([in-depth steps
 6. The Kubernetes Scheduler sees the `Pending` Pods and finds suitable Nodes for the Pods to run on. (eg. checks if the Node has enough CPU/Memory to run that Pod).
 7. The `kubelet` on the assigned Nodes starts the 3 `nginx` containers. You can see which Nodes are running which Pods using the `-o wide` flag.  
 
-```
+```bash
 kubectl get pods -o wide
 ```
 
 Expected output: 
 
-```
+```bash
 NAME                                READY   STATUS    RESTARTS   AGE   IP         NODE                                                NOMINATED NODE   READINESS GATES
 nginx-deployment-6b474476c4-4txp6   1/1     Running   0          59m   10.8.4.3   gke-cymbal-dev-cymbal-dev-node-pool-4839a130-6jnw   <none>           <none>
 nginx-deployment-6b474476c4-67hwc   1/1     Running   0          55m   10.8.2.6   gke-cymbal-dev-cymbal-dev-node-pool-4839a130-b8fs   <none>           <none>
@@ -170,7 +170,7 @@ The key thing to take away from this section is that the Kubernetes APIServer, w
 
 ### 7. **Get your deployment from the APIServer using `kubectl`**. 
 
-```
+```bash
 kubectl get deployment nginx-deployment -o yaml 
 ```
 
@@ -206,7 +206,7 @@ In this way, a KRM file is a complete record of not only your desired state, but
 
 ###  8. Clean up by deleting the nginx-deployment from the cluster. 
 
-```
+```bash
 kubectl delete -f nginx-deployment.yaml 
 ```
 

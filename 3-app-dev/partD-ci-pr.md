@@ -9,14 +9,14 @@ Now that we've tested the new frontend feature locally using the dev cluster, we
 
 Run these commands from the cymbalbank-app-source root directory: 
 
-```
+```bash
 cp ../cloudbuild-ci-pr.yaml . 
 cat cloudbuild-ci-pr.yaml
 ```
 
 Expected output: 
 
-```
+```YAML
 steps:
 - name: 'gcr.io/google-samples/intro-to-krm/skaffold-mvn:latest'
   id: Deploy to Staging Cluster
@@ -79,7 +79,7 @@ From the Create Trigger menu, set the fields as follows:
 
 ### 4. **Return to your terminal, and push your local frontend-banner branch to remote.**
 
-```
+```bash
 git add .
 git commit -m "Add frontend banner, PR CI pipeline" 
 git push origin frontend-banner
@@ -99,7 +99,7 @@ Note - it may take 5-10 minutes for this pipeline to complete.
 
 ### 7. **View the frontend banner in staging.**
 
-```
+```bash
 kubectx cymbal-staging
 kubectl get svc frontend -n frontend
 ```
@@ -114,7 +114,7 @@ Now let's pretend that your pull request was reviewed by a developer teammate, a
 
 If the CI Pull Request build fails with the following error: 
 
-```
+```bash
  - balancereader: Error checking cache.
 failed to build: getting hash for artifact "balancereader": getting dependencies for "balancereader": could not fetch dependencies for workspace .: initial Jib dependency refresh failed: failed to get Jib dependencies: running [/workspace/mvnw jib:_skaffold-fail-if-jib-out-of-date -Djib.requiredVersion=1.4.0 --projects src/balancereader --also-make jib:_skaffold-files-v2 --quiet --batch-mode]
  - stdout: ""

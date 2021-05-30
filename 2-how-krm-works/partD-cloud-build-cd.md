@@ -9,13 +9,13 @@ Let's implement a GitOps-style continuous deployment pipeline for CymbalBank usi
 
 ### 1. **View the continuous deployment pipeline**. This file has been provided for you, and defines a Cloud Build pipeline that runs the `kubectl apply -k` command described above, effectively deploying the demo overlay in the `cymbalbank-app-config` repo to the `cymbal-prod` cluster. 
 
-```
+```bash
 cat cymbalbank-app-config/cloudbuild-cd-prod.yaml 
 ```
 
 Expected output: 
 
-```
+```YAML
 steps:
 - name: 'gcr.io/cloud-builders/kubectl'
   id: Deploy
@@ -61,7 +61,7 @@ You should now see the trigger appear in the Cloud Build menu. **Note** - the re
 
 ### 4. **Trigger the build by pushing the manifests to your config repo.** 
 
-```
+```bash
 cd cymbalbank-app-config/
 git add .
 git commit -m "Initialize app config repo"
@@ -71,7 +71,7 @@ cd ..
 
 Expected output: 
 
-```
+```bash
 Writing objects: 100% (37/37), 16.46 KiB | 3.29 MiB/s, done.
 Total 37 (delta 25), reused 0 (delta 0), pack-reused 0
 remote: Resolving deltas: 100% (25/25), done.
@@ -89,14 +89,14 @@ Watch the Cloud Build logs as the Continuous Deployment pipeline runs, using `ku
 
 ### 6. **Return to your terminal and get the pods in the `cymbal-prod` cluster**: 
 
-```
+```bash
 kubectx cymbal-prod
 kubectl get pods --all-namespaces --selector=org=cymbal-bank
 ```
 
 Expected output: 
 
-```
+```bash
 NAMESPACE            NAME                                  READY   STATUS    RESTARTS   AGE
 balancereader        balancereader-7bd58bcd4f-q9kpj        2/2     Running   1          5m53s
 contacts             contacts-7694bb5cb6-2tl8r             2/2     Running   0          5m53s
@@ -113,13 +113,13 @@ Notice how there are 3 frontend `replicas`, as defined in the `prod` kustomize o
 
 You can also run `kubectl get` on the other resource types just deployed, including Services: 
 
-```
+```bash
 kubectl get services  --all-namespaces --selector=org=cymbal-bank
 ```
 
 Expected output: 
 
-```
+```bash
 NAMESPACE            NAME                 TYPE           CLUSTER-IP     EXTERNAL-IP   PORT(S)        AGE
 balancereader        balancereader        ClusterIP      10.7.252.14    <none>        8080/TCP       3m44s
 contacts             contacts             ClusterIP      10.7.241.192   <none>        8080/TCP       3m44s

@@ -17,14 +17,14 @@ Let's explore how we can use Config Sync to keep the same resources constantly d
   
 We created this namespace manually during part 1, but now it's being managed by Config Sync.  
 
-```
+```bash
 kubectx cymbal-dev
 kubectl get namespace frontend -o yaml 
 ```
 
 Expected output (trimmed): 
 
-```
+```YAML
 apiVersion: v1
 kind: Namespace
 metadata:
@@ -40,14 +40,14 @@ Where did this resource come from? Let's explore the structure of the policy rep
 
 ### 2. **Run the `tree` command on the newly-initialized `cymbalbank-policy` repo.** 
 
-```
+```bash
 cd cymbalbank-policy/
 tree .
 ```
 
 Expected output: 
 
-```
+```bash
 .
 └── namespaces
     ├── balancereader
@@ -74,13 +74,13 @@ By default, resources committed to a policy repo will be synced to all clusters 
 
 ### 3. **Attempt to delete the frontend namespace from the dev cluster.** 
 
-```
+```bash
 kubectl delete namespace frontend
 ```
 
 Expected output: 
 
-```
+```bash
 error: You must be logged in to the server (admission webhook "v1.admission-webhook.configsync.gke.io" denied the request: requester is not authorized to delete managed resources)
 ```
 

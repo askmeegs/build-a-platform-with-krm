@@ -9,7 +9,7 @@ In this section, we'll create a "bridge" CI/CD pipeline, so that when a Pull Req
 
 ### 1. **View the Cloud Build pipeline for commits to the `main` branch of the app source repo** 
 
-```
+```bash
 cat ../cloudbuild-ci-main.yaml 
 ```
 
@@ -80,7 +80,7 @@ This pipeline will run when a pull request merges into the `main` branch. It doe
 
 ### 2. **Copy the main CI pipeline into cymbalbank-app-source.** 
 
-```
+```bash
 cp ../cloudbuild-ci-main.yaml .
 git add .
 git commit -m "Add cloudbuild CI main" 

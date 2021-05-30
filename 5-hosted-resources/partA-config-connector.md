@@ -5,7 +5,7 @@
 
 Back in [Demo 1](/1-setup/), we used Terraform to set up a bunch of cloud resources, including multiple GKE clusters, IAM resources, Cloud SQL databases, and Secret Manager secrets. Terraform is great for bootstrapping hosted resources because like KRM, it uses declarative resource files like this —
 
-```
+```bash
 resource "google_sql_database" "cymbal-dev-ledger-db" {
   project = var.project_id 
   name     = "ledger-db"
@@ -34,7 +34,7 @@ Let's install Config Connector onto our GKE environment. We'll lifecycle cloud-h
 
 ### 1. **Set variables.** 
 
-```
+```bash
 export PROJECT_ID=your-project-id
 export GITHUB_USERNAME=your-github-username 
 ```
@@ -43,13 +43,13 @@ export GITHUB_USERNAME=your-github-username
 
 ### 3. **Run the setup script.** 
 
-```
+```bash
 ./setup-config-connector.sh 
 ```
 
 Expected output: 
 
-```
+```bash
 ✅ Finished installing Config Connector on all clusters.
 ```
 
@@ -57,14 +57,14 @@ This script grants Config Connector (running in the GKE cluster) the IAM permiss
 
 ### 4. **Verify that Config Connector is installed on the admin cluster.**
 
-```
+```bash
 kubectx cymbal-admin
 kubectl get pods -n cnrm-system
 ```
 
 Expected output: 
 
-```
+```bash
 NAME                                            READY   STATUS    RESTARTS   AGE
 cnrm-controller-manager-0                       2/2     Running   0          37s
 cnrm-deletiondefender-0                         1/1     Running   0          3d19h
@@ -82,13 +82,13 @@ Let's start with a basic example of creating a GCP-hosted resource using Config 
 
 ### 1. **View the GCE KRM resources.** 
 
-```
+```bash
 cat compute-engine/instance.yaml 
 ```
 
 Expected output: 
 
-```
+```YAML
 apiVersion: compute.cnrm.cloud.google.com/v1beta1
 kind: ComputeInstance
 metadata:
@@ -115,20 +115,20 @@ This KRM resource defines one Compute Engine instance, along with a Compute Disk
 
 ### 2. Apply the Compute Engine resources to the admin cluster. **⚠️ Note** - this demo shows applying the cloud-hosted KRM resources manually with kubectl, due to an ongoing bug between Config Sync and Config Connector. But in an ideal scenario, we use Config Sync to sync the Config Connector KRM just like we did policies. 
 
-```
+```bash
 kubectx cymbal-admin
 kubectl apply -f compute-engine/instance.yaml
 ```
 
 ### 3. **Get the status of the deployed resources on the cymbal-admin cluster** 
 
-```
+```bash
 kubectl get gcp 
 ```
 
 Expected output: 
 
-```
+```bash
 NAME                                                                               AGE     READY   STATUS     STATUS AGE
 computesubnetwork.compute.cnrm.cloud.google.com/computeinstance-dep-cloudmachine   5m57s   True    UpToDate   5m3s
 
