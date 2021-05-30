@@ -5,7 +5,6 @@ megan.tfvars
 *.lock.hcl
 .DS_Store
 3/app-dev/bank-of-anthos/
-.vscode/*
 *key.json
 config-sync-operator.yaml
 terraform-megan.tfvars
@@ -13,3 +12,4 @@ terraform-megan.tfvars
 */cymbalbank-app-source/
 */cymbalbank-policy/
 SQLInstance/
+.vscode/
