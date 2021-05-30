@@ -13,6 +13,7 @@ matrix:
     ignores:
     - code
     - pre
+    - 'div.snippet-clipboard-content'
   sources:
   - '**/*.md'
   default_encoding: utf-8
