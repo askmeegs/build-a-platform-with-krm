@@ -9,7 +9,7 @@ The second reason Kubernetes is powerful is because of its **declarative API**. 
 
 You might notice in the diagram above that all arrows point to the Kubernetes API Server - the API is the source of truth for Kubernetes, the "secret sauce." And it is this second point - the power of the always-reconciling, declarative Kubernetes API - that we will focus on for the rest of these demos. 
 
-So what does that "desired" state look like? How do you get configuration into a Kuberntes cluster? With **KRM**. KRM stands for the [**Kubernetes Resource Model**](https://kubernetes.io/docs/concepts/overview/working-with-objects/kubernetes-objects/), a specific configuration structure that Kubernetes can read. KRM can be expressed as YAML or JSON, but more commonly you'll see YAML. 
+So what does that "desired" state look like? How do you get configuration into a Kubernetes cluster? With **KRM**. KRM stands for the [**Kubernetes Resource Model**](https://kubernetes.io/docs/concepts/overview/working-with-objects/kubernetes-objects/), a specific configuration structure that Kubernetes can read. KRM can be expressed as YAML or JSON, but more commonly you'll see YAML. 
 
 KRM was created by the Kubernetes authors several years ago, and it was designed to work with that declarative reconciliation model. Each KRM resource is a noun that the Kubernetes control plane knows how to take action on. (If you're ever worked with a REST API with basic CRUD operations, this may sound familiar). Let's look at our first resource. 
 

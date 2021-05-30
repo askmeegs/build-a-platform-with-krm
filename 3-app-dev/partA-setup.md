@@ -9,7 +9,7 @@ export PROJECT_ID=<your-project-id>
 export GITHUB_USERNAME=<your-github-username>
 ```
 
-### 2. **Switch to the `cymbal-dev` kubecontext.**
+### 2. **Switch to the `cymbal-dev` cluster.**
 
 ```
 kubectx cymbal-dev

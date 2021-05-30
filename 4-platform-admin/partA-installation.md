@@ -136,9 +136,9 @@ gatekeeper-audit-76d8d7fb-dbnd7                  1/1     Running   0          15
 gatekeeper-controller-manager-6bf5fdb68f-bftcz   1/1     Running   0          15m
 ```
 
-The first set of workloads, in the `config-management-system` namespace, run Config Sync. These workloads periodically check your github policy repo for any updates to the KRM source of truth stored there, and deploys those updated resources to the cluster. (Note that every cluster runs their own Config Sync, but all the clusters are synced to the same repo.)
+The first set of workloads, in the `config-management-system` namespace, run Config Sync. These workloads periodically check your GitHub policy repo for any updates to the KRM source of truth stored there, and deploys those updated resources to the cluster. (Note that every cluster runs their own Config Sync, but all the clusters are synced to the same repo.)
 
-The second set of workloadss, in the `gatekeeper-system` namespace, run Policy Controller. (Policy Controller is based on an open-source project called [Gatekeeper](https://github.com/open-policy-agent/gatekeeper)). These workloads help ensure that any resources entering the cluster - both through CI/CD or through Config Sync - adheres with any policies we set. 
+The second set of workloads, in the `gatekeeper-system` namespace, run Policy Controller. (Policy Controller is based on an open-source project called [Gatekeeper](https://github.com/open-policy-agent/gatekeeper)). These workloads help ensure that any resources entering the cluster - both through CI/CD or through Config Sync - adheres with any policies we set. 
 
 We'll explore how both these tools work in the rest of this demo. 
 

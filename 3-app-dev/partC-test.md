@@ -148,7 +148,7 @@ You should see your new banner at the top of the login screen:
 
 ![screenshot](screenshots/login-banner.png)
 
-Note that `Cloud Code: Run on Kubernetes` uses `skaffold dev` as the underlying command, which constantly watches your local source code for changes, and keeps building the updated services as you write more code. Optionally, make some changes to the login banner or add some text to the `login.html` file - you should see the `Output` in your IDE log the updated build, and if you re-navigate to the fronten external IP, you should see your changes reflected. 
+Note that `Cloud Code: Run on Kubernetes` uses `skaffold dev` as the underlying command, which constantly watches your local source code for changes, and keeps building the updated services as you write more code. Optionally, make some changes to the login banner or add some text to the `login.html` file - you should see the `Output` in your IDE log the updated build, and if you re-navigate to the frontend external IP, you should see your changes reflected. 
 
 ### 11. Remove your test deployment from the dev cluster by 
 
