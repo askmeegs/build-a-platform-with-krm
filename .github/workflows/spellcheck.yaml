@@ -8,6 +8,14 @@ matrix:
     encoding: utf-8
   pipeline:
   - pyspelling.filters.markdown:
+    ignores:
+    - code
+    - pre
+    - div.snippet-clipboard-content
+    - div.highlight-source-shell
+    - span.pl-ent
+    - span.pl-s
+    - span.pl-pds
   - pyspelling.filters.html:
     comments: false
     ignores:
