@@ -93,13 +93,38 @@ Click **Create**.
 git checkout -b nginx
 ```
 
-### **7. Copy the `test-workload.yaml` Service we used earlier in this demo into the `cymbalbank-app-config` repo, under the `base/` manifests.**
+### **7. Copy the `test-workload.yaml` Deployment we used earlier in this demo into the `cymbalbank-app-config` repo, under the `base/` manifests.**
 
-Given that we committed a policy to `cymbalbank-policy` stating that only up to 2 containers are allowed per Pod, we expect the pipeline to fail, with the same Policy Controller error we saw when trying to `kubectl apply -f` this same Deployment. Also update the base `kustomization.yaml` to bring the nginx Deployment into the baseline manifests it knows about. 
+Given that we committed a policy to `cymbalbank-policy` stating that only up to 3 containers are allowed per Pod, we expect the pipeline to fail, with the same Policy Controller error we saw when trying to `kubectl apply -f` this same Deployment. Also update the base `kustomization.yaml` to bring the nginx Deployment into the baseline manifests it knows about. 
 
 ```
 cp ../constraint-limit-containers/test-workload.yaml ./base/
-echo "\n- test-workload.yaml" >> ./base/kustomization.yaml
+```
+
+### **8. Add test-workload.yaml to your kustomization.yaml file.** 
+
+Do this by opening `./base/kustomization.yaml` and adding this line to the bottom of the file: 
+
+```
+- test-workload.yaml
+```
+
+Your kustomization.yaml file should now look like this: 
+
+```YAML 
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+- balancereader.yaml
+- contacts.yaml
+- ledgerwriter.yaml
+- loadgenerator.yaml
+- populate-accounts-db.yaml
+- populate-ledger-db.yaml
+- transactionhistory.yaml
+- userservice.yaml
+- frontend.yaml
+- test-workload.yaml
 ```
 
 ### **8. Commit the file to the `nginx` branch.**

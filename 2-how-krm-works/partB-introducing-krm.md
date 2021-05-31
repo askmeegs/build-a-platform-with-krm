@@ -103,10 +103,11 @@ nginx-deployment-6b474476c4-4txp6   1/1     Running   0          2m30s
 nginx-deployment-6b474476c4-gqsql   1/1     Running   0          2m30s
 ```
 
-### 5. **Delete one of the pods in your nginx Deployment.**, by copying the `NAME` field in your output of the command above.  
+### 5. **Delete one of the pods in your nginx Deployment.**.  
 
 ```
-kubectl delete pod nginx-deployment-6b474476c4-2fbfc
+POD=$(kubectl get pod -l app=nginx -o jsonpath="{.items[0].metadata.name}")
+kubectl delete $POD
 ```
 
 Expected output: 

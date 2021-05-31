@@ -41,8 +41,7 @@ Where did this resource come from? Let's explore the structure of the policy rep
 ### 2. **Run the `tree` command on the newly-initialized `cymbalbank-policy` repo.** 
 
 ```
-cd cymbalbank-policy/
-tree .
+tree cymbalbank-policy/
 ```
 
 Expected output: 

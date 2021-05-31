@@ -9,7 +9,7 @@ spec:
   jobTimeoutMs: "600000"
   load:
     sourceUris:
-      - "gs://krm-test-6-datasets/cymbal-mock-transactions.csv"
+      - "gs://PROJECT_ID/cymbal-mock-transactions.csv"
     destinationTable:
       tableRef:
         name: cymbalmocktable

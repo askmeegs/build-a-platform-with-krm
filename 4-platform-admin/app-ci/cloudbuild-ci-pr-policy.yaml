@@ -15,6 +15,6 @@ steps:
   args: ['--input', 'hydrated-manifests/kpt-manifests.yaml']
 availableSecrets:
   secretManager:
-  - versionName: projects/${PROJECT_ID}/secrets/github-username/versions/1 
+  - versionName: projects/${PROJECT_ID}/secrets/github-username/versions/latest
     env: 'GITHUB_USERNAME'
 timeout: '1200s' #timeout - 20 minutes
