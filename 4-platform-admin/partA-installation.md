@@ -33,15 +33,17 @@ To https://github.com/askmeegs/cymbalbank-policy
 
 ### 3. **Navigate to the [Anthos dashboard](https://console.cloud.google.com/anthos) in the Google Cloud Console.** 
 
-### 4. **In the right sidebar, click Clusters.** You should see your four clusters in the list. 
+### 4. **In the left sidebar, click Clusters.** You should see your four clusters in the list. 
 
 ![](screenshots/anthos-clusters.png)
 
-### 5. **In the right sidebar, click Config Management.** You should see a window like the one below. **Click "Setup.", then "Enable Config Management."** 
+### 5. **In the left sidebar, click Config Management.** You should see a window like the one below. **Click "Setup.", then "Enable Config Management."** 
 
 ![](screenshots/setup-acm.png)
 
 ### 6. **In the Anthos Config Management cluster list, click the open circle next to the `cymbal-admin` cluster. Then at the top of the screen, click "Configure."** 
+
+*Note* - it may take up to 2 minutes for this table to populate. 
 
 ### 7. **In the setup menu that appears, populate with the following fields**: 
 
@@ -49,7 +51,6 @@ To https://github.com/askmeegs/cymbalbank-policy
 - **ACM Settings for your Clusters:** `Version 1.7.1` or the default-populated version. 
 - **Config sync:** check "Enable." A menu will pop up. 
 - **URL:** `https://github.com/your-github-username/cymbalbank-policy`. **Replace `your-github-username` with your username.**
-- **Policy controller:** check "Enable." 
 - **Branch**: `main`
 - **Tag/commit**: leave blank
 - **Policy directory**: `/`

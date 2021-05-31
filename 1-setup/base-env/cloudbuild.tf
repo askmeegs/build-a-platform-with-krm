@@ -7,7 +7,7 @@ variable "project_number" {
   description = "Google Cloud project number"
 }
 
-
+# Gives Cloud Build's service account permissions to deploy to GKE ("container developer" role)
 resource "google_project_iam_binding" "cloud-build-iam-binding" {
   project = var.project_id
   role    = "roles/container.developer"
@@ -17,7 +17,8 @@ resource "google_project_iam_binding" "cloud-build-iam-binding" {
   ]
 }
 
-# to allow Cloud Build to commit to a user's Github account using a github token secret 
+# Allows Cloud Build to commit to a user's Github account using a github token secret, 
+# by giving Cloud Build access to Secret Manager.  
 resource "google_project_iam_binding" "cloud-build-iam-binding-secrets" {
   project = var.project_id
   role    = "roles/secretmanager.secretAccessor"

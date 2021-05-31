@@ -99,15 +99,30 @@ Reopen Cloud Build in the Google Cloud Console. Click Triggers > **Create Trigge
 - Click **Create**. 
 
 
-### 4. **Merge the frontend-banner pull request**.
+### 4. **Wait for the frontend-banner branch's PR CI to build, then merge the pull request**.
 
-Do this by navigating back to Github and clicking "Squash and Merge." 
+If the CI Pull Request build fails with the following error: 
+
+**Note** - if you see an error that looks like this - 
+
+```
+ - balancereader: Error checking cache.
+failed to build: getting hash for artifact "balancereader": getting dependencies for "balancereader": could not fetch dependencies for workspace 
+```
+
+- This is caused by a possible Jib bug that occurs sporadically on `skaffold build`. Try running the build pipeline again by clicking `Retry` next to `Build Details`. 
+
+When the Pull Request's Cloud Build pipeline is complete, you should see a check-mark in Github next to the latest commit to the `frontend-banner` branch. If you mouse over the check-mark, you should see a window like the one below. **Note** - it may take 5-10 minutes for your pipeline to complete. 
+
+![](screenshots/pr-ready-to-merge.png)
+
+Now, merge the Pull Request by clicking **Squash and Merge.** 
 
 ### 5. **Watch the Continuous Integration - Main pipeline run in Cloud Build.** Wait for the build to complete. 
 
 ![ci-main-success](screenshots/ci-main-success.png)
 
-### 6. **When the build completes, navigate to [Google Container Registry]() in the Cloud Console.** You should be able to see the production images that Cloud Build just built and pushed. 
+### 6. **When the build completes, navigate to [Google Container Registry](https://console.cloud.google.com/gcr) in the Cloud Console.** You should be able to see the production images that Cloud Build just built and pushed. 
 
 ![gcr](screenshots/gcr.png)
 

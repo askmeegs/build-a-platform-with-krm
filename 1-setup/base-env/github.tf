@@ -9,7 +9,7 @@ provider "github" {
 # App Source Repo 
 resource "github_repository" "app-source" {
   name        = "cymbalbank-app-source"
-  description = "Intro to KRM Demo: CymbalBank - Application Source"
+  description = "Build a Platform with KRM Demo: Application Source"
 
   visibility  = "public"
 }
@@ -17,7 +17,7 @@ resource "github_repository" "app-source" {
 # App Config Repo 
 resource "github_repository" "app-config" {
   name        = "cymbalbank-app-config"
-  description = "Intro to KRM Demo: CymbalBank - Application Manifests"
+  description = "Build a Platform with KRM Demo: Application Config"
 
   visibility  = "public"
 }
@@ -25,7 +25,7 @@ resource "github_repository" "app-config" {
 # Policy Repo 
 resource "github_repository" "policy" {
   name        = "cymbalbank-policy"
-  description = "Intro to KRM Demo: CymbalBank - ConfigSync Policy Repo"
+  description = "Build a Platform with KRM Demo: Policy Repo"
 
   visibility  = "public"
 }
