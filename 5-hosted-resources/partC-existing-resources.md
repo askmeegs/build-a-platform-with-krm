@@ -195,7 +195,7 @@ And another set of resources to learn more about KRM, its design principles, and
 
 ## Cleaning up
 
-If you want to keep your project but delete all the resources deployed by this demo, run the following script from the root of the `intro-to-krm/` repo: 
+If you want to keep your project but delete all the resources deployed by this demo, run the following script **from the root of this repository**. 
 
 ```
 ./cleanup.sh

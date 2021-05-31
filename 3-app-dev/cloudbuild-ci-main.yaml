@@ -45,10 +45,10 @@ steps:
   secretEnv: ['GITHUB_EMAIL', 'GITHUB_USERNAME', 'GITHUB_TOKEN']
 availableSecrets:
   secretManager:
-  - versionName: projects/${PROJECT_ID}/secrets/github-username/versions/1 
+  - versionName: projects/${PROJECT_ID}/secrets/github-username/versions/latest
     env: 'GITHUB_USERNAME'
-  - versionName: projects/${PROJECT_ID}/secrets/github-token/versions/1 
+  - versionName: projects/${PROJECT_ID}/secrets/github-token/versions/latest
     env: 'GITHUB_TOKEN'
-  - versionName: projects/${PROJECT_ID}/secrets/github-email/versions/1 
+  - versionName: projects/${PROJECT_ID}/secrets/github-email/versions/latest
     env: 'GITHUB_EMAIL'
 timeout: '1200s' #timeout - 20 minutes

@@ -136,6 +136,8 @@ Notice how each service uses `ClusterIP` (enable in-cluster routing only) except
 
 ![screenshot](screenshots/cymbal-home-page.png)
 
+**Note** - if you see a `Could not load transactions` error in the frontend UI after logging in, wait a few minutes and refresh the page - the pods may still be starting up.
+
 🥳 **Well done! You've completed Demo 2 - How KRM Works.** 
 
 The next demo will guide you through a Cymbal Bank app developer's journey, getting code into production in our Kubernetes environment. 

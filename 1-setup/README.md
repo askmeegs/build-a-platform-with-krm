@@ -72,6 +72,7 @@ export GITHUB_USERNAME="<your-github-username>"
 ```
 gcloud config set project ${PROJECT_ID}
 gcloud services enable \
+  cloudresourcemanager.googleapis.com \
   container.googleapis.com \
   cloudbuild.googleapis.com \
   sqladmin.googleapis.com \
@@ -123,7 +124,21 @@ project_id = ""
 project_number = ""
 ```
 
-### 8. **Set up application default credentials** for your project - this allows Terraform to create GCP resources on your behalf. A browser window should open, or you should be prompted to copy a token into the URL output by the command. 
+### 8. **Initialize gcloud for your project**, specifying your GCP account and project ID. 
+
+You don't need to set a default region or zone. 
+
+```
+gcloud init 
+```
+
+Expected output: 
+
+```
+Your Google Cloud SDK is configured and ready to use!
+```
+
+### 9. **Set up application default credentials** for your project - this allows Terraform to create GCP resources on your behalf. A browser window should open, or you should be prompted to copy a token into the URL output by the command. 
 
 ```
 gcloud auth application-default login
@@ -135,7 +150,7 @@ Expected output (your path will be different):
 Credentials saved to file: [/Users/mokeefe/.config/gcloud/application_default_credentials.json]
 ```
 
-### 9. **Run `terraform init`.** This downloads the providers (Github, Google Cloud) needed for setup. 
+### 10. **Run `terraform init`.** This downloads the providers (Github, Google Cloud) needed for setup. 
 
 ```
 terraform init base-env
@@ -151,7 +166,7 @@ any changes that are required for your infrastructure. All Terraform commands
 should now work.
 ```
 
-### 10. **Run `terraform plan`.** This looks at the `.tf` files in the `base-env` directory and tells you what it will deploy to your Google Cloud project. 
+### 11. **Run `terraform plan`.** This looks at the `.tf` files in the `base-env` directory and tells you what it will deploy to your Google Cloud project. 
 
 
 ```
@@ -171,7 +186,7 @@ Changes to Outputs:
 
 ```
 
-### 11.  **Run `terraform apply`** to create the resources.
+### 12.  **Run `terraform apply`** to create the resources.
 
 You will see a bunch of output as Terraform creates the resources. This command will take about 10 minutes to run.
 
@@ -192,7 +207,7 @@ kubernetes_prod_cluster_name = "cymbal-prod"
 kubernetes_staging_cluster_name = "cymbal-staging"
 ```
 
-### 12. **Run the cluster setup script from the `1-setup/` directory.** 
+### 13. **Run the cluster setup script from the `1-setup/` directory.** 
 
 This registers the clusters to the Anthos dashboard, sets up Kubernetes contexts, and sets up the Kubernetes namespaces you'll deploy the application into, in the next demo. **Note - this script can take up to 10 minutes to complete.** 
 
@@ -206,7 +221,7 @@ Expected output:
 ✅ GKE Cluster Setup Complete.
 ```
 
-###  13.  **Verify that you can now access your different clusters as follows:** 
+### 14.  **Verify that you can now access your different clusters as follows:** 
 
 ```
 kubectx cymbal-prod 

@@ -122,13 +122,15 @@ Now, merge the Pull Request by clicking **Squash and Merge.**
 
 ![ci-main-success](screenshots/ci-main-success.png)
 
-### 6. **When the build completes, navigate to [Google Container Registry](https://console.cloud.google.com/gcr) in the Cloud Console.** You should be able to see the production images that Cloud Build just built and pushed. 
+### 6. **When the build completes, navigate to [Google Container Registry](https://console.cloud.google.com/gcr) in the Cloud Console.** 
+
+From the Container Registry dashboard, navigate into the `cymbal-bank` folder, then the `release` subfolder. You should see the list of Cymbal Bank services, which the Continuous Integration pipeline just pushed.
 
 ![gcr](screenshots/gcr.png)
 
 ### 7. **Navigate back to Github and open the cymbalbank-app-config repo.** 
 
-In the `base/` directory, and in each Deployment, you should see a new `image` tag, indicating that the CI pipeline injected the tag of the images built from the latest commit to `main`, which since your PR merged, includes the frontend banner source code. 
+In the `overlays/prod/` directory, and in each Deployment, you should see a new `image` tag, indicating that the CI pipeline injected the tag of the images built from the latest commit to `main`, which since your PR merged, includes the frontend banner source code. 
 
 ![](screenshots/injected-tag.png)
 

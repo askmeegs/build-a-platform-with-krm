@@ -93,9 +93,9 @@ Click **Create**.
 git checkout -b nginx
 ```
 
-### **7. Copy the `test-workload.yaml` Service we used earlier in this demo into the `cymbalbank-app-config` repo, under the `base/` manifests.**
+### **7. Copy the `test-workload.yaml` Deployment we used earlier in this demo into the `cymbalbank-app-config` repo, under the `base/` manifests.**
 
-Given that we committed a policy to `cymbalbank-policy` stating that only up to 2 containers are allowed per Pod, we expect the pipeline to fail, with the same Policy Controller error we saw when trying to `kubectl apply -f` this same Deployment. Also update the base `kustomization.yaml` to bring the nginx Deployment into the baseline manifests it knows about. 
+Given that we committed a policy to `cymbalbank-policy` stating that only up to 3 containers are allowed per Pod, we expect the pipeline to fail, with the same Policy Controller error we saw when trying to `kubectl apply -f` this same Deployment. Also update the base `kustomization.yaml` to bring the nginx Deployment into the baseline manifests it knows about. 
 
 ```
 cp ../constraint-limit-containers/test-workload.yaml ./base/

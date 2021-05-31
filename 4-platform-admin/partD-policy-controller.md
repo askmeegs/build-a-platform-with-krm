@@ -63,7 +63,9 @@ k8sallowedrepos                           2d9h
 
 ### 2. **View the `K8sNoExternalServices` Constraint resource, provided for you in the `constraint-ext-services` directory.** 
 
-This Constraint implements the `[K8sNoExternalServices](https://cloud.google.com/anthos-config-management/docs/reference/constraint-template-library#k8snoexternalservices)` Constraint Template with concrete information about our environment. 
+This Constraint implements the [`K8sNoExternalServices`](https://cloud.google.com/anthos-config-management/docs/reference/constraint-template-library#k8snoexternalservices) Constraint Template with concrete information about our environment. 
+
+Note - this command should be run from the `4-platform-admin/` directory. 
 
 ```
 cat constraint-ext-services/constraint.yaml
@@ -165,6 +167,8 @@ cymbal-dev      SYNCED  ed2e4e0            main         2021-05-13T23:59:42Z  IN
 cymbal-prod     SYNCED  ed2e4e0            main         2021-05-13T23:59:42Z  INSTALLED
 cymbal-staging  SYNCED  ed2e4e0            main         2021-05-13T23:59:29Z  INSTALLED
 ```
+
+**Note** - your `Last_Synced_Token` will be different from this example output. 
 
 ### **8. Verify that the constraint is deployed to the cymbal-dev cluster.** 
 

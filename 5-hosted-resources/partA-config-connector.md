@@ -32,16 +32,22 @@ In any case, let's learn how Config Connector works with GCP-hosted resources.
 
 Let's install Config Connector onto our GKE environment. We'll lifecycle cloud-hosted resources from the `cymbal-admin` cluster, so we'll install Config Connector there. 
 
-### 1. **Set variables.** 
+### 1. `cd` into the `5-hosted-resources/` directory from the root of this repository. 
+
+```
+cd 5-hosted-resources/
+```
+
+### 2. **Set variables.** 
 
 ```
 export PROJECT_ID=your-project-id
 export GITHUB_USERNAME=your-github-username 
 ```
 
-### 2. **Open `configconnector.yaml` and in line 8, replace `PROJECT_ID` with your Project ID.** 
+### 3. **Open `configconnector.yaml` and in line 8, replace `PROJECT_ID` with your Project ID.** 
 
-### 3. **Run the setup script.** 
+### 4. **Run the setup script.** 
 
 ```
 ./setup-config-connector.sh 
@@ -55,7 +61,7 @@ Expected output:
 
 This script grants Config Connector (running in the GKE cluster) the IAM permissions it needs to create and update GCP resources in your project, and deploys Config Connector onto the cluster. 
 
-### 4. **Verify that Config Connector is installed on the admin cluster.**
+### 5. **Verify that Config Connector is installed on the admin cluster.**
 
 ```
 kubectx cymbal-admin

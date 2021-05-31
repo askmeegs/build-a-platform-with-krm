@@ -183,9 +183,11 @@ bigqueryjob.bigquery.cnrm.cloud.google.com/cymbal-mock-load-job   109s   True   
 
 ![screenshot](screenshots/bigquery-console.png)
 
-Now let's come back to the restrictions we outlined at the beginning of this section- for now, the only allowed BigQuery dataset allowed in this (beyond the public datasets) is the one we just created. Let's create a resource name restriction policy to lock down any other BigQuery resources from being committed to the policy repo. Also note that in a real use case, we would lock down BigQuery Table and Dataset creation permissions to the Config Connector Google Service Account only, using Google Cloud IAM to restrict Cymbal Bank analytics team permissions to the `BigQuery Viewer` role only. This would block users from creating BigQuery resources from the console, as well. 
+Now let's come back to the restrictions we outlined at the beginning of this section- for now, the only BigQuery dataset allowed is the one we just created. Let's create a resource name restriction policy to lock down any other BigQuery resources from being committed to the policy repo. Also note that in a real use case, we would lock down BigQuery Table and Dataset creation permissions to the Config Connector Google Service Account only, using Google Cloud IAM to restrict Cymbal Bank analytics team permissions to the `BigQuery Viewer` role only. This would block users from creating BigQuery resources from the console, as well. 
 
-### 11. View the Policy Controller resources in the `bigquery/` directory. This file defines a constraint template for `BigQueryDatasetAllowName`, and a constraint of type `BigQueryDatasetAllowName`, which together allow only one BigQuery dataset in the policy repo - the one we already created, `cymbalmockdataset`. 
+### 11. View the Policy Controller resources in the `bigquery/` directory. 
+
+This file defines a constraint template for `BigQueryDatasetAllowName`, and a constraint of type `BigQueryDatasetAllowName`, which together allow only one BigQuery dataset in the policy repo.
 
 ```
 cat bigquery/constraint-template.yaml
@@ -226,7 +228,7 @@ spec:
     allowedName: cymbalmockdataset
 ```
 
-### 12. **Apply the Constraint and Constraint Template** (again, in a real use case we'd push these policies to the policy repo, and have Config Sync apply them to the cluster.)
+### 12. **Apply the Constraint and Constraint Template** to the admin cluster.
 
 ```
 kubectx cymbal-admin

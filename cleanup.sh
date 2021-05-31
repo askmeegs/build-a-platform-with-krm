@@ -10,6 +10,13 @@ if [[ -z "$GITHUB_USERNAME" ]]; then
     exit 1
 fi
 
+read -p "⚠️   Are you sure you want to delete your demo environment? Press Y to proceed. " -n 1 -r
+echo    
+if [[ ! $REPLY =~ ^[Yy]$ ]]
+then
+    [[ "$0" = "$BASH_SOURCE" ]] && exit 1 || return 1  
+fi
+
 gcloud config set project $PROJECT_ID 
 
 echo "🗑 Deleting Cloud Storage bucket for BigQuery..."
@@ -40,10 +47,3 @@ gcloud iam service-accounts delete cymbal-gsa@$PROJECT_ID.iam.gserviceaccount.co
 echo "🗑 Running terraform destroy to remove GKE clusters, Cloud SQL databases..." 
 cd 1-setup/
 terraform destroy
-
-# Prompt user to delete github repos on their own 
-# echo "✅ Google Cloud resources deleted. To delete your Github repos, navigate to the following URLs, click Settings > Delete Repository."
-
-# echo "https://github.com/$GITHUB_USERNAME/cymbalbank-app-source"
-# echo "https://github.com/$GITHUB_USERNAME/cymbalbank-app-config"
-# echo "https://github.com/$GITHUB_USERNAME/cymbalbank-policy"

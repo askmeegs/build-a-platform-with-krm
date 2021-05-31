@@ -1,6 +1,6 @@
 # Part A - Setup  
 
-### 1. **`cd` into this directory.**
+### 1. **`cd` into this directory from the root of this repository.**
 
 ```
 cd 2-how-krm-works/
