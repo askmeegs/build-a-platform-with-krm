@@ -39,7 +39,10 @@ This allows Cloud Build to watch the Github repositories in your account.
 - Ensure that in the top menubar drop-down, your demo project is correctly selected. 
 - On the left sidebar, click **Triggers.**  
 - Click **Connect Repository.** 
-- In the menu that pops up on the right, for `Select Source`, choose Github. Authenticate to your Github account, then under repositories, search `cymbal`. 
+- In the menu that pops up on the right, for `Select Source`, choose Github. 
+- **Authenticate** to your Github account. 
+- ⚠️ **Note** - If a red window pops up saying to `Install Cloud Build`, click the button to install the Cloud Build app to your Github account. You can [read more about this integration here](https://cloud.google.com/build/docs/automating-builds/create-github-app-triggers). 
+- Next to **Select Repository**, click on your Github account, then click on the repository drop-down menu. Search `cymbal`.  
 - Check **all 3 cymbal-bank repositories** -- `cymbalbank-app-source`, `cymbalbank-app-config`, and `cymbalbank-policy`. We'll create Cloud Build triggers for all 3 repos over the course of the demos. 
 - Click **Connect.** 
 - Click **Done**. 
@@ -50,8 +53,8 @@ This allows Cloud Build to watch the Github repositories in your account.
 - Name it `continuous-deployment-prod`
 - Under **Event**, choose `Push to a branch`
 - Under **Source**, choose your `cymbalbank-app-config` repo. 
-- Enter `main` next to **Branch**. This means that the build will run with every push to the `main` branch of this repo. 
-- Under **Configuration**, click `Cloud Build configuration file`, `Repository`, and enter `cloudbuild-cd-prod.yaml` next to file location. 
+- Enter `main` next to **Branch**. This means that the build will run with every push the `main` branch of this repo. 
+- Under **Configuration**, click `Cloud Build configuration file`, `Repository`, and enter `cloudbuild-cd-prod.yaml` next to file location.  **⚠️ Note** - this file name is different from default value (`cloudbuild.yaml`) so ensure you set it to `cloudbuild-cd-prod.yaml`. 
 - Click **Create.** 
 
 You should now see the trigger appear in the Cloud Build menu. **Note** - the repository should correspond to `your-github-username/cymbalbank-app-config`, not `askmeegs` as shown below. 
@@ -132,6 +135,8 @@ userservice          userservice          ClusterIP      10.7.249.254   <none>  
 Notice how each service uses `ClusterIP` (enable in-cluster routing only) except for the `frontend`, which is of type `LoadBalancer`. This type means that GCP spawned an external load balancer to route from outside the cluster, into the frontend pod. Navigate to your frontend service `EXTERNAL_IP` in a browser - you should see the CymbalBank login screen, and you should be able to log in with the pre-populated `testuser` credentials and see the Cymbal Bank account home page. 
 
 ![screenshot](screenshots/cymbal-home-page.png)
+
+**Note** - if you see a `Could not load transactions` error in the frontend UI after logging in, wait a few minutes and refresh the page - the pods may still be starting up.
 
 🥳 **Well done! You've completed Demo 2 - How KRM Works.** 
 

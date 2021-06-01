@@ -1,7 +1,7 @@
 
 # Part B - Keeping Resources in Sync
 
-You might be asking yourself why we just set up another repo to store KRM, and another mechanism - beyond the Cloud Build CI/CD we already have - to deploy KRM to our clusters. The answer has to do with the way Config Sync works. Unlike CI/CD, Config Sync is *constantly* making sure the Git resources are in sync on the cluster. Deployment doesn't just happen on a build trigger - it's a continuous reconciliation loop between what's in Git, and what is deplyed on the cluster.
+You might be asking yourself why we just set up another repo to store KRM, and another mechanism - beyond the Cloud Build CI/CD we already have - to deploy KRM to our clusters. The answer has to do with the way Config Sync works. Unlike CI/CD, Config Sync is *constantly* making sure the Git resources are in sync on the cluster. Deployment doesn't just happen on a build trigger - it's a continuous reconciliation loop between what's in Git, and what is deployed on the cluster.
 
 ![](screenshots/config-sync-overview.png)
 
@@ -41,8 +41,7 @@ Where did this resource come from? Let's explore the structure of the policy rep
 ### 2. **Run the `tree` command on the newly-initialized `cymbalbank-policy` repo.** 
 
 ```
-cd cymbalbank-policy/
-tree .
+tree cymbalbank-policy/
 ```
 
 Expected output: 

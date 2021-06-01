@@ -88,7 +88,7 @@ Now we're ready to use Cloud Code, configured with this `skaffold.yaml` file, to
 
 ### 3. **Reopen VSCode, and open `skaffold.yaml` in the `cymbalbank-app-source` directory.** 
 
-### 4. **Press `shift-command-p`**, and in the command palette that appears, type `Cloud Code: Debug`. 
+### 4. **Press `shift-command-p`**, and in the command palette that appears, type `Cloud Code: Run on Kubernetes`. 
 
 A terminal window should pop up at the bottom of the screen. 
 
@@ -105,6 +105,10 @@ A terminal window should pop up at the bottom of the screen.
 ![screenshot](screenshots/cc-gcr.png)
 
 A terminal should open up within VSCode that shows the skaffold logs, as it builds images and deploys to the dev cluster. This will take 3-5 minutes. 
+
+**Notes:** 
+- You may be prompted with the message: `would you like to clean up deployed resources after each run?` - you can click "Yes' for this. 
+- You may see warnings in the logs, such as `Input image registry ... does not match the expected image registry` or `Extensions vscjava.vscode-java-debug needed for debugging`. This is ok, you can ignore the warnings. 
 
 Expected Cloud Code output: 
 
@@ -148,9 +152,9 @@ You should see your new banner at the top of the login screen:
 
 ![screenshot](screenshots/login-banner.png)
 
-Note that `Cloud Code: Run on Kubernetes` uses `skaffold dev` as the underlying command, which constantly watches your local source code for changes, and keeps building the updated services as you write more code. Optionally, make some changes to the login banner or add some text to the `login.html` file - you should see the `Output` in your IDE log the updated build, and if you re-navigate to the fronten external IP, you should see your changes reflected. 
+Note that `Cloud Code: Run on Kubernetes` uses `skaffold dev` as the underlying command, which constantly watches your local source code for changes, and keeps building the updated services as you write more code. Optionally, make some changes to the login banner or add some text to the `login.html` file - you should see the `Output` in your IDE log the updated build, and if you re-navigate to the frontend external IP, you should see your changes reflected. 
 
-### 11. Remove your test deployment from the dev cluster by 
+### 11. Remove your test deployment from the dev cluster by pressing `ctrl-cmd-P` and typing `Cloud Code: Delete`. Press enter.  
 
 **💫 Nice work! You just used skaffold, Cloud Code, and kustomize to test code changes in GKE.** 
 

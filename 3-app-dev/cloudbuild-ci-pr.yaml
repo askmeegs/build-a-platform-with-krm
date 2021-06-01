@@ -7,20 +7,13 @@ steps:
   - |
     git clone "https://github.com/$$GITHUB_USERNAME/cymbalbank-app-config"
     gcloud container clusters get-credentials ${_CLUSTER_NAME} --zone ${_CLUSTER_ZONE} --project ${PROJECT_ID} 
-    skaffold run --profile=staging --default-repo="gcr.io/${PROJECT_ID}/cymbal-bank/${BRANCH_NAME}" --tail=false
-    kubectl wait --for=condition=available --timeout=300s deployment/frontend -n frontend 
-    kubectl wait --for=condition=available --timeout=300s deployment/contacts -n contacts 
-    kubectl wait --for=condition=available --timeout=300s deployment/userservice -n userservice 
-    kubectl wait --for=condition=available --timeout=300s deployment/ledgerwriter -n ledgerwriter 
-    kubectl wait --for=condition=available --timeout=300s deployment/transactionhistory -n transactionhistory 
-    kubectl wait --for=condition=available --timeout=300s deployment/balancereader -n balancereader 
-    kubectl wait --for=condition=available --timeout=300s deployment/loadgenerator -n loadgenerator
+    skaffold run --profile=staging --default-repo="gcr.io/${PROJECT_ID}/cymbal-bank/${BRANCH_NAME}" --status-check --tail=false
   secretEnv: ['GITHUB_USERNAME']
 substitutions:
   _CLUSTER_NAME: 'cymbal-staging'
   _CLUSTER_ZONE: 'us-central1-a'
 availableSecrets:
   secretManager:
-  - versionName: projects/${PROJECT_ID}/secrets/github-username/versions/1 
+  - versionName: projects/${PROJECT_ID}/secrets/github-username/versions/latest
     env: 'GITHUB_USERNAME'
 timeout: '1200s' #timeout - 20 minutes

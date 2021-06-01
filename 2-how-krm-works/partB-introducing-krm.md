@@ -1,7 +1,7 @@
 
 # Part B - Introducing KRM 
 
-In part 1, we set up four [Google Kubernetes Engine (GKE)]() clusters. [GKE](https://cloud.google.com/kubernetes-engine/docs/concepts/kubernetes-engine-overview) is a cloud-hosted distribution of [Kubernetes](https://kubernetes.io/docs/concepts/overview/what-is-kubernetes/), which is an open-source container orchestration engine. Kubernetes is powerful for two big reasons. This first is that Kubernetes allows you to treat multiple host servers - or "Nodes" - as a single computer. This means that that Kubernetes will auto-schedule your containers to Nodes that have room for them. What this means is that clusters can have arbitrarily large numbers of nodes - [thousands of them](https://kubernetes.io/docs/setup/best-practices/cluster-large/) - supporting massive workloads [like machine learning](https://cloud.google.com/blog/products/containers-kubernetes/google-kubernetes-engine-clusters-can-have-up-to-15000-nodes).
+In part 1, we set up four [Google Kubernetes Engine (GKE)]() clusters. [GKE](https://cloud.google.com/kubernetes-engine/docs/concepts/kubernetes-engine-overview) is a cloud-hosted distribution of [Kubernetes](https://kubernetes.io/docs/concepts/overview/what-is-kubernetes/), which is an open-source container orchestration engine. Kubernetes is powerful for two big reasons. The first is that Kubernetes allows you to treat multiple host servers - or "Nodes" - as a single computer. This means that that Kubernetes will auto-schedule your containers to Nodes that have room for them. What this means is that clusters can have arbitrarily large numbers of nodes - [thousands of them](https://kubernetes.io/docs/setup/best-practices/cluster-large/) - supporting massive workloads [like machine learning](https://cloud.google.com/blog/products/containers-kubernetes/google-kubernetes-engine-clusters-can-have-up-to-15000-nodes).
 
 ![screenshot](screenshots/k8s-arch.png)
 
@@ -103,10 +103,11 @@ nginx-deployment-6b474476c4-4txp6   1/1     Running   0          2m30s
 nginx-deployment-6b474476c4-gqsql   1/1     Running   0          2m30s
 ```
 
-### 5. **Delete one of the pods in your nginx Deployment.**, by copying the `NAME` field in your output of the command above.  
+### 5. **Delete one of the pods in your nginx Deployment.**.  
 
 ```
-kubectl delete pod nginx-deployment-6b474476c4-2fbfc
+POD=$(kubectl get pod -l app=nginx -o jsonpath="{.items[0].metadata.name}")
+kubectl delete $POD
 ```
 
 Expected output: 
@@ -138,7 +139,7 @@ For starters, it's helpful to understand what's inside a Kubernetes cluster - an
 
 ![gke architecture](screenshots/gke-arch.png)
 
-All Kubernetes components, and all outside actors - including you, executing `kubectl` commands - interact with the **APIServer**. As said before, the Kubernetes API Server, with its storage backend, **[etcd](https://kubernetes.io/docs/concepts/overview/components/#etcd)**, is the single source of truth for a cluster. This is where both the intended and actual state of each KRM resource lives. 
+All Kubernetes components, and all outside actors - including you, executing `kubectl` commands - interact with the **APIServer**. As said before, the Kubernetes API Server (with its storage backend, **[etcd](https://kubernetes.io/docs/concepts/overview/components/#etcd)**) is the single source of truth for a cluster. This is where both the intended and actual state of each KRM resource lives. 
 
 The **[Resource controllers](https://kubernetes.io/docs/concepts/architecture/controller/)** inside the GKE control plane are basically a set of loops that periodically check "what needs to be done." For instance, if the Deployment controller sees that you just applied a new Deployment to the cluster, it will update that resource as "to be scheduled - 3 pods". Then the **Scheduler**, also periodically checking the API Server, will schedule those 3 pods to the available **Nodes** in your cluster. Each Node runs a process called **kubelet**. The job of the kubelet is to start and stop containers, effectively doing the "last mile" of action to get the cluster's state match your desired state. The kubelet periodically queries the APIServer to see if it has any jobs to do - for instance, start or stop a container using its container runtime (eg. Docker, or in the case of GKE, [containerd](https://cloud.google.com/kubernetes-engine/docs/concepts/using-containerd)).
 
@@ -168,7 +169,7 @@ Here we can see that the Kubernetes scheduler spread out the 3 nginx pods across
 
 The key thing to take away from this section is that the Kubernetes APIServer, with its etcd backing store, is the single source of truth for all "nouns" - KRM objects - in the cluster. What this means is that the `nginx-deployment.yaml` file you applied to the cluster actually gets added to by the Kubernetes control plane, with info about its live state. 
 
-### 7. **Get your deployment out of the APIServer using `kubectl`**. 
+### 7. **Get your deployment from the APIServer using `kubectl`**. 
 
 ```
 kubectl get deployment nginx-deployment -o yaml 

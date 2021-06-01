@@ -10,7 +10,7 @@ Now that you have a Kubernetes environment to work with, let's learn the basics 
 - How to streamline KRM editing using `kustomize` 
 - How the CymbalBank application can be expressed as Kubernetes resources 
 - How to push KRM resources to a Git repo 
-- How to create a Continous Deployment pipeline triggered on a Git repo, to deploy KRM into production. 
+- How to create a Continuous Deployment pipeline triggered on a Git repo, to deploy KRM into production. 
 
 ## Prerequisites 
 

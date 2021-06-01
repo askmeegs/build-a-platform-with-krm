@@ -57,7 +57,7 @@ cat cloudsql/projects/$PROJECT_ID/SQLInstance/cymbal-dev/SQLDatabase/accounts-db
 cat cloudsql/projects/$PROJECT_ID/SQLInstance/cymbal-dev/SQLDatabase/ledger-db.yaml
 ```
 
-Expected otuput: 
+Expected output: 
 
 ```
 ---
@@ -187,7 +187,7 @@ Let's summarize the key takeaways from all 5 demos:
 - KRM is a great way to manage resources because Kubernetes is constantly running a **control loop** to make sure your **desired** state matches the **actual** cluster state. We saw this in action both for core Kubernetes API resources (Demo 2 / for instance, Deployments that keep Pods alive) and hosted Cloud resources (Demo 5 / via Config Connector)
 - **KRM promotes a "GitOps" model** where you keep all your configuration in Git, and sync it down to multiple clusters at once.  
 - Policy Controller, together with Config Sync, allow you to impose custom policies on your KRM resources, both at deploy-time and during CI/CD (Demo 4). These **policies allow you to set fine-grained controls** on different resource types, to ensure compliance within your org. 
-- **KRM / the Kubernets API can lifecycle resources that run outside a Kubernetes cluster.** We saw how Config Connector, running inside the admin cluster, created and updated resources in Google Cloud. 
+- **KRM / the Kubernetes API can lifecycle resources that run outside a Kubernetes cluster.** We saw how Config Connector, running inside the admin cluster, created and updated resources in Google Cloud. 
 
 Hopefully you learned a thing or two from these demos- really, we've only just scratched the surface of what KRM can do. All the "learn more" links across Parts 1-5 are available in the [README of this repo](/README.md).
 
@@ -195,7 +195,7 @@ And another set of resources to learn more about KRM, its design principles, and
 
 ## Cleaning up
 
-If you want to keep your project but delete all the resources deployed by this demo, run the following script from the root of the `intro-to-krm/` repo: 
+If you want to keep your project but delete all the resources deployed by this demo, run the following script **from the root of this repository**. 
 
 ```
 ./cleanup.sh
