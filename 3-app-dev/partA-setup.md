@@ -1,7 +1,7 @@
 
 # Part A - Setup  
 
-### 1. **Open a Terminal and set variables.**
+### 1. **Open a Terminal and set variables (if not already set).**
 
 ```
 cd 3-app-dev/
