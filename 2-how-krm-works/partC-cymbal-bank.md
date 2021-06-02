@@ -39,6 +39,7 @@ cymbalbank-app-config/
 │   ├── populate-ledger-db.yaml
 │   ├── transactionhistory.yaml
 │   └── userservice.yaml
+├── cloudbuild-cd-prod.yaml
 └── overlays
     ├── dev
     │   ├── balancereader.yaml
@@ -59,14 +60,14 @@ cymbalbank-app-config/
         ├── transactionhistory.yaml
         └── userservice.yaml
 
-4 directories, 27 files
+4 directories, 28 files
 ```
 
 Here, we can see that there's a `base` directory, with YAML files for each Cymbal Bank service, plus two `overlay` directories, `dev` and `prod`, each with their own YAML file per Cymbal Bank service. What's going on here? 
 
 ### 3. **Explore the Cymbal Bank kustomize overlays.** 
 
-kustomize allows for pre-baked "flavors" of a set of Kubernetes manifests, called [overlays](https://kubectl.docs.kubernetes.io/guides/config_management/components/). Overlays help reduce manual editing of YAML files, while allowing multiple flavors to use the same source YAML. The README in the `cymbalbank-app-config` root directory details the differences between the demo, prod, and dev overlays. Notice that different fields get different values depending on the environment - for instance, we may want more frontend replicas in production to serve real production traffic. 
+kustomize allows for pre-baked "flavors" of a set of Kubernetes manifests, called [overlays](https://kubectl.docs.kubernetes.io/guides/config_management/components/). Overlays help reduce manual editing of YAML files, while allowing multiple flavors to use the same source YAML. The README in the `cymbalbank-app-config` root directory details the differences between the dev and prod overlays:
 
 
 |      | 🔎 **Tracing** | 📊 **Metrics** | 📝 **Log Level** | 🏦 **Frontend Replicas** |
@@ -75,6 +76,7 @@ kustomize allows for pre-baked "flavors" of a set of Kubernetes manifests, calle
 | 🚀 **Prod** | on      | on      | `info`    | 3                   |
 
 
+Here, we have different application settings for Dev and Prod environments. For instance, we have Cloud Trace and Monitoring export `on` in production, but off in Development. Development logging is `debug`, whereas in production we use `info`, which is less noisy. And in production, the number of frontend replicas is increased from 1 to 3, in order to better served production traffic.  
 
 ### 4. **Both overlays rely on the same base manifests for each Cymbal Bank service. For instance, view the `userservice` base manifests:** 
 

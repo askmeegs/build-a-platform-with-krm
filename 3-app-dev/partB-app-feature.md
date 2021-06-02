@@ -7,7 +7,7 @@ Let's take on the persona of an app developer looking to make an update to the C
 
 ### 2. **Add the `intro-to-krm` root directory to your VSCode workspace**, by clicking `File > Add Folder to Workspace`. 
 
-### 3. **From the VSCode sidebar, open `cymbalbank-app-source/src/frontend/templates/login.html`**. 
+### 3. **From the VSCode sidebar, open `3-app-dev/cymbalbank-app-source/src/frontend/templates/login.html`**. 
 
 This is an HTML template for the Cymbal Bank login page. 
 

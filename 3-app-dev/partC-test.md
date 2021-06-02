@@ -107,6 +107,7 @@ A terminal window should pop up at the bottom of the screen.
 A terminal should open up within VSCode that shows the skaffold logs, as it builds images and deploys to the dev cluster. This will take 3-5 minutes. 
 
 **Notes:** 
+- You may see a pop-up asking: `Do you want the application "skaffold" to accept incoming network connections?`. Click **Allow.**  
 - You may be prompted with the message: `would you like to clean up deployed resources after each run?` - you can click "Yes' for this. 
 - You may see warnings in the logs, such as `Input image registry ... does not match the expected image registry` or `Extensions vscjava.vscode-java-debug needed for debugging`. This is ok, you can ignore the warnings. 
 
@@ -165,7 +166,7 @@ Note that `Cloud Code: Run on Kubernetes` uses `skaffold dev` as the underlying 
 
 If the `Cloud Code: Run on Kubernetes` command fails, check Cloud Code's configuration: 
 
-1. Open `intro-to-krm/.vscode/launch.json`. You should see a file that looks like this: 
+1. Open `intro-to-krm/.vscode/launch.json`. You should see a file that looks like this (note - `imageRegistry` should be populated with your Project ID, in this example, `krm-test-6`.)
 
 ```JSON
 {

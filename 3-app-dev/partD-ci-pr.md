@@ -92,7 +92,7 @@ This will trigger the `cloudbuild-ci-pr.yaml` Cloud Build pipeline.
 
 ![github-pr](screenshots/github-open-pr.png)
 
-### 5. **Navigate back to Cloud Build > History. Watch the Continuous Integration - Pull Request pipeline run.** 
+### 5. **Navigate to [Cloud Build: History](https://console.cloud.google.com/cloud-build/builds). Watch the Continuous Integration - Pull Request pipeline run.** 
 
 Note - it may take 5-10 minutes for this pipeline to complete.
 

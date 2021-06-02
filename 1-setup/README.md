@@ -28,7 +28,7 @@ The diagram above shows the resources Terraform will create during setup:
 ## Prerequisites 
 
 1. **A local development environment**, either Linux or MacOS, into which you can install command-line tools. **Note** - make sure you're using a POSIX-compliant shell, such as `bash` or `zsh`. Non-POSIX compliant shells like `fish` aren't supported.  
-2. An **Google Cloud project**, with billing enabled. Have the Project ID handy. *A note to Googlers* - it's recommended that you use a project in an external organization. 
+2. An **Google Cloud project**, with billing enabled ([click here to learn how to set up a project](https://cloud.google.com/resource-manager/docs/creating-managing-projects#gcloud)). Have the Project ID handy. *A note to Googlers* - it's recommended that you use a project in an external organization. 
 3. A **Github account**. 
 4. A [**Github Personal Access token**](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token) with repo creation permissions. (See example below.)
 
