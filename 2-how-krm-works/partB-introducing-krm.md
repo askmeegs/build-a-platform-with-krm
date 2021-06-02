@@ -141,7 +141,7 @@ For starters, it's helpful to understand what's inside a Kubernetes cluster - an
 
 All Kubernetes components, and all outside actors - including you, executing `kubectl` commands - interact with the **APIServer**. As said before, the Kubernetes API Server (with its storage backend, **[etcd](https://kubernetes.io/docs/concepts/overview/components/#etcd)**) is the single source of truth for a cluster. This is where both the intended and actual state of each KRM resource lives. 
 
-The **[Resource controllers](https://kubernetes.io/docs/concepts/architecture/controller/)** inside the GKE control plane are basically a set of loops that periodically check "what needs to be done."For instance, if the Deployment controller sees that you just applied a new Deployment to the cluster, it will update that resource as "to be scheduled - 3 pods". Then the **Scheduler**, also periodically checking the API Server, will schedule those 3 pods to the available **Nodes** in your cluster. Each Node runs a process called **kubelet**. The job of the kubelet is to start and stop containers, effectively doing the "last mile" of action to get the cluster's state match your desired state. The kubelet periodically queries the APIServer to see if it has any jobs to do - for instance, start or stop a container using its container runtime (eg. Docker, or in the case of GKE, [containerd](https://cloud.google.com/kubernetes-engine/docs/concepts/using-containerd))
+The **[Resource controllers](https://kubernetes.io/docs/concepts/architecture/controller/)** inside the GKE control plane are basically a set of loops that periodically check "what needs to be done." For instance, if the Deployment controller sees that you just applied a new Deployment to the cluster, it will update that resource as "to be scheduled - 3 pods". Then the **Scheduler**, also periodically checking the API Server, will schedule those 3 pods to the available **Nodes** in your cluster. Each Node runs a process called **kubelet**. The job of the kubelet is to start and stop containers, effectively doing the "last mile" of action to get the cluster's state match your desired state. The kubelet periodically queries the APIServer to see if it has any jobs to do - for instance, start or stop a container using its container runtime (eg. Docker, or in the case of GKE, [containerd](https://cloud.google.com/kubernetes-engine/docs/concepts/using-containerd)).
 
 So when you ran `kubectl apply -f`, a series of events happened ([in-depth steps here](https://github.com/jamiehannaford/what-happens-when-k8s)): 
 1. `kubectl` validated your Deployment file.
@@ -149,7 +149,7 @@ So when you ran `kubectl apply -f`, a series of events happened ([in-depth steps
 3. The Kubernetes APIServer "admitted" the resource into the API. 
 4. The Kubernetes APIServer stored the resource in `etcd`. 
 5. The Kubernetes Controllers responsible for Deployments picked up on the new Deployment in their next loop, and marked 3 replicas as "Pending" / to be scheduled. 
-6. The Kubernetes Scheduler sees the `Pending` Pods and finds suitable Nodes for the Pods to run on. (eg. checks if the Node has enough CPU/Memory to run that Pod).
+6. The Kubernetes Scheduler sees the `Pending` Pods and finds suitable Nodes for the Pods to run on. (eg. checks if the Node has enough CPU/Memory to run that Pod.)
 7. The `kubelet` on the assigned Nodes starts the 3 `nginx` containers. You can see which Nodes are running which Pods using the `-o wide` flag.  
 
 ```

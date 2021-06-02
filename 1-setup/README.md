@@ -46,7 +46,7 @@ The diagram above shows the resources Terraform will create during setup:
 - [terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli) 
 - **tree** - `brew install tree` (MacOS)
 - [Docker desktop](https://www.docker.com/products/docker-desktop) (Mac) or [Docker Engine](https://docs.docker.com/engine/install/ubuntu/) (Linux)
-- [skaffold](https://skaffold.dev/docs/install/). 
+- [skaffold](https://skaffold.dev/docs/install/) 
 - [Java - JDK 14](https://www.oracle.com/java/technologies/javase-downloads.html)
 - [Maven (Java)](https://maven.apache.org/install.html)
 - [VSCode](https://code.visualstudio.com/Download)
@@ -194,7 +194,7 @@ You will see a bunch of output as Terraform creates the resources. This command 
 terraform apply -auto-approve -var-file="base-env/terraform.tfvars" base-env
 ```
 
-Expected output: 
+When the command completes, you should see something similar to this:  
 
 ```
 Apply complete! Resources: 35 added, 0 changed, 0 destroyed.

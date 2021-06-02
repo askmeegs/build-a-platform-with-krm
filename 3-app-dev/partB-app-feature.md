@@ -11,7 +11,7 @@ Let's take on the persona of an app developer looking to make an update to the C
 
 This is an HTML template for the Cymbal Bank login page. 
 
-### 4. **In `login.html`, find line **71**.  
+### 4. **In `login.html`, find line 71**.  
 
 ![screenshot](screenshots/vscode-login-before.png)
 

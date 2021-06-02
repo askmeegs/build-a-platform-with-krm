@@ -51,7 +51,7 @@ Also note how Cloud Build gets the name of the `cymbalbank-app-config` repo from
 
 ![secret manager](screenshots/secret-manager.png)
 
-**Note** - this is a basic pull request pipeline. In a real use case, you'd likely run different tests, like linters, unit tests, and integration test, before staging the code. Also, in a real use case a repo will likely have multiple PRs open at once, and with this build as-is, different PRs would clobber each other because they're trying to deploy the same services to the same namespaces. The way to get around this would be adding a namespaces suffix like `frontend-pr1` -- or deploying all the services into the same namespace, eg. `pr1`.   
+**Note** - this is a basic pull request pipeline. In a real use case, you'd likely run different tests, like linters, unit tests, and integration tests, before staging the code. Also, in a real use case a repo will likely have multiple PRs open at once, and with this build as-is, different PRs would clobber each other because they're trying to deploy the same services to the same namespaces. The way to get around this would be adding a namespaces suffix like `frontend-pr1` -- or deploying all the services into the same namespace, eg. `pr1`.   
 
 ### 2. **Create the Continuous Integration - PR trigger.**
 
