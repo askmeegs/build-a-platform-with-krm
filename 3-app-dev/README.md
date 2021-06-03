@@ -1,5 +1,7 @@
 # 3 - App Development with KRM   
 
+⏱ *estimated time: 2-3 hours* 
+
 Now that we've set up Continuous Deployment for the Cymbal Bank app, you might be asking yourself, how did the application code actually get into those production containers? What if the code gets updated? 
 
 If you look inside the `cymbalbank-app-config/` manifests, and look at the `image` tags for any of the Deployments in the `prod/` overlay, you'll see that for Demo 2, pre-built sample images were initially provided for you:

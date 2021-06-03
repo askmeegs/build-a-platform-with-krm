@@ -1,5 +1,7 @@
 # 4 - Administering KRM with Config Sync and Policy Controller
 
+⏱ *estimated time: 3 hours* 
+
 In [part 2](/2-how-krm-works), we learned how the Kubernetes API works, and how to apply resources with `kubectl apply -f`. Then in [part 3](/3-app-dev), we learned how to automatically deploy KRM using skaffold and Cloud Build, with the help of kustomize. 
 
 These two use cases cover Kubernetes app development pretty well. But now imagine that you're a platform developer or administrator, responsible for not just one of the CymbalBank services, but for the entire Kubernetes environment, including the `dev`, `staging`, and `prod` clusters. An app developer may care most about testing their code and getting features into production with minimal friction, but your concerns are probably different. You care about consistency across the whole platform - that certain baseline resources are always deployed and in sync across all the clusters. (You do *not* want a developer to `kubectl apply -f` one of those resources by mistake, and you especially don't want that to happen without anyone knowing.) You also care about compliance with the financial services regulations CymbalBank is subject to, and you might work directly with Cymbal's security team to make sure the necessary policies are in place. 

@@ -1,5 +1,7 @@
 # 2 - How KRM Works 
 
+⏱ *estimated time: 2 hours* 
+
 Now that you have a Kubernetes environment to work with, let's learn the basics of the Kubernetes Resource Model. This demo has 4 parts.
 
 ## What you'll learn  

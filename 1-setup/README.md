@@ -1,5 +1,7 @@
 # 1 - Setup 
 
+⏱ *estimated time: 1 hour* 
+
 ## Introduction
 
 Welcome to the *Build a Platform with KRM* demos! This is a five-part series designed to show you, from start to finish, how to build a developer-facing Kubernetes platform for your organization— one that can scale to both the size of your engineering org, as well as to the number of services you're running. No prior knowledge of Kubernetes or config management is required to complete these demos, but if you're a K8s power-user, hopefully this series will have some new info and tools you can try.
