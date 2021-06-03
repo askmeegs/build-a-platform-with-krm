@@ -1,5 +1,7 @@
 # Part 5 - Using KRM for Hosted Resources 
 
+⏱ *estimated time: 90 minutes* 
+
 In part 2, we learned about the Controller model in Kubernetes, where your desired state - applied to the Kubernetes API Server - is "actuated" upon, or "made real," with a bunch of Controllers. These controllers do things like generate Pods and create Services inside that cluster. You can look at the [source code](https://github.com/kubernetes/kubernetes/blob/master/pkg/controller) for the open source Kubernetes controllers - [here's the one for ReplicaSets (Deployments)](https://github.com/kubernetes/kubernetes/blob/master/pkg/controller/replicaset/replica_set.go). 
 
 But even though the API Server and the Kubernetes Controllers are closely connected, they're actually two separate things. The API Server is what allows you to define KRM, as YAML files, and use the toolchain we've explored throughout these demos -- kustomize, Cloud Code, skaffold, Cloud Build, Config Sync, Policy Controller. The Controllers are the internals, and they're just Go code. 

@@ -12,6 +12,8 @@ These demos can be completed standalone - all you need is a Google Cloud project
 
 ## Contents 
 
+⏱ **Note** - the estimated time to complete the demos is 9 hours. The demos do not have to be completed all at once, but each demo must be completed in order. 
+
 ### 🚧  [Demo 1 - Setup](/1-setup) 
 - [1 - Setup](/1-setup)
 
