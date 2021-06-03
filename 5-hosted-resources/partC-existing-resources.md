@@ -193,6 +193,10 @@ Hopefully you learned a thing or two from these demos- really, we've only just s
 
 And another set of resources to learn more about KRM, its design principles, and other helpful tools, see: **https://github.com/askmeegs/learn-krm**.
 
+## ⭐️ We'd love your feedback! ⭐️
+
+### 🗳 [If you have a moment, please fill out this short survey](https://forms.gle/pUX2DPW9fxgDMwEw8) to share your thoughts on this demo! Thank you! 
+
 ## Cleaning up
 
 If you want to keep your project but delete all the resources deployed by this demo, run the following script **from the root of this repository**. 
