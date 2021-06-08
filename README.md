@@ -66,6 +66,7 @@ These demos can be completed standalone - all you need is a Google Cloud project
 - [Terraform](https://www.terraform.io/)
 - [Github](https://github.com) 
 - [kubectl](https://kubernetes.io/docs/reference/kubectl/overview/)
+- [kubectx](https://github.com/ahmetb/kubectx)
 - [skaffold](https://skaffold.dev)
 - [kustomize](https://kustomize.io/)
 - [Jib](https://github.com/GoogleContainerTools/jib)
