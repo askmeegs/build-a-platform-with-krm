@@ -107,7 +107,7 @@ nginx-deployment-6b474476c4-gqsql   1/1     Running   0          2m30s
 
 ```
 POD=$(kubectl get pod -l app=nginx -o jsonpath="{.items[0].metadata.name}")
-kubectl delete $POD
+kubectl delete pod $POD
 ```
 
 Expected output: 

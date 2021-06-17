@@ -38,6 +38,7 @@ This allows Cloud Build to watch the Github repositories in your account.
 - [Open Cloud Build](https://console.cloud.google.com/cloud-build) in the Google Cloud Console. 
 - Ensure that in the top menubar drop-down, your demo project is correctly selected. 
 - On the left sidebar, click **Triggers.**  
+- Click **Manage Repositories.**
 - Click **Connect Repository.** 
 - In the menu that pops up on the right, for `Select Source`, choose Github. 
 - **Authenticate** to your Github account. 
