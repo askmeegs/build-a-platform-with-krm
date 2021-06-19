@@ -25,10 +25,9 @@ register_cluster () {
     kubectx ${CLUSTER_NAME} 
 
     URI="https://container.googleapis.com/v1/projects/${PROJECT_ID}/zones/${CLUSTER_ZONE}/clusters/${CLUSTER_NAME}"
-    gcloud container hub memberships register ${CLUSTER_NAME} \
-    --project=${PROJECT_ID} \
+    gcloud beta container hub memberships register ${CLUSTER_NAME} \
     --gke-uri=${URI} \
-    --service-account-key-file=register-key.json
+    --enable-workload-identity
 }
 
 setup_cluster () {
@@ -81,19 +80,6 @@ kubectx cymbal-admin=.
 
 echo "Enabling Anthos APIs..."
 gcloud services enable anthos.googleapis.com 
-
-# Set up project for Anthos / project-wide service account
-echo "🔑 Creating Anthos registration service account..."
-gcloud iam service-accounts create ${SERVICE_ACCOUNT_NAME} --project=${PROJECT_ID}
-
-gcloud projects add-iam-policy-binding ${PROJECT_ID} \
-    --member="serviceAccount:${SERVICE_ACCOUNT_NAME}@${PROJECT_ID}.iam.gserviceaccount.com" \
-    --role="roles/gkehub.connect"
-
-echo "🔑 Downloading service account key..."
-gcloud iam service-accounts keys create register-key.json \
-    --iam-account=${SERVICE_ACCOUNT_NAME}@${PROJECT_ID}.iam.gserviceaccount.com \
-    --project=${PROJECT_ID}
 
 # Set up clusters for the CymbalBank app 
 setup_cluster "cymbal-dev" "us-east1-c" 
