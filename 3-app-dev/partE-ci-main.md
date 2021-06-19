@@ -101,17 +101,6 @@ Reopen Cloud Build in the Google Cloud Console. Click Triggers > **Create Trigge
 
 ### 4. **Wait for the frontend-banner branch's PR CI to build, then merge the pull request**.
 
-If the CI Pull Request build fails with the following error: 
-
-**Note** - if you see an error that looks like this - 
-
-```
- - balancereader: Error checking cache.
-failed to build: getting hash for artifact "balancereader": getting dependencies for "balancereader": could not fetch dependencies for workspace 
-```
-
-- This is caused by a possible Jib bug that occurs sporadically on `skaffold build`. Try running the build pipeline again by clicking `Retry` next to `Build Details`. 
-
 When the Pull Request's Cloud Build pipeline is complete, you should see a check-mark in Github next to the latest commit to the `frontend-banner` branch. If you mouse over the check-mark, you should see a window like the one below. **Note** - it may take 5-10 minutes for your pipeline to complete. 
 
 ![](screenshots/pr-ready-to-merge.png)

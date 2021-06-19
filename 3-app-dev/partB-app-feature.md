@@ -5,11 +5,13 @@ Let's take on the persona of an app developer looking to make an update to the C
 
 ### 1. **Open VSCode**. 
 
-### 2. **Add the `intro-to-krm` root directory to your VSCode workspace**, by clicking `File > Add Folder to Workspace`. 
+### 2. **Add the `intro-to-krm` root directory to your VSCode workspace**.
 
-### 3. **From the VSCode sidebar, open `3-app-dev/cymbalbank-app-source/src/frontend/templates/login.html`**. 
+You can do this by clicking `File > Add Folder to Workspace`. 
 
-This is an HTML template for the Cymbal Bank login page. 
+### 3. **From the VSCode sidebar, open the Login HTML template.
+
+This file is located in `3-app-dev/cymbalbank-app-source/src/frontend/templates/login.html`**. 
 
 ### 4. **In `login.html`, find line 71**.  
 
@@ -17,7 +19,7 @@ This is an HTML template for the Cymbal Bank login page.
 
 ### 5. **Under line 71, paste in the following code.** 
 
-This code adds an HTML `card` for that login banner. 
+This code adds an HTML `card` for a banner advertising the promotional interest rate on new accounts.
 
 ```
           <div class="col-lg-6 offset-lg-3">

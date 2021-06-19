@@ -94,7 +94,7 @@ This will trigger the `cloudbuild-ci-pr.yaml` Cloud Build pipeline.
 
 ### 5. **Navigate to [Cloud Build: History](https://console.cloud.google.com/cloud-build/builds). Watch the Continuous Integration - Pull Request pipeline run.** 
 
-Note - it may take 5-10 minutes for this pipeline to complete.
+It may take 5-10 minutes for this pipeline to complete. 
 
 ![ci-pr](screenshots/ci-pr-success.png)
 
@@ -110,16 +110,3 @@ kubectl get svc frontend -n frontend
 Now let's pretend that your pull request was reviewed by a developer teammate, and you're ready to merge the pull request and get your code into production.
 
 **[Continue to Part E - Merging Your Pull Request.](partE-ci-main.md)** 
-
-## Troubleshooting 
-
-If the CI Pull Request build fails with the following error: 
-
-```
- - balancereader: Error checking cache.
-failed to build: getting hash for artifact "balancereader": getting dependencies for "balancereader": could not fetch dependencies for workspace .: initial Jib dependency refresh failed: failed to get Jib dependencies: running [/workspace/mvnw jib:_skaffold-fail-if-jib-out-of-date -Djib.requiredVersion=1.4.0 --projects src/balancereader --also-make jib:_skaffold-files-v2 --quiet --batch-mode]
- - stdout: ""
- - stderr: "Exception in thread \"main\" java.lang.RuntimeException: Could not locate the Maven launcher JAR in Maven distribution...
- ```
-
-This is caused by a possible Jib bug that occurs sporadically on `skaffold build`. Try running the build pipeline again by clicking `Retry` next to `Build Details`. 

@@ -18,7 +18,7 @@ In this demo, we'll explore how an app developer can get a new Cymbal Bank featu
 
 ## What you'll learn  
 - How to set up a Kubernetes development environment using VSCode and Google Cloud Code 
-- How the `skaffold` tool works with container builders like Docker and Jib to auto-build source code, and deploy to Kubernetes
+- How the `skaffold` tool works with container builders like Docker to auto-build source code, and deploy to Kubernetes
 - How to integrate `skaffold` with the `kustomize` manifests we saw in part 2 
 - How to stage pull requests in Kubernetes automatically
 - How to set up a complete CI/CD pipeline, building on the Continuous Deployment workflow from part 2 

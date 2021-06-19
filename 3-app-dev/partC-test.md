@@ -20,6 +20,19 @@ cat ../skaffold.yaml
 Expected output: 
 
 ```YAML
+# Copyright 2021 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 apiVersion: skaffold/v2alpha4
 kind: Config
 build:
@@ -27,14 +40,11 @@ build:
   - image: frontend
     context: src/frontend
   - image: ledgerwriter
-    jib:
-      project: src/ledgerwriter
+    context: src/ledgerwriter
   - image: balancereader
-    jib:
-      project: src/balancereader
+    context: src/balancereader
   - image: transactionhistory
-    jib:
-      project: src/transactionhistory
+    context: src/transactionhistory
   - image: contacts
     context: src/contacts
   - image: userservice
@@ -46,7 +56,7 @@ build:
   local: 
     concurrency: 4 
 deploy:
-  statusCheckDeadlineSeconds: 300
+  statusCheckDeadlineSeconds: 600
   kustomize: {}
 portForward:
 - resourceType: deployment
@@ -65,15 +75,16 @@ profiles:
     deploy: 
       kustomize: 
         paths:
-          - "cymbalbank-app-config/overlays/prod"
+          - "cymbalbank-app-config/overlays/dev"
   - name: prod
     deploy: 
       kustomize: 
         paths:
           - "cymbalbank-app-config/overlays/prod"
+
 ```
 
-A [skaffold.yaml](https://skaffold.dev/docs/references/yaml/) file is the configuration for skaffold. It tells skaffold where the source code lives for the various Cymbal Bank services, and where the YAML files live for Kubernetes. We configure the Java services (eg. balancereader) to use the [Jib](https://github.com/GoogleContainerTools/jib/) container builder, which is a Java-specific tool that allows us to build directly using Maven without writing Dockerfiles. For the Python services (eg. contacts) we use the default Docker builder. We're also configuring skaffold to use the kustomize overlays we explored in Part 2, mapping the skaffold `dev` **[profile](https://skaffold.dev/docs/environment/profiles/)** to the kustomize dev overlay. We also define skaffold profiles for staging and prod.
+A [skaffold.yaml](https://skaffold.dev/docs/references/yaml/) file is the configuration for skaffold. It tells skaffold where the source code lives for the various Cymbal Bank services, and where the YAML files live for Kubernetes. We're also configuring skaffold to use the kustomize overlays we explored in Part 2, mapping the skaffold `dev` **[profile](https://skaffold.dev/docs/environment/profiles/)** to the kustomize dev overlay. We also define skaffold profiles for staging and prod.
 
 
 ###  2. **From the `cymbalbank-app-source/` directory, copy `skaffold.yaml`**. 
@@ -155,7 +166,13 @@ You should see your new banner at the top of the login screen:
 
 Note that `Cloud Code: Run on Kubernetes` uses `skaffold dev` as the underlying command, which constantly watches your local source code for changes, and keeps building the updated services as you write more code. Optionally, make some changes to the login banner or add some text to the `login.html` file - you should see the `Output` in your IDE log the updated build, and if you re-navigate to the frontend external IP, you should see your changes reflected. 
 
-### 11. Remove your test deployment from the dev cluster by pressing `ctrl-cmd-P` and typing `Cloud Code: Delete`. Press enter.  
+### 11. Remove your test deployment from the dev cluster. 
+
+Run the following command from a terminal window. 
+
+```
+skaffold delete --profile dev
+```
 
 **💫 Nice work! You just used skaffold, Cloud Code, and kustomize to test code changes in GKE.** 
 
