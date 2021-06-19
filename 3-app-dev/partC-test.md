@@ -27,14 +27,11 @@ build:
   - image: frontend
     context: src/frontend
   - image: ledgerwriter
-    jib:
-      project: src/ledgerwriter
+    context: src/ledgerwriter
   - image: balancereader
-    jib:
-      project: src/balancereader
+    context: src/balancereader
   - image: transactionhistory
-    jib:
-      project: src/transactionhistory
+    context: src/transactionhistory
   - image: contacts
     context: src/contacts
   - image: userservice
@@ -44,9 +41,9 @@ build:
   tagPolicy:
     gitCommit: {}
   local: 
-    concurrency: 4 
+    concurrency: 4
 deploy:
-  statusCheckDeadlineSeconds: 300
+  statusCheckDeadlineSeconds: 600
   kustomize: {}
 portForward:
 - resourceType: deployment
@@ -65,7 +62,7 @@ profiles:
     deploy: 
       kustomize: 
         paths:
-          - "cymbalbank-app-config/overlays/prod"
+          - "cymbalbank-app-config/overlays/dev"
   - name: prod
     deploy: 
       kustomize: 
@@ -73,7 +70,7 @@ profiles:
           - "cymbalbank-app-config/overlays/prod"
 ```
 
-A [skaffold.yaml](https://skaffold.dev/docs/references/yaml/) file is the configuration for skaffold. It tells skaffold where the source code lives for the various Cymbal Bank services, and where the YAML files live for Kubernetes. We configure the Java services (eg. balancereader) to use the [Jib](https://github.com/GoogleContainerTools/jib/) container builder, which is a Java-specific tool that allows us to build directly using Maven without writing Dockerfiles. For the Python services (eg. contacts) we use the default Docker builder. We're also configuring skaffold to use the kustomize overlays we explored in Part 2, mapping the skaffold `dev` **[profile](https://skaffold.dev/docs/environment/profiles/)** to the kustomize dev overlay. We also define skaffold profiles for staging and prod.
+A [skaffold.yaml](https://skaffold.dev/docs/references/yaml/) file is the configuration for skaffold. It tells skaffold where the source code lives for the various Cymbal Bank services, and where the YAML files live for Kubernetes. Each service container is built with Docker. We're also configuring skaffold to use the kustomize overlays we explored in Part 2, mapping the skaffold `dev` **[profile](https://skaffold.dev/docs/environment/profiles/)** to the kustomize dev overlay. We also define skaffold profiles for staging and prod.
 
 
 ###  2. **From the `cymbalbank-app-source/` directory, copy `skaffold.yaml`**. 

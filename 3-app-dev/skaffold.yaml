@@ -5,14 +5,11 @@ build:
   - image: frontend
     context: src/frontend
   - image: ledgerwriter
-    jib:
-      project: src/ledgerwriter
+    context: src/ledgerwriter
   - image: balancereader
-    jib:
-      project: src/balancereader
+    context: src/balancereader
   - image: transactionhistory
-    jib:
-      project: src/transactionhistory
+    context: src/transactionhistory
   - image: contacts
     context: src/contacts
   - image: userservice
@@ -22,9 +19,9 @@ build:
   tagPolicy:
     gitCommit: {}
   local: 
-    concurrency: 4 
+    concurrency: 4
 deploy:
-  statusCheckDeadlineSeconds: 300
+  statusCheckDeadlineSeconds: 600
   kustomize: {}
 portForward:
 - resourceType: deployment

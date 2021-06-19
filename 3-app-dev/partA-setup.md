@@ -34,11 +34,11 @@ git checkout -b frontend-banner
 cd .. 
 ```
 
-### 4. **Populate the `cymbalbank-app-source` repo with the upstream [Bank of Anthos](https://github.com/googlecloudplatform/bank-of-anthos) sample app code.**
+### 4. **Populate the `cymbalbank-app-source` repo with the [Bank of Anthos](https://github.com/googlecloudplatform/bank-of-anthos) sample app code.**
 
 ```
-git clone "https://github.com/GoogleCloudPlatform/bank-of-anthos"
-cd bank-of-anthos; rm -rf .git; cd .. 
+git clone "https://github.com/askmeegs/bank-of-anthos"
+cd bank-of-anthos; git checkout java-docker; rm -rf .git; cd .. 
 cp -r bank-of-anthos/ cymbalbank-app-source/ 
 rm -rf bank-of-anthos 
 ```

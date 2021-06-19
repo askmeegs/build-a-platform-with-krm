@@ -45,10 +45,11 @@ steps:
         fi
         svc="`basename $f .yaml`"
         echo "🏦 Service name: $svc"
-        subst="image: gcr.io/${PROJECT_ID}/cymbal-bank/release/$svc:${SHORT_SHA}"
+        subst="\ \ \ \ \ \ \ \ image: gcr.io/${PROJECT_ID}/cymbal-bank/release/$svc:${SHORT_SHA}"
 
-        echo "🐳 Injecting image tag: $subst > $f"  
-        sed -i "s|image: $svc|$subst|g" $f 
+        echo "🐳 Injecting image tag: $subst"  
+        sed -i "/image:.*$svc.*/c$subst" $f
+
         
         echo "📝 Done injecting image tag - $f"
         cat $f | grep "image: "
@@ -62,13 +63,15 @@ steps:
   secretEnv: ['GITHUB_EMAIL', 'GITHUB_USERNAME', 'GITHUB_TOKEN']
 availableSecrets:
   secretManager:
-  - versionName: projects/${PROJECT_ID}/secrets/github-username/versions/1 
+  - versionName: projects/${PROJECT_ID}/secrets/github-username/versions/latest
     env: 'GITHUB_USERNAME'
-  - versionName: projects/${PROJECT_ID}/secrets/github-token/versions/1 
+  - versionName: projects/${PROJECT_ID}/secrets/github-token/versions/latest
     env: 'GITHUB_TOKEN'
-  - versionName: projects/${PROJECT_ID}/secrets/github-email/versions/1 
+  - versionName: projects/${PROJECT_ID}/secrets/github-email/versions/latest
     env: 'GITHUB_EMAIL'
 timeout: '1200s' #timeout - 20 minutes
+options:
+  machineType: 'E2_HIGHCPU_8'
 ```
 
 This pipeline will run when a pull request merges into the `main` branch. It does 4 things: 
@@ -100,17 +103,6 @@ Reopen Cloud Build in the Google Cloud Console. Click Triggers > **Create Trigge
 
 
 ### 4. **Wait for the frontend-banner branch's PR CI to build, then merge the pull request**.
-
-If the CI Pull Request build fails with the following error: 
-
-**Note** - if you see an error that looks like this - 
-
-```
- - balancereader: Error checking cache.
-failed to build: getting hash for artifact "balancereader": getting dependencies for "balancereader": could not fetch dependencies for workspace 
-```
-
-- This is caused by a possible Jib bug that occurs sporadically on `skaffold build`. Try running the build pipeline again by clicking `Retry` next to `Build Details`. 
 
 When the Pull Request's Cloud Build pipeline is complete, you should see a check-mark in Github next to the latest commit to the `frontend-banner` branch. If you mouse over the check-mark, you should see a window like the one below. **Note** - it may take 5-10 minutes for your pipeline to complete. 
 

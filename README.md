@@ -65,7 +65,6 @@ These demos can be completed standalone - all you need is a Google Cloud project
 - [Kubernetes](https://kubernetes.io)
 - [Docker](https://www.docker.com/) 
 - [Github](https://github.com) 
-- [Jib](https://github.com/GoogleContainerTools/jib)
 - [kubectl](https://kubernetes.io/docs/reference/kubectl/overview/)
 - [kubectx](https://github.com/ahmetb/kubectx)
 - [kustomize](https://kustomize.io/)

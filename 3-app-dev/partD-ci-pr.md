@@ -26,16 +26,18 @@ steps:
   - |
     git clone "https://github.com/$$GITHUB_USERNAME/cymbalbank-app-config"
     gcloud container clusters get-credentials ${_CLUSTER_NAME} --zone ${_CLUSTER_ZONE} --project ${PROJECT_ID} 
-    skaffold run --profile=staging --default-repo="gcr.io/${PROJECT_ID}/cymbal-bank/${BRANCH_NAME}" --status-check --tail=false
+    skaffold run --profile=staging --default-repo="gcr.io/${PROJECT_ID}/cymbal-bank/${BRANCH_NAME}" --status-check --tail=false --force=true
   secretEnv: ['GITHUB_USERNAME']
 substitutions:
   _CLUSTER_NAME: 'cymbal-staging'
   _CLUSTER_ZONE: 'us-central1-a'
 availableSecrets:
   secretManager:
-  - versionName: projects/${PROJECT_ID}/secrets/github-username/versions/1 
+  - versionName: projects/${PROJECT_ID}/secrets/github-username/versions/latest
     env: 'GITHUB_USERNAME'
 timeout: '1200s' #timeout - 20 minutes
+options:
+  machineType: 'E2_HIGHCPU_8'
 ```
 
 This Cloud Build pipeline is designed to run on open Pull Requests in the `cymbalbank-app-source` repo. This means that when the build pipeline runs, it will run out of the `cymbalbank-app-source` directory, at the branch corresponding to the pull request - meaning, the build already will have your frontend banner code. 
@@ -111,15 +113,3 @@ Now let's pretend that your pull request was reviewed by a developer teammate, a
 
 **[Continue to Part E - Merging Your Pull Request.](partE-ci-main.md)** 
 
-## Troubleshooting 
-
-If the CI Pull Request build fails with the following error: 
-
-```
- - balancereader: Error checking cache.
-failed to build: getting hash for artifact "balancereader": getting dependencies for "balancereader": could not fetch dependencies for workspace .: initial Jib dependency refresh failed: failed to get Jib dependencies: running [/workspace/mvnw jib:_skaffold-fail-if-jib-out-of-date -Djib.requiredVersion=1.4.0 --projects src/balancereader --also-make jib:_skaffold-files-v2 --quiet --batch-mode]
- - stdout: ""
- - stderr: "Exception in thread \"main\" java.lang.RuntimeException: Could not locate the Maven launcher JAR in Maven distribution...
- ```
-
-This is caused by a possible Jib bug that occurs sporadically on `skaffold build`. Try running the build pipeline again by clicking `Retry` next to `Build Details`. 
