@@ -20,13 +20,7 @@ install_config_sync () {
     echo "********** Installing Config Sync + Policy Controller: $CLUSTER_NAME, zone: $CLUSTER_ZONE ***************" 
 
     kubectx $CLUSTER_NAME 
-    # kubectl apply -f config-management-operator.yaml
-    # # inject github username into Config Management YAML + apply 
-    # CRD_FILE="config-management-crds/${CLUSTER_NAME}.yaml"
-    # gsed -i "s/GITHUB_USERNAME/${GITHUB_USERNAME}/g" $CRD_FILE
 
-    # install config sync by applying the CRD 
-    # kubectl apply -f config-management-crds/${CLUSTER_NAME}.yaml
     gcloud alpha container hub config-management apply \
     --membership=$CLUSTER_NAME \
     --config=apply-spec.yaml \
@@ -37,9 +31,8 @@ install_config_sync () {
 gcloud config set project $PROJECT_ID
 gcloud alpha container hub config-management enable
 
-# Download Config Sync operator 
-# gsutil cp gs://config-management-release/released/latest/config-management-operator.yaml config-management-operator.yaml
-
+# Replace GITHUB_USERNAME for policy repo in install "apply_spec"
+gsed -i "s/GITHUB_USERNAME/${GITHUB_USERNAME}/g" apply-spec.yaml
 
 # Install Config Sync on dev, staging, and prod 
 install_config_sync "cymbal-dev" "us-east1-c" 
