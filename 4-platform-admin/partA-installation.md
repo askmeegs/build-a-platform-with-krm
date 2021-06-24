@@ -37,57 +37,18 @@ To https://github.com/askmeegs/cymbalbank-policy
  * [new branch]      main -> main
 ```
 
-### 4. **Navigate to the [Anthos dashboard](https://console.cloud.google.com/anthos) in the Google Cloud Console.** 
+### 4. **Install Config Sync and Policy Controller** on all four GKE clusters. 
 
-### 5. **In the left sidebar, click Clusters.** You should see your four clusters in the list. 
+```
+./install.sh 
+```
 
-![](screenshots/anthos-clusters.png)
+This script does the following: 
 
-### 6. **In the left sidebar, click Config Management.** You should see a window like the one below. **Click "Setup.", then "Enable Config Management."** 
+- Installs [Config Sync](https://cloud.google.com/anthos-config-management/docs/config-sync-overview) on all four clusters. This is a set of workloads, running in each cluster, designed to sync configuration from the policy repo to the cluster automatically. 
+- Installs [Policy Controller](https://cloud.google.com/anthos-config-management/docs/concepts/policy-controller) on all four clusters. This is a Kubernetes admission controller that can read custom policies from your policy repo. 
 
-![](screenshots/setup-acm.png)
-
-### 7. **In the Anthos Config Management cluster list, click the open circle next to the `cymbal-admin` cluster. Then at the top of the screen, click "Configure."** 
-
-*Note* - it may take up to 2 minutes for this table to populate. 
-
-### 8. **In the setup menu that appears, populate with the following fields**: 
-
-- **Git repository authentication for ACM:** `None`, then click **Continue.** 
-- **ACM Settings for your Clusters:** `Version 1.7.1` or the default-populated version. 
-- **Config sync:** check "Enable." A menu will pop up. 
-- **URL:** `https://github.com/your-github-username/cymbalbank-policy`. **Replace `your-github-username` with your username.**
-- **Branch**: `main`
-- **Tag/commit**: leave blank
-- **Policy directory**: `/`
-- **Sync wait**: leave blank
-- **Git proxy**: leave blank 
-- **Source format**: `unstructured`
-- **Policy controller**: check "Enable."
-- **Install default template library**: check to Enable.
-- **Audit interval**: 60
-- **Exempt namespaces**: leave blank 
-- **Enable constraint template objects that reference..**: uncheck
-
-Click **Continue**, then **Done.** You should then see that the Config Sync status for the cymbal-admin cluster is `In progress`. 
-
-![](screenshots/install-progress.png)
-
-### 9. **Repeat step 7 for the other three clusters: cymbal-dev, cymbal-staging, and cymbal-prod.** 
-
-(Note - it's also possible to do this setup over the command line, but currently there is a bug when you try to install both Config Sync and Policy Controller at the same time using that method, so to play it safe we're installing in the UI for now.)
-
-### 10. **Wait for all clusters to show as `Synced` and `Installed` for Config Sync and Policy Controller, respectively**. 
-
-You may see multiple errors in the UI as these tools are installed on your GKE clusters - this is expected. The total installation time may take 3-5 minutes. 
-
-![](screenshots/install-errors.png)
-
-Eventually, you should see this: 
-
-![](screenshots/install-success.png)
-
-### 11. **Return to your terminal. Get the Config Sync install status for all clusters in your project.**
+### 5. **Get the Config Sync and Policy Controller install status for all clusters in your project.**
 
 ```
 gcloud alpha container hub config-management status --project=${PROJECT_ID}
@@ -121,7 +82,7 @@ Date:   Thu May 13 17:58:10 2021 -0400
 
 So when you installed Config Sync and Policy Controller, what actually got deployed? 
 
-### 12. **Switch to the dev cluster, and get the Pods in the `config-management-system` and `gatekeeper-system` namespaces.**
+### 6. **Switch to the dev cluster, and get the Pods in the `config-management-system` and `gatekeeper-system` namespaces.**
 
 ```
 kubectx cymbal-dev
