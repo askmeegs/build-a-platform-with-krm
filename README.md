@@ -14,16 +14,16 @@ These demos can be completed standalone - all you need is a Google Cloud project
 
 ⏱ **Note** - the estimated time to complete the demos is 9 hours. The demos do not have to be completed all at once, but each demo must be completed in order. 
 
-### 🚧  [Demo 1 - Setup](/1-setup) 
+### 🚧  [Demo 1 - Setup](/1-setup) (*[blog post](https://cloud.google.com/blog/topics/developers-practitioners/build-platform-krm-part-1-whats-platform)*) 
 - [1 - Setup](/1-setup)
 
-### ☸️  [Demo 2 - How KRM Works](/2-how-krm-works) 
+### ☸️  [Demo 2 - How KRM Works](/2-how-krm-works) (*[blog post](https://cloud.google.com/blog/topics/developers-practitioners/build-platform-krm-part-2-how-kubernetes-resource-model-works)*) 
 - [Part A - Setup](/2-how-krm-works/partA-setup.md)
 - [Part B - Introducing the Kubernetes Resource Model](/2-how-krm-works/partB-introducing-krm.md)
 - [Part C - The Cymbal Bank App](/2-how-krm-works/partC-cymbal-bank.md)
 - [Part D - Deploying Cymbal Bank to GKE with Cloud Build](/2-how-krm-works/partD-cloud-build-cd.md)
 
-### 💻  [Demo 3 - App Development with KRM](/3-app-dev) 
+### 💻  [Demo 3 - App Development with KRM](/3-app-dev) (*[blog post](https://cloud.google.com/blog/topics/developers-practitioners/build-platform-krm-part-3-simplifying-kubernetes-app-development)*) 
 - [Part A - Setup](/3-app-dev/partA-setup.md)
 - [Part B - Add an Application Feature](/3-app-dev/partB-app-feature.md)
 - [Part C - Test the feature](/3-app-dev/partC-test.md)
