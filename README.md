@@ -1,6 +1,6 @@
 ![](screenshots/logo.png)
 
-This repository contains the demos for the "Build a Platform with KRM" blog post + video series. 
+This repository contains the demos for the "Build a Platform with KRM" series.
 
 These demos can be completed standalone - all you need is a Google Cloud project and a GitHub account. 
 
