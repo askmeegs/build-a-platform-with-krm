@@ -26,9 +26,9 @@ echo "🗑 Deleting Config Connector-managed resources (Compute Engine, BigQuery
 kubectx cymbal-admin 
 kubectl delete -f 5-hosted-resources/bigquery/mock-dataset.yaml 
 kubectl delete -f 5-hosted-resources/compute-engine/instance.yaml
-kubectl delete -f cloudsql/projects/$PROJECT_ID/SQLInstance/us-east1/cymbal-dev.yaml
-kubectl delete -f cloudsql/projects/$PROJECT_ID/SQLInstance/cymbal-dev/SQLDatabase/accounts-db.yaml
-kubectl delete -f cloudsql/projects/$PROJECT_ID/SQLInstance/cymbal-dev/SQLDatabase/ledger-db.yaml
+kubectl delete -f 5-hosted-resources/cloudsql/projects/$PROJECT_ID/SQLInstance/us-east1/cymbal-dev.yaml
+kubectl delete -f 5-hosted-resources/cloudsql/projects/$PROJECT_ID/SQLInstance/cymbal-dev/SQLDatabase/accounts-db.yaml
+kubectl delete -f 5-hosted-resources/cloudsql/projects/$PROJECT_ID/SQLInstance/cymbal-dev/SQLDatabase/ledger-db.yaml
 
 echo "💤 Sleeping 30 seconds to allow Config Connector to delete Cloud Resources..."
 sleep 30 
@@ -46,4 +46,4 @@ gcloud iam service-accounts delete cymbal-gsa@$PROJECT_ID.iam.gserviceaccount.co
 # Terraform destroy (GKE clusters, Git repos, Cloud Build permissions, Cloud SQL databases)
 echo "🗑 Running terraform destroy to remove GKE clusters, Cloud SQL databases..." 
 cd 1-setup/
-terraform destroy
+terraform destroy -var-file="base-env/terraform.tfvars" --auto-approve base-env

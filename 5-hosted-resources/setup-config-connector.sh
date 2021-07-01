@@ -9,44 +9,46 @@ fi
 gcloud config set project $PROJECT_ID
 export SERVICE_ACCOUNT_NAME="cymbal-admin-kcc"
 
-echo "☁️ Creating a Google Service Account (GSA) for Config Connector..."
-gcloud iam service-accounts create $SERVICE_ACCOUNT_NAME
+kcc_project_setup() {
+    echo "☁️ Creating a Google Service Account (GSA) for Config Connector..."
+    gcloud iam service-accounts create $SERVICE_ACCOUNT_NAME
 
-echo "☁️ Granting the GSA cloud resource management permissions..." 
-gcloud projects add-iam-policy-binding ${PROJECT_ID} \
-    --member="serviceAccount:${SERVICE_ACCOUNT_NAME}@${PROJECT_ID}.iam.gserviceaccount.com" \
-    --role="roles/owner"
+    echo "☁️ Granting the GSA cloud resource management permissions..." 
+    gcloud projects add-iam-policy-binding ${PROJECT_ID} \
+        --member="serviceAccount:${SERVICE_ACCOUNT_NAME}@${PROJECT_ID}.iam.gserviceaccount.com" \
+        --role="roles/owner"
 
-echo "☁️ Connecting your Google Service Account to the Kubernetes Service Account (KSA) that Config Connector uses..."
-gcloud iam service-accounts add-iam-policy-binding \
-cymbal-admin-kcc@$PROJECT_ID.iam.gserviceaccount.com \
-    --member="serviceAccount:$PROJECT_ID.svc.id.goog[cnrm-system/cnrm-controller-manager]" \
-    --role="roles/iam.workloadIdentityUser"
+    echo "☁️ Connecting your Google Service Account to the Kubernetes Service Account (KSA) that Config Connector uses..."
+    gcloud iam service-accounts add-iam-policy-binding \
+    cymbal-admin-kcc@$PROJECT_ID.iam.gserviceaccount.com \
+        --member="serviceAccount:$PROJECT_ID.svc.id.goog[cnrm-system/cnrm-controller-manager]" \
+        --role="roles/iam.workloadIdentityUser"
+}
 
-# Populate configconnector.yaml
-echo "☁️ Populating and deploying configconnector.yaml with your GSA info..."
-sed -i "s/PROJECT_ID/$PROJECT_ID/g" configconnector.yaml
+uninstall_config_sync() {
+    CLUSTER_NAME=$1 
+    CLUSTER_ZONE=$2
+    echo "☸️ Uninstalling Config Sync and Policy Controller: $CLUSTER_NAME, zone: $CLUSTER_ZONE"
+    gcloud alpha container hub config-management apply \
+    --membership=$CLUSTER_NAME \
+    --config=remove-cs-spec.yaml \
+    --project=$PROJECT_ID
+}
 
-
-install_kcc () {
+install_config_connector () {
     CLUSTER_NAME=$1 
     CLUSTER_ZONE=$2 
-    echo "☸️ Installing Config Connector: $CLUSTER_NAME, zone: $CLUSTER_ZONE" \
+    echo "☸️ Installing Config Connector: $CLUSTER_NAME, zone: $CLUSTER_ZONE" 
 
     kubectx $CLUSTER_NAME
 
-    # Apply configconnector.yaml 
-    echo "☁️ Installing the Config Connector controller..." 
     kubectl apply -f configconnector.yaml
     kubectl annotate namespace default cnrm.cloud.google.com/project-id=$PROJECT_ID 
 }
 
-# Note - due to an ongoing bug, Config Sync and Config Connector can't be installed 
-# on GKE at the same time. So dev/staging/prod have Config Sync, and admin has config connector. 
 
-# install_kcc "cymbal-dev" "us-east1-c" 
-# install_kcc "cymbal-staging" "us-central1-a" 
-# install_kcc "cymbal-prod" "us-west1-a"
-install_kcc "cymbal-admin" "us-central1-f"
+kcc_project_setup
+uninstall_config_sync "cymbal-admin" "us-central1-f"
+install_config_connector "cymbal-admin" "us-central1-f"
 
 echo "✅ Finished installing Config Connector on the admin cluster."

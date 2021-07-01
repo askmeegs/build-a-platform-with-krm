@@ -14,12 +14,14 @@ config-connector version
 Expected output: 
 
 ```
-1.46.0
+1.53.0
 ```
 
 ### 2. **View the Cloud SQL KRM export script.** 
 
-This script generates static KRM resource files (YAML) for the Cloud SQL development database. (Although these steps only show KRM for the development DB, we could do the same for the staging and production databases as well.)
+This script generates static KRM resource files (YAML) for the Cloud SQL development database.
+
+**Note**: Although these steps only show KRM for the development DB, we could do the same for the staging and production databases as well.
 
 ```
 cat cloudsql/generate-cloudsql-krm.sh 
@@ -118,11 +120,12 @@ spec:
   resourceID: ledger-db
 ```
 
-These KRM files represent the live state of your Cloud SQL resources, originally created using Terraform. (You will see your PROJECT_ID next to `cnrm.cloud.google.com/project-id`.)
+These KRM files represent the live state of your Cloud SQL resources, originally created using Terraform. (You should see your PROJECT_ID next to `cnrm.cloud.google.com/project-id`.)
 
 ### 5. **Apply the Cloud SQL KRM resources to the cymbal-admin cluster.**
 
 ```
+kubectx cymbal-admin
 kubectl apply -f cloudsql/projects/$PROJECT_ID/SQLInstance/us-east1/cymbal-dev.yaml
 kubectl apply -f cloudsql/projects/$PROJECT_ID/SQLInstance/cymbal-dev/SQLDatabase/accounts-db.yaml
 kubectl apply -f cloudsql/projects/$PROJECT_ID/SQLInstance/cymbal-dev/SQLDatabase/ledger-db.yaml
@@ -157,7 +160,7 @@ NAME                                               AGE   READY   STATUS     STAT
 sqlinstance.sql.cnrm.cloud.google.com/cymbal-dev   42s   True    UpToDate   10s
 ```
 
-### 7. **Open the Cloud Console and navigate to Cloud SQL**. 
+### 7. **Open the Cloud Console and [navigate to Cloud SQL](https://console.cloud.google.com/sql)**. 
 
 Notice how in the list, the `cymbal-dev` cluster now has a new label, `managed-by-cnrm: true`. This indicates that this SQL Instance is now under the management umbrella of Config Connector. 
 
@@ -178,24 +181,25 @@ Notice how in the list, the `cymbal-dev` cluster now has a new label, `managed-b
 
 ## Wrap-up 
 
-If you made it this far, great work - you just completed several challenging demos that explored the Kubernetes Resource Model with multiple angles, developer personas, products, and tools. 
+If you made it this far, **great work**! You just completed several demos that explored the Kubernetes Resource Model with multiple developer personas, products, and tools in mind. 
 
 Let's summarize the key takeaways from all 5 demos: 
 
 - **Building a platform is hard**, especially in the cloud, especially when you have multiple Kubernetes clusters in play, on top of hosted resources.  
-- **KRM is one way to manage your Cloud and Kubernetes config**, but it's not the only way - Demo 1 showed us how to do it with Terraform. 
 - KRM is a great way to manage resources because Kubernetes is constantly running a **control loop** to make sure your **desired** state matches the **actual** cluster state. We saw this in action both for core Kubernetes API resources (Demo 2 / for instance, Deployments that keep Pods alive) and hosted Cloud resources (Demo 5 / via Config Connector)
 - **KRM promotes a "GitOps" model** where you keep all your configuration in Git, and sync it down to multiple clusters at once.  
 - Policy Controller, together with Config Sync, allow you to impose custom policies on your KRM resources, both at deploy-time and during CI/CD (Demo 4). These **policies allow you to set fine-grained controls** on different resource types, to ensure compliance within your org. 
 - **KRM / the Kubernetes API can lifecycle resources that run outside a Kubernetes cluster.** We saw how Config Connector, running inside the admin cluster, created and updated resources in Google Cloud. 
+- **KRM is one way to manage your Cloud and Kubernetes resources**, but it's not the only way - for instance, we set up the initial demo environment with Terraform in part 1. The benefit of putting more and more resources in a KRM format is that you have a single language and toolchain for your infrastructure, in and outside of Kubernetes.  
 
-Hopefully you learned a thing or two from these demos- really, we've only just scratched the surface of what KRM can do. All the "learn more" links across Parts 1-5 are available in the [README of this repo](/README.md).
 
-And another set of resources to learn more about KRM, its design principles, and other helpful tools, see: **https://github.com/askmeegs/learn-krm**.
+Hopefully you learned a thing or two from these demos- really, we've only just scratched the surface of what KRM can do. 
+
+For a list of additional resources to learn the Kubernetes Resource Model, check out: **https://github.com/askmeegs/learn-krm**.
 
 ## ⭐️ We'd love your feedback! ⭐️
 
-### 🗳 [If you have a moment, please fill out this short survey](https://forms.gle/pUX2DPW9fxgDMwEw8) to share your thoughts on this demo! Thank you! 
+### 🗳 [If you have a moment, please fill out this short survey](https://forms.gle/pUX2DPW9fxgDMwEw8) to share your thoughts on these demos. Thank you! 
 
 ## Cleaning up
 

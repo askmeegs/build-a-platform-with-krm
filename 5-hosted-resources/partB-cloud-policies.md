@@ -21,10 +21,10 @@ export PROJECT_ID=<your-project-id>
 ### 2. **View the mock transaction dataset.** This is a 1000-line CSV file, whose fields mimic the data currently stored in the Cloud SQL `ledger_db` today. 
 
 ```
-head bigquery/cymbal-mock-transactions.csv 
+cat bigquery/cymbal-mock-transactions.csv 
 ```
 
-Expected output: 
+Expected output (truncated): 
 
 ```
 transaction_id,from_account,to_account,amount,timestamp,user_agent
@@ -39,7 +39,9 @@ transaction_id,from_account,to_account,amount,timestamp,user_agent
 9,145870222,311667375,$39.17,4/15/2021,Chrome/51.0.2704.103
 ```
 
-### 3. **Verify that you have the gsutil tool installed** - this comes bundled with the gcloud command. [Install the tool](https://cloud.google.com/storage/docs/gsutil_install) if it's not in your PATH. 
+### 3. **Verify that you have the gsutil tool installed** - this comes bundled with the gcloud command. 
+
+[Install the tool](https://cloud.google.com/storage/docs/gsutil_install) if it's not in your PATH. 
 
 ```
 gsutil version 
@@ -48,7 +50,7 @@ gsutil version
 Expected output: 
 
 ```
-gsutil version: 4.61
+gsutil version: 4.64
 ```
 
 ### 4. **Create a Cloud Storage bucket in your project, called `datasets`.**
@@ -60,7 +62,7 @@ gsutil mb -c standard gs://$PROJECT_ID-datasets
 Expected output: 
 
 ```
-Creating gs://krm-test-5-datasets/...
+Creating gs://krm-test11-datasets/...
 ```
 
 ### 5. **Upload the mock transaction data to Cloud Storage.**
@@ -85,13 +87,11 @@ cat bigquery/mock-dataset.yaml
 
 Expected output: 
 
-```
+```YAML
 apiVersion: bigquery.cnrm.cloud.google.com/v1beta1
 kind: BigQueryJob
 metadata:
   name: cymbal-mock-load-job
-  annotations:
-    configsync.gke.io/cluster-name-selector: cymbal-admin
 spec:
   location: "US"
   jobTimeoutMs: "600000"
@@ -120,8 +120,6 @@ apiVersion: bigquery.cnrm.cloud.google.com/v1beta1
 kind: BigQueryDataset
 metadata:
   name: cymbalmockdataset
-  annotations:
-    configsync.gke.io/cluster-name-selector: cymbal-admin
 spec:
   friendlyName: cymbal-mock-dataset
 ---
@@ -129,8 +127,6 @@ apiVersion: bigquery.cnrm.cloud.google.com/v1beta1
 kind: BigQueryTable
 metadata:
   name: cymbalmocktable
-  annotations:
-    configsync.gke.io/cluster-name-selector: cymbal-admin
 spec:
   friendlyName: cymbal-mock-table
   datasetRef:
@@ -189,14 +185,15 @@ Now let's come back to the restrictions we outlined at the beginning of this sec
 
 This file defines a constraint template for `BigQueryDatasetAllowName`, and a constraint of type `BigQueryDatasetAllowName`, which together allow only one BigQuery dataset in the policy repo.
 
+View the custom Constraint Template: 
+
 ```
 cat bigquery/constraint-template.yaml
-cat bigquery/constraint.yaml
 ```
 
 Expected output: 
 
-```
+```YAML
 apiVersion: templates.gatekeeper.sh/v1beta1
 kind: ConstraintTemplate
 metadata:
@@ -226,6 +223,24 @@ metadata:
 spec:
   parameters:
     allowedName: cymbalmockdataset
+```
+
+View the Constraint, using the custom Constraint Template: 
+
+```
+cat bigquery/constraint.yaml 
+```
+
+Expected output: 
+
+```YAML
+apiVersion: constraints.gatekeeper.sh/v1beta1
+kind: BigQueryDatasetAllowName
+metadata:
+  name: bigquery-allow-mock-only
+spec:
+  parameters:
+    allowedName: cymbalmockdatase
 ```
 
 ### 12. **Apply the Constraint and Constraint Template** to the admin cluster.

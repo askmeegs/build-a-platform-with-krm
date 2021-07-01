@@ -59,7 +59,12 @@ Expected output:
 ✅ Finished installing Config Connector on all clusters.
 ```
 
-This script grants Config Connector (running in the GKE cluster) the IAM permissions it needs to create and update GCP resources in your project, and deploys Config Connector onto the cluster. 
+This script does the following: 
+1. Uninstalls Config Sync from the `cymbal-admin` cluster. (**Note** - currently a bug causes Config Sync and Config Connector to conflict with each other. In the future, you will be able to use Config Sync to deploy your Config Connector resources)
+2. Grants Config Connector IAM permissions to lifecycle GCP resources in your project
+3. Installs Config Connector on the `cymbal-admin` cluster. 
+
+grants Config Connector (running in the GKE cluster) the IAM permissions it needs to create and update GCP resources in your project, and deploys Config Connector onto the cluster. 
 
 ### 5. **Verify that Config Connector is installed on the admin cluster.**
 
@@ -84,6 +89,7 @@ cnrm-webhook-manager-7d5b995bbc-xpx65           1/1     Running   0          3d1
 Let's start with a basic example of creating a GCP-hosted resource using Config Connector, declared with KRM. Let's say that one of the security admins in CymbalBank only has access to a Windows machine, and they want to start working with the platform team to study and create org-wide policies using the Policy Controller constraints we learned about in part 4. Because some of the tools we've learned don't support Windows yet, we can spin up a Linux host for them so they have access to a full development environment. 
 
 ![screenshot](screenshots/secadmin-gce.jpg)
+
 
 
 ### 1. **View the GCE KRM resources.** 
@@ -119,7 +125,7 @@ spec:
 
 This KRM resource defines one Compute Engine instance, along with a Compute Disk and some networking resources. Notice how the KRM looks a lot like a Deployment YAML - it has a name, metadata with some labels, and a spec, with info specifically about a GCE instance. Config Connector knows how to read this `ComputeEngine` resource type, and take action on it - in this case, create a Compute Engine instance in our GCP project. 
 
-### 2. Apply the Compute Engine resources to the admin cluster. **⚠️ Note** - this demo shows applying the cloud-hosted KRM resources manually with kubectl, due to an ongoing bug between Config Sync and Config Connector. But in an ideal scenario, we use Config Sync to sync the Config Connector KRM just like we did policies. 
+### 2. Apply the Compute Engine resources to the admin cluster. 
 
 ```
 kubectx cymbal-admin
@@ -154,7 +160,9 @@ iamserviceaccount.iam.cnrm.cloud.google.com/inst-dep-cloudmachine   5m58s   True
 
 Note - it may take a few minutes for the resources to be created. In the meantime, you may see `UpdateFailed` or `DependencyNotReady`. This is expected. 
 
-### 4. **Open the Cloud Console and navigate to Compute Engine > VM Instances. Filter on `name:secadmin`. You should see the new GCE instance in the list.** 
+### 4. **Open the Cloud Console and navigate to [Compute Engine > VM Instances](https://console.cloud.google.com/compute/instances).** 
+
+Filter on `name:secadmin`. You should see the new GCE instance in the list.
 
 ![screenshots](screenshots/secadmin-gce-console.png)
 
