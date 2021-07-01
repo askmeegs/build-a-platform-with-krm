@@ -31,7 +31,7 @@ These demos can be completed standalone - all you need is a Google Cloud project
 - [Part E - Merge the Pull Request](/3-app-dev/partE-ci-main.md)
 - [Part F - Continuous Deployment](/3-app-dev/partF-cd.md)
  
-### 🛠  [Demo 4 - Administering KRM with Config Sync and Policy Controller](/4-platform-admin) 
+### 🛠  [Demo 4 - Administering KRM with Config Sync and Policy Controller](/4-platform-admin) (*[blog post](https://cloud.google.com/blog/topics/developers-practitioners/build-platform-krm-part-4-administering-multi-cluster-environment)*)
 - [Part A - Installing Config Sync and Policy Controller](/4-platform-admin/partA-installation.md)
 - [Part B - Keeping Resources in Sync](/4-platform-admin/partB-configsync.md)
 - [Part C - Creating Cluster-scoped Resources](/4-platform-admin/partC-cluster-scoped.md)
