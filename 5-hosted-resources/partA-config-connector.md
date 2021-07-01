@@ -160,9 +160,9 @@ iamserviceaccount.iam.cnrm.cloud.google.com/inst-dep-cloudmachine   5m58s   True
 
 Note - it may take a few minutes for the resources to be created. In the meantime, you may see `UpdateFailed` or `DependencyNotReady`. This is expected. 
 
-### 4. **Open the Cloud Console and navigate to [Compute Engine > VM Instances](https://console.cloud.google.com/compute/instances). 
+### 4. **Open the Cloud Console and navigate to [Compute Engine > VM Instances](https://console.cloud.google.com/compute/instances).** 
 
-Filter on `name:secadmin`. You should see the new GCE instance in the list.** 
+Filter on `name:secadmin`. You should see the new GCE instance in the list.
 
 ![screenshots](screenshots/secadmin-gce-console.png)
 

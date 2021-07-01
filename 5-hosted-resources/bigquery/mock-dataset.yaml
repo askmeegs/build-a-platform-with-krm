@@ -7,7 +7,7 @@ spec:
   jobTimeoutMs: "600000"
   load:
     sourceUris:
-      - "gs://krm-test11/cymbal-mock-transactions.csv"
+      - "gs://PROJECT_ID/cymbal-mock-transactions.csv"
     destinationTable:
       tableRef:
         name: cymbalmocktable
