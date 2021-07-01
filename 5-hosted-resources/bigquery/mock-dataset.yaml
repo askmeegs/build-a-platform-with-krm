@@ -2,14 +2,12 @@ apiVersion: bigquery.cnrm.cloud.google.com/v1beta1
 kind: BigQueryJob
 metadata:
   name: cymbal-mock-load-job
-  annotations:
-    configsync.gke.io/cluster-name-selector: cymbal-admin
 spec:
   location: "US"
   jobTimeoutMs: "600000"
   load:
     sourceUris:
-      - "gs://PROJECT_ID/cymbal-mock-transactions.csv"
+      - "gs://krm-test11/cymbal-mock-transactions.csv"
     destinationTable:
       tableRef:
         name: cymbalmocktable
@@ -32,8 +30,6 @@ apiVersion: bigquery.cnrm.cloud.google.com/v1beta1
 kind: BigQueryDataset
 metadata:
   name: cymbalmockdataset
-  annotations:
-    configsync.gke.io/cluster-name-selector: cymbal-admin
 spec:
   friendlyName: cymbal-mock-dataset
 ---
@@ -41,8 +37,6 @@ apiVersion: bigquery.cnrm.cloud.google.com/v1beta1
 kind: BigQueryTable
 metadata:
   name: cymbalmocktable
-  annotations:
-    configsync.gke.io/cluster-name-selector: cymbal-admin
 spec:
   friendlyName: cymbal-mock-table
   datasetRef:

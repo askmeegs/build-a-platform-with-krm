@@ -1,0 +1,11 @@
+applySpecVersion: 1
+spec:
+  configSync:
+    enabled: false
+    sourceFormat: unstructured
+    syncRepo: https://github.com/GITHUB_USERNAME/cymbalbank-policy
+    syncBranch: main
+    secretType: none
+    policyDir: /
+  policyController:
+    enabled: true
