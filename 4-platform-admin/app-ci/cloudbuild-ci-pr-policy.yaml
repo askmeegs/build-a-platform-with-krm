@@ -5,7 +5,7 @@ steps:
   entrypoint: '/bin/sh'
   args: ['-c', 'mkdir hydrated-manifests && kubectl kustomize overlays/prod > hydrated-manifests/prod.yaml']
 - id: 'Clone cymbalbank-policy repo'
-  name: 'gcr.io/kpt-dev/kpt'
+  name: 'gcr.io/kpt-dev/kpt:v0.39.3'
   entrypoint: '/bin/sh'
   args: ['-c', 'kpt pkg get https://github.com/$$GITHUB_USERNAME/cymbalbank-policy.git@main constraints
                   && kpt fn source constraints/ hydrated-manifests/ > hydrated-manifests/kpt-manifests.yaml']
