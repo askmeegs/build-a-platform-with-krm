@@ -39,7 +39,7 @@ These demos can be completed standalone - all you need is a Google Cloud project
 - [Part E - Creating Custom Policies](/4-platform-admin/partE-custom-policies.md)
 - [Part F - Integrating Policy Checks into CI/CD](/4-platform-admin/partF-policy-check-ci.md)
 
-### ☁️  [Demo 5 - Managing Cloud-hosted Resources with KRM](/5-hosted-resources) 
+### ☁️  [Demo 5 - Managing Cloud-hosted Resources with KRM](/5-hosted-resources) (*[blog post](https://cloud.google.com/blog/topics/developers-practitioners/build-platform-krm-part-5-manage-hosted-resources-kubernetes)*)
 - [Part A - Introducing Config Connector](/5-hosted-resources/partA-config-connector.md)
 - [Part B - Enforcing Policies on Cloud-Hosted Resources](5-hosted-resources/partB-cloud-policies.md)
 - [Part C - Managing Existing Cloud Resources with Config Connector](/5-hosted-resources/partC-existing-resources.md)
