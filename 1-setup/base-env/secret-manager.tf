@@ -17,6 +17,7 @@ variable "github_email" {
 variable "github_token" {
   type = string
   description = "Github personal access token"
+  sensitive = true
 }
 
 # secret manager secret for your github developer token 
