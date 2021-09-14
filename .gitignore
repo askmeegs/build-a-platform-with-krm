@@ -13,3 +13,4 @@ terraform-megan.tfvars
 */cymbalbank-app-source/
 */cymbalbank-policy/
 SQLInstance/
+.envrc
