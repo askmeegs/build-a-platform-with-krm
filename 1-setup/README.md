@@ -82,6 +82,7 @@ Do not forget to update your `.gitignore` with the created `.envrc` file.
 ### 5. **Enable Google Cloud APIs** in your project. ⚠️ Note- This command takes a few minutes to run.
 
 ```
+gcloud login
 gcloud config set project ${PROJECT_ID}
 gcloud services enable \
   cloudresourcemanager.googleapis.com \
