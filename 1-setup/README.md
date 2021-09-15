@@ -136,6 +136,9 @@ project_id = ""
 project_number = ""
 ```
 
+**Note**: Because some informations are sensitive you may also define environment variables as terraform values. See [this](https://www.terraform.io/docs/cli/config/environment-variables.html#tf_var_name) documentation.  
+Doing so you should rename `./base-env/terraform.tfvars` to untake [variable definition precedence](https://www.terraform.io/docs/language/values/variables.html#variable-definition-precedence).
+
 ### 9. **Initialize gcloud for your project**, specifying your GCP account and project ID. 
 
 You don't need to set a default region or zone. 
