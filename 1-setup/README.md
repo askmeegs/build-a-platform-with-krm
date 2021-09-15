@@ -53,9 +53,10 @@ The diagram above shows the resources Terraform will create during setup:
 
 ### 2. Create a [**Github Personal Access token**](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token) in your account.
 
-You can create one by navigating to [Settings > Personal Access Tokens](https://github.com/settings/tokens) - be sure to copy its value, you'll need it in a few steps. Give your token the following Scopes:
+You can create one by navigating to [Settings >Developer settings >Personal Access Tokens](https://github.com/settings/tokens) - be sure to copy its value, you'll need it in a few steps. Give your token the following Scopes:
 - `repo` (for creating repos)
-- `delete-repo` (for cleanup at the end)
+- `delete-repo` (for cleanup at the end)  
+and set a consistent TTL to this token. (7 days should be enough)
 
 ![](screenshots/gh-token-create-repo.png)
 
