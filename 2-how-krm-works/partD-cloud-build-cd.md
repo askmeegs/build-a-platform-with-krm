@@ -69,7 +69,7 @@ You should now see the trigger appear in the Cloud Build menu. **Note** - the re
 cd cymbalbank-app-config/
 git add .
 git commit -m "Initialize app config repo"
-git push origin main
+git push -u origin main
 cd .. 
 ```
 
@@ -81,6 +81,7 @@ Total 37 (delta 25), reused 0 (delta 0), pack-reused 0
 remote: Resolving deltas: 100% (25/25), done.
 To https://github.com/askmeegs/cymbalbank-app-config
  * [new branch]      main -> main
+ Branch 'main' set up to track remote branch 'main' from 'origin'.
 ```
 
 ### 5. **Navigate back to Cloud Build and in the left sidebar, click History.** 
