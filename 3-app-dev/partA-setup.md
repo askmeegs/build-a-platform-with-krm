@@ -37,8 +37,8 @@ cd ..
 ### 4. **Populate the `cymbalbank-app-source` repo with the [Bank of Anthos](https://github.com/googlecloudplatform/bank-of-anthos) sample app code.**
 
 ```
-git clone "https://github.com/askmeegs/bank-of-anthos"
-cd bank-of-anthos; git checkout java-docker; rm -rf .git; cd .. 
+git clone -b java-docker --depth=1  "https://github.com/askmeegs/bank-of-anthos"
+(cd bank-of-anthos; rm -rf .git) 
 cp -r bank-of-anthos/ cymbalbank-app-source/ 
 rm -rf bank-of-anthos 
 ```
