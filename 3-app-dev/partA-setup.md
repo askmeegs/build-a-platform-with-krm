@@ -39,7 +39,7 @@ cd ..
 ```
 git clone -b java-docker --depth=1  "https://github.com/askmeegs/bank-of-anthos"
 (cd bank-of-anthos; rm -rf .git) 
-mv bank-of-anthos/ cymbalbank-app-source/ 
+mv bank-of-anthos/* cymbalbank-app-source/ ; rm -rf bank-of-anthos
 ```
 
 ### 5. **Clone the `cymbalbank-app-config` repo inside the `cymbalbank-app-source` repo.**
