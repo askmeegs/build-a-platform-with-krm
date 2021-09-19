@@ -101,7 +101,8 @@ A terminal window should pop up at the bottom of the screen.
 
 ![screenshot](screenshots/cc-gcr.png)
 
-A terminal should open up within VSCode that shows the skaffold logs, as it builds images and deploys to the dev cluster. This will take 3-5 minutes. 
+A terminal should open up within VSCode that shows the skaffold logs, as it builds images and deploys to the dev cluster. The time needed to upload images to cloud registry will widely depends on your upload bandwidth.  
+In "optimal" conditions this will take 3-5 minutes.  
 
 **Notes:** 
 - You may see a pop-up asking: `Do you want the application "skaffold" to accept incoming network connections?`. Click **Allow.**  
