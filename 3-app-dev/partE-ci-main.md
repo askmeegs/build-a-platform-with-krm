@@ -79,7 +79,9 @@ This pipeline will run when a pull request merges into the `main` branch. It doe
 1. Builds production images based on the source code that has just landed to the `main` branch. Those images are pushed to Google Container Registry in your project. Those images are tagged with the latest Git commit SHA to the `main` branch.
 2. Clones the `cymbalbank-app-config` repo (remember, we're running out of the `cymbalbank-app-source` repo, just like the CI Pull Request pipeline we set up in Part D). 
 3. Injects the new image tags (the ones we just built, with the Git commit SHA) into the deployment manifests in `cymbalbank-app-config`. 
-4. Pushes those YAML file changes to the `main` branch of `cymbalbank-app-config`, authenticated with your `GITHUB_TOKEN` stored in Secret Manager.  
+4. Pushes those YAML file changes to the `main` branch of `cymbalbank-app-config`, authenticated with your `GITHUB_TOKEN` stored in Secret Manager. 
+
+**Note:** - Although we specified a `--profile` for the `skaffold build` command, it does not trigger anything special because of the lack of `build` section in `skaffold.yaml` prod profile.  See this [link](https://skaffold.dev/docs/environment/profiles/) for more information.
 
 ### 2. **Copy the main CI pipeline into cymbalbank-app-source.** 
 
