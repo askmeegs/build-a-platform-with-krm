@@ -38,13 +38,26 @@ Here, we set resource quotas for CPU and Memory on the entire frontend namespace
 ### 2. **Copy all the Resource Quota resources into your cymbalbank-policy repo.**
 
 ```
-cp production-quotas/balancereader/quota.yaml cymbalbank-policy/namespaces/balancereader/
-cp production-quotas/contacts/quota.yaml cymbalbank-policy/namespaces/contacts/
-cp production-quotas/frontend/quota.yaml cymbalbank-policy/namespaces/frontend/
-cp production-quotas/ledgerwriter/quota.yaml cymbalbank-policy/namespaces/ledgerwriter/
-cp production-quotas/loadgenerator/quota.yaml cymbalbank-policy/namespaces/loadgenerator/
-cp production-quotas/transactionhistory/quota.yaml cymbalbank-policy/namespaces/transactionhistory/
-cp production-quotas/userservice/quota.yaml cymbalbank-policy/namespaces/userservice/
+for i in $(ls production-quotas/**/quota.yaml);
+cp $i cymbalbank-policy/namespaces/${$(dirname $i)#production-quotas/}
+```
+
+Listing `quota.yaml` files in `cymbalbank-policy` directory,
+
+```
+ls cymbalbank-policy/**/quota.yaml
+```
+
+you should get:
+
+```
+cymbalbank-policy/namespaces/balancereader/quota.yaml  
+cymbalbank-policy/namespaces/loadgenerator/quota.yaml
+cymbalbank-policy/namespaces/contacts/quota.yaml
+cymbalbank-policy/namespaces/transactionhistory/quota.yaml
+cymbalbank-policy/namespaces/frontend/quota.yaml
+cymbalbank-policy/namespaces/userservice/quota.yaml
+cymbalbank-policy/namespaces/ledgerwriter/quota.yaml
 ```
 
 ### 3. **Commit the ResourceQuotas to the `main` branch of the cymbalbank-policy repo.**
