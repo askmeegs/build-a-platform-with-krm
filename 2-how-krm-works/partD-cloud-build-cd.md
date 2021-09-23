@@ -7,7 +7,9 @@
 
 Let's implement a GitOps-style continuous deployment pipeline for CymbalBank using [Google Cloud Build](https://cloud.google.com/build/docs/overview). Cloud Build is a tool that executes custom build steps on Google Cloud's infrastructure. 
 
-### 1. **View the continuous deployment pipeline**. This file has been provided for you, and defines a Cloud Build pipeline that runs the `kubectl apply -k` command described above, effectively deploying the demo overlay in the `cymbalbank-app-config` repo to the `cymbal-prod` cluster. 
+### 1. **View the continuous deployment pipeline**. 
+
+This file has been provided for you, and defines a Cloud Build pipeline that runs the `kubectl apply -k` command described above, effectively deploying the demo overlay in the `cymbalbank-app-config` repo to the `cymbal-prod` cluster. 
 
 ```
 cat cymbalbank-app-config/cloudbuild-cd-prod.yaml 
