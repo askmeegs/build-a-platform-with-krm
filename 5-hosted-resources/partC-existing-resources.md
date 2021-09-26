@@ -139,7 +139,7 @@ sqldatabase.sql.cnrm.cloud.google.com/accounts-db created
 sqldatabase.sql.cnrm.cloud.google.com/ledger-db created
 ```
 
-Note that although the Kubernetes resources were just created, Config Connector will see that these SQL resources are already running in your project, and the resources won't be updated (since the KRM matches the live state, right now) except for a set of labels that indicate. 
+Note that although the Kubernetes resources were just created, Config Connector will see that these SQL resources are already running in your project, and the resources won't be updated (since the KRM matches the live state, right now) except for a set of labels that indicate their managed status by the config connector.
 
 You can see these labels by navigating to the Cloud SQL console. 
 
