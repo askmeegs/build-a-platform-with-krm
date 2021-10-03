@@ -199,7 +199,7 @@ For a list of additional resources to learn the Kubernetes Resource Model, check
 
 ## ⭐️ We'd love your feedback! ⭐️
 
-### 🗳 [If you have a moment, please fill out this short survey](https://forms.gle/pUX2DPW9fxgDMwEw8) to share your thoughts on these demos. Thank you! 
+### 🗳 [If you have a moment, please fill out this short survey](https://forms.gle/EhQS1fX4Kzyno9v36) to share your thoughts on these demos. Thank you! 
 
 ## Cleaning up
 
