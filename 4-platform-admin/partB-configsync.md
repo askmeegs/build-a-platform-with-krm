@@ -7,7 +7,7 @@ You might be asking yourself why we just set up another repo to store KRM, and a
 
 *[source - Config Sync documentation](https://cloud.google.com/kubernetes-engine/docs/add-on/config-sync/config-sync-overview)*
 
-What this means is that if a developer tries to manually delete a resource that lives in the cymbalbank-policy repo, Config Sync notices, and it will block that developer from doing so. If a bad actor gains access to the cluster and *does* successfully delete the resource, Config Sync will bring it back online. When the live state of the cluster diverges from the source-of-truth in Git, this is called **configuration drift**, and Config Sync is great at preventing that. 
+What this means is that if a developer tries to manually delete a config resource from the cluster that lives in the cymbalbank-policy repo, Config Sync notices, and it will block that developer from doing so. If a bad actor gains access to the cluster and *does* successfully delete the resource, Config Sync will bring it back online. When the live state of the cluster diverges from the source-of-truth in Git, this is called **configuration drift**, and Config Sync is great at preventing that. 
 
 Further, Config Sync works really well for certain types of platform-level KRM resources that might apply to all the Cymbal bank teams - think authentication policies, or base-layer workloads for monitoring. CI/CD works well for application workloads that are tied to source code and pull requests. Both tools handle KRM, but they are complementary and as we'll see later in this demo, they can be used together to powerful effect. 
 

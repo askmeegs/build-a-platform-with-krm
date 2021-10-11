@@ -9,9 +9,9 @@ Let's take on the persona of an app developer looking to make an update to the C
 
 You can do this by clicking `File > Add Folder to Workspace`. 
 
-### 3. **From the VSCode sidebar, open the Login HTML template.
+### 3. **From the VSCode sidebar, open the Login HTML template**.
 
-This file is located in `3-app-dev/cymbalbank-app-source/src/frontend/templates/login.html`**. 
+This file is located in `3-app-dev/cymbalbank-app-source/src/frontend/templates/login.html`. 
 
 ### 4. **In `login.html`, find line 71**.  
 

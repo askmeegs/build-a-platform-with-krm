@@ -23,9 +23,11 @@ Your baseline environment is set up using [Terraform](https://www.terraform.io/)
 The diagram above shows the resources Terraform will create during setup: 
 
 - **4 [Google Kubernetes Engine](https://cloud.google.com/kubernetes-engine) (GKE) clusters** for admin, development, staging, and production. The admin cluster has [**Config Connector**](https://cloud.google.com/config-connector/docs/overview) enabled, which will be used in part 5. 
+We choose GKE classic mode because we will need add-ons unavailable on the *Autopilot* mode.  
 - **3 [Cloud SQL](https://cloud.google.com/sql)** (Postgres) databases for development, staging, and production. 
 - **3 Github repos** for application source code, application config, and org-wide policies. **⚠️ Note - this demo does require creating new public repos in your Github account. You can delete these repos when you are done with the demos.** 
 - **3 [Secret Manager](https://cloud.google.com/secret-manager) secrets** containing your Github username, email, and developer token. 
+
 
 ## Prerequisites 
 
@@ -53,9 +55,10 @@ The diagram above shows the resources Terraform will create during setup:
 
 ### 2. Create a [**Github Personal Access token**](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token) in your account.
 
-You can create one by navigating to [Settings > Personal Access Tokens](https://github.com/settings/tokens) - be sure to copy its value, you'll need it in a few steps. Give your token the following Scopes:
+You can create one by navigating to [Settings >Developer settings >Personal Access Tokens](https://github.com/settings/tokens) - be sure to copy its value, you'll need it in a few steps. Give your token the following Scopes:
 - `repo` (for creating repos)
-- `delete-repo` (for cleanup at the end)
+- `delete-repo` (for cleanup at the end)  
+and set a consistent TTL to this token. (7 days should be enough)
 
 ![](screenshots/gh-token-create-repo.png)
 
@@ -76,9 +79,13 @@ export PROJECT_ID="<your-project-id>"
 export GITHUB_USERNAME="<your-github-username>"
 ```
 
+**Note**: You can optionnally use the [direnv](https://direnv.net/) project to associate these env variables to the folder containing this project.  
+Do not forget to update your `.gitignore` with the created `.envrc` file.
+
 ### 5. **Enable Google Cloud APIs** in your project. ⚠️ Note- This command takes a few minutes to run.
 
 ```
+gcloud login
 gcloud config set project ${PROJECT_ID}
 gcloud services enable \
   cloudresourcemanager.googleapis.com \
@@ -131,6 +138,9 @@ github_email = ""
 project_id = ""
 project_number = ""
 ```
+
+**Note**: Because some informations are sensitive you may also define environment variables as terraform values. See [this](https://www.terraform.io/docs/cli/config/environment-variables.html#tf_var_name) documentation.  
+Doing so you should rename `./base-env/terraform.tfvars` to untake [variable definition precedence](https://www.terraform.io/docs/language/values/variables.html#variable-definition-precedence).
 
 ### 9. **Initialize gcloud for your project**, specifying your GCP account and project ID. 
 

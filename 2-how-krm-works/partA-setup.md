@@ -21,6 +21,8 @@ This Github repo should have been created in your account during setup. This rep
 git clone "https://github.com/${GITHUB_USERNAME}/cymbalbank-app-config"
 ```
 
+**Note** - Following parts of this tutorial assume that your default branch name is `main` instead of `master`. You can configure it on your local machine running `git config --global init.defaultBranch main`
+
 Expected output: 
 
 ```
