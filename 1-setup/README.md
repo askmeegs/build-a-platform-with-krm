@@ -23,7 +23,7 @@ Your baseline environment is set up using [Terraform](https://www.terraform.io/)
 The diagram above shows the resources Terraform will create during setup: 
 
 - **4 [Google Kubernetes Engine](https://cloud.google.com/kubernetes-engine) (GKE) clusters** for admin, development, staging, and production. The admin cluster has [**Config Connector**](https://cloud.google.com/config-connector/docs/overview) enabled, which will be used in part 5. 
-We choose GKE classic mode because we will need add-ons unavailable on the *Autopilot* mode.  
+We choose GKE Standard mode because we will need add-ons unavailable on the *Autopilot* mode.  
 - **3 [Cloud SQL](https://cloud.google.com/sql)** (Postgres) databases for development, staging, and production. 
 - **3 Github repos** for application source code, application config, and org-wide policies. **⚠️ Note - this demo does require creating new public repos in your Github account. You can delete these repos when you are done with the demos.** 
 - **3 [Secret Manager](https://cloud.google.com/secret-manager) secrets** containing your Github username, email, and developer token. 
@@ -79,7 +79,7 @@ export PROJECT_ID="<your-project-id>"
 export GITHUB_USERNAME="<your-github-username>"
 ```
 
-**Note**: You can optionnally use the [direnv](https://direnv.net/) project to associate these env variables to the folder containing this project.  
+**Note**: You can optionally use the [direnv](https://direnv.net/) project to associate these env variables to the folder containing this project.  
 Do not forget to update your `.gitignore` with the created `.envrc` file.
 
 ### 5. **Enable Google Cloud APIs** in your project. ⚠️ Note- This command takes a few minutes to run.
