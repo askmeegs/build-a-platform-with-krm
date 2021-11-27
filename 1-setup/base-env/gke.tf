@@ -27,7 +27,7 @@ resource "google_container_cluster" "admin" {
   # (instead of the default which is to have your GKE nodes have the default GCE 
   # service account - which has sweeping permissions on your project.)
   workload_identity_config {
-    identity_namespace = "${var.project_id}.svc.id.goog"
+    workload_pool = "${var.project_id}.svc.id.goog"
   }
 
   # the admin cluster has the Config Connector GKE add-on.  
@@ -85,7 +85,7 @@ resource "google_container_cluster" "dev" {
   initial_node_count = 1
 
   workload_identity_config {
-    identity_namespace = "${var.project_id}.svc.id.goog"
+    workload_pool = "${var.project_id}.svc.id.goog"
   }
 
 }
@@ -132,7 +132,7 @@ resource "google_container_cluster" "staging" {
   initial_node_count = 1
 
   workload_identity_config {
-    identity_namespace = "${var.project_id}.svc.id.goog"
+    workload_pool = "${var.project_id}.svc.id.goog"
   }
 
 }
@@ -179,7 +179,7 @@ resource "google_container_cluster" "prod" {
   initial_node_count = 1
 
   workload_identity_config {
-    identity_namespace = "${var.project_id}.svc.id.goog"
+    workload_pool = "${var.project_id}.svc.id.goog"
   }
 
 }
