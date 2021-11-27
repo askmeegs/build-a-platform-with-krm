@@ -44,7 +44,7 @@ We choose GKE Standard mode because we will need add-ons unavailable on the *Aut
 - [gcloud](https://cloud.google.com/sdk/docs/install) (>= 338.0.0)
 - [kubectl](https://cloud.google.com/sdk/gcloud/reference/components/install) (>= 1.19)
 - [kubectx](https://github.com/ahmetb/kubectx#installation)
-- [terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli) (>= v0.14.8)
+- [terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli) (>= v1.0.11) - ⚠️ Important - you must upgrade your Terraform version if it's below v1.0.11. 
 - **tree** - `brew install tree` (MacOS)
 - [Docker desktop](https://www.docker.com/products/docker-desktop) (Mac, >= 20.10.6) or [Docker Engine](https://docs.docker.com/engine/install/ubuntu/) (Linux)
 - [skaffold](https://skaffold.dev/docs/install/) (>= v1.19.0)
@@ -85,7 +85,6 @@ Do not forget to update your `.gitignore` with the created `.envrc` file.
 ### 5. **Enable Google Cloud APIs** in your project. ⚠️ Note- This command takes a few minutes to run.
 
 ```
-gcloud login
 gcloud config set project ${PROJECT_ID}
 gcloud services enable \
   cloudresourcemanager.googleapis.com \
@@ -171,7 +170,7 @@ Credentials saved to file: [/Users/mokeefe/.config/gcloud/application_default_cr
 ### 11. **Run `terraform init`.** This downloads the providers (Github, Google Cloud) needed for setup. 
 
 ```
-terraform init base-env
+terraform -chdir=base-env init
 ```
 
 Expected output: 
@@ -188,7 +187,7 @@ should now work.
 
 
 ```
-terraform plan -var-file="base-env/terraform.tfvars" base-env
+terraform -chdir=base-env plan -var-file="terraform.tfvars"
 ```
 
 Expected output: 
@@ -209,7 +208,7 @@ Changes to Outputs:
 You will see a bunch of output as Terraform creates the resources. This command will take about 10 minutes to run.
 
 ```
-terraform apply -auto-approve -var-file="base-env/terraform.tfvars" base-env
+terraform -chdir=base-env apply -auto-approve -var-file="terraform.tfvars"
 ```
 
 When the command completes, you should see something similar to this:  
