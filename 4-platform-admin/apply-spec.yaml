@@ -3,7 +3,7 @@ spec:
   configSync:
     enabled: true
     sourceFormat: unstructured
-    syncRepo: https://github.com/GITHUB_USERNAME/cymbalbank-policy
+    syncRepo: https://github.com/askmeegs/cymbalbank-policy
     syncBranch: main
     secretType: none
     policyDir: /
