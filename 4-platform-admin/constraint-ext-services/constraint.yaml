@@ -6,4 +6,5 @@ metadata:
   annotations:
     configsync.gke.io/cluster-name-selector: cymbal-dev
 spec:
-  internalCIDRs: []
+  parameters:
+    internalCIDRs: [ ] 
