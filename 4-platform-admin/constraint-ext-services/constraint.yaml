@@ -3,6 +3,8 @@ apiVersion: constraints.gatekeeper.sh/v1beta1
 kind: K8sNoExternalServices
 metadata:
   name: dev-no-ext-services
+  annotations:
+    configsync.gke.io/cluster-name-selector: cymbal-dev
 spec:
   parameters:
     internalCIDRs: [ ] 
