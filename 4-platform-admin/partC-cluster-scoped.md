@@ -45,7 +45,7 @@ cp $i cymbalbank-policy/namespaces/${$(dirname $i)#production-quotas/}
 Listing `quota.yaml` files in `cymbalbank-policy` directory,
 
 ```
-ls cymbalbank-policy/**/quota.yaml
+ls cymbalbank-policy/*/*/quota.yaml
 ```
 
 you should get:

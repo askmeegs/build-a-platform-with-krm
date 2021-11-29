@@ -64,7 +64,7 @@ cymbal-prod     SYNCED  5e068d0            main         2021-05-13T22:14:10Z  IN
 cymbal-staging  SYNCED  5e068d0            main         2021-05-13T22:19:12Z  INSTALLED
 ```
 
-Here, `Last_Synced_Token` is the git commit SHROT_SHA of your latest commit to the `main` branch of your `cymbalbank-policy` repo - you can verify this by `cd`-ing into your policy repo and running: 
+Here, `Last_Synced_Token` is the git commit `SHORT_SHA` of your latest commit to the `main` branch of your `cymbalbank-policy` repo - you can verify this by `cd`-ing into your policy repo and running: 
 
 ```
 git log 
@@ -93,15 +93,15 @@ kubectl get pods -n gatekeeper-system
 Expected output: 
 
 ```
-NAME                                  READY   STATUS    RESTARTS   AGE
-admission-webhook-6899f7fbd9-2zlvw    1/1     Running   0          14m
-admission-webhook-6899f7fbd9-nskpn    1/1     Running   1          14m
-reconciler-manager-6b785845c4-5gx47   2/2     Running   0          14m
-root-reconciler-8b8889f49-jnnsg       3/3     Running   0          14m
-
+NAME                                          READY   STATUS    RESTARTS   AGE
+admission-webhook-64948475d7-v27tr            1/1     Running   0          23m
+admission-webhook-64948475d7-wtgls            1/1     Running   1          23m
+config-management-operator-7d5f54c74c-k82g4   1/1     Running   0          24m
+reconciler-manager-7c6dccbb5f-pp5w2           2/2     Running   0          23m
+root-reconciler-699dbf97cb-xw8bh              4/4     Running   0          22m
 NAME                                             READY   STATUS    RESTARTS   AGE
-gatekeeper-audit-76d8d7fb-dbnd7                  1/1     Running   0          15m
-gatekeeper-controller-manager-6bf5fdb68f-bftcz   1/1     Running   0          15m
+gatekeeper-audit-6f46754545-9zqh2                1/1     Running   0          23m
+gatekeeper-controller-manager-7f778d8b94-jxxrq   1/1     Running   0          23m
 ```
 
 The first set of workloads, in the `config-management-system` namespace, run Config Sync. These workloads periodically check your GitHub policy repo for any updates to the KRM source of truth stored there, and deploys those updated resources to the cluster. (Note that every cluster runs their own Config Sync, but all the clusters are synced to the same repo.)
