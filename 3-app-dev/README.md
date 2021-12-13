@@ -10,7 +10,7 @@ If you look inside the `cymbalbank-app-config/` manifests, and look at the `imag
     spec: 
       containers:
       - name: contacts
-        image: gcr.io/bank-of-anthos/contacts:v0.4.3
+        image: gcr.io/bank-of-anthos/contacts:v0.5.1
 ```
 
 In this demo, we'll explore how an app developer can get a new Cymbal Bank feature from their editor into production. 

@@ -11,7 +11,7 @@ spec:
     spec: 
       containers:
       - name: loadgenerator
-        image: gcr.io/bank-of-anthos/loadgenerator:v0.4.3
+        image: gcr.io/bank-of-anthos/loadgenerator:v0.5.1
         env:
         - name: LOG_LEVEL
           value: "info"

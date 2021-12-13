@@ -11,7 +11,7 @@ spec:
     spec: 
       containers:
       - name: contacts
-        image: gcr.io/bank-of-anthos/contacts:v0.4.3
+        image: gcr.io/bank-of-anthos/contacts:v0.5.1
         env:
         - name: ENABLE_TRACING
           value: "true"
