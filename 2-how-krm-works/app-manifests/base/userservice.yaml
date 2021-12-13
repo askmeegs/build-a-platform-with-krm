@@ -27,7 +27,7 @@ spec:
           containerPort: 8080
         env:
         - name: VERSION
-          value: "v0.4.3"
+          value: "v0.5.1"
         - name: PORT
           value: "8080"
         - name: ENABLE_TRACING
