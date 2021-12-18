@@ -12,7 +12,7 @@ spec:
     spec: 
       containers:
       - name: front
-        image: gcr.io/bank-of-anthos/frontend:v0.5.1
+        image: gcr.io/bank-of-anthos-ci/frontend:v0.5.2
         env:
         - name: ENABLE_TRACING
           value: "true"
