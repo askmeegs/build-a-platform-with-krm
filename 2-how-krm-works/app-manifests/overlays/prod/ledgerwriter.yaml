@@ -11,7 +11,7 @@ spec:
     spec: 
       containers:
       - name: ledgerwriter
-        image: gcr.io/bank-of-anthos/ledgerwriter:v0.5.1
+        image: gcr.io/bank-of-anthos-ci/ledgerwriter:v0.5.2
         env:
         - name: ENABLE_TRACING
           value: "true"

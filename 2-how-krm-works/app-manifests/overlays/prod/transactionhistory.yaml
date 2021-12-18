@@ -11,7 +11,7 @@ spec:
     spec: 
       containers:
       - name: transactionhistory
-        image: gcr.io/bank-of-anthos/transactionhistory:v0.5.1
+        image: gcr.io/bank-of-anthos-ci/transactionhistory:v0.5.2
         env:
         - name: ENABLE_TRACING
           value: "true"
